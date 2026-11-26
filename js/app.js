@@ -129,41 +129,35 @@ function engineStop(fade = 1) {
   ENGINE.nodes = null;
 }
 
-/* Nhạc nền xuyên suốt (file mp3) – bắt đầu ở lần chạm đầu tiên vì trình duyệt chặn tự phát */
-const BGM = { el: $('#bgm'), want: .42, started: false };
-function bgmLevel(v, ms = 900) {
-  BGM.want = v; const el = BGM.el; if (!el) return;
-  if (v > 0 && el.paused && BGM.started) el.play().catch(() => {});
-  const from = el.volume, t0 = performance.now(), target = AU.muted ? 0 : v;
-  const step = () => { const k = Math.min(1, (performance.now() - t0) / ms); el.volume = from + (target - from) * k; if (k < 1) requestAnimationFrame(step); else if (v === 0) el.pause(); };
-  step();
-}
-function bgmKick() {
-  if (BGM.started) return; BGM.started = true; audio();
-  BGM.el.volume = 0; BGM.el.play().then(() => bgmLevel(BGM.want, 1500)).catch(() => { BGM.started = false; });
-}
-addEventListener('pointerdown', bgmKick, { capture: true });
 
-/* Nhạc beat cho Audition (tự tổng hợp) – 124 BPM */
-const MUSIC = { bpm: 124, on: false, step: 0, next: 0, t0: 0, timer: null, useCtx: false };
+
+/* Nhạc nền vui tươi tự soạn (không bản quyền) – C trưởng, 116 BPM, chạy xuyên suốt; Audition bắt nhịp theo bài này */
+const MUSIC = { bpm: 116, on: false, step: 0, next: 0, t0: 0, timer: null, useCtx: false, bus: null, want: .5 };
 MUSIC.spb = 60 / MUSIC.bpm; MUSIC.bar = MUSIC.spb * 4;
-const PROG = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]];
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
-function schedStep(s, t) {
-  const c = AU.ctx, i = s % 16, bar = Math.floor(s / 16), ch = PROG[bar % 4], intense = bar % 8 >= 4;
-  if (i % 4 === 0) { const o = tone(150, t, .3, 'sine', 1); o.frequency.exponentialRampToValueAtTime(42, t + .14); }
-  if (i === 4 || i === 12) noise(t, .16, .45, 'bandpass', 1600, .8);
-  if (i % 4 === 2) noise(t, .06, .28, 'highpass', 7000); else if (intense) noise(t, .025, .08, 'highpass', 9000);
-  if (i % 2 === 0) {
-    const o = c.createOscillator(), fl = c.createBiquadFilter(), g = c.createGain();
-    o.type = 'sawtooth'; o.frequency.value = mtof(ch[0] - 24); fl.type = 'lowpass'; fl.frequency.setValueAtTime(i % 4 === 2 ? 900 : 400, t);
-    env(g, t, .005, .32, .16); o.connect(fl); fl.connect(g); g.connect(AU.master); o.start(t); o.stop(t + .25);
-  }
-  if (i % 4 === 2) {
-    const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = 2400; fl.connect(AU.master);
-    ch.forEach(m => { tone(mtof(m), t, .17, 'sawtooth', .05, fl); tone(mtof(m) * 1.006, t, .17, 'sawtooth', .04, fl); });
-  }
-  if (intense) { const arp = [ch[0], ch[1], ch[2], ch[1] + 12, ch[2] + 12, ch[0] + 12]; tone(mtof(arp[i % 6] + 12), t, .09, 'square', .045); }
+// I – V – vi – IV
+const CH = [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]];
+// giai điệu 4 ô nhịp (nốt móc đơn, null = nghỉ)
+const MEL = [[76, 79, 76, 74, 72, null, 74, 76], [74, null, 71, 74, 79, null, 77, 76], [72, 76, 81, 79, 76, null, 74, 72], [69, 72, 77, 76, 74, null, 72, null]];
+function pluck(f, t, vol, dur = .28) { // tiếng marimba: sine + hoạ âm, tắt nhanh
+  const c = AU.ctx, g = c.createGain(); env(g, t, .004, vol, dur); g.connect(MUSIC.bus);
+  [[1, 1], [4, .18], [10, .05]].forEach(([m, v]) => { const o = c.createOscillator(), gg = c.createGain(); o.frequency.value = f * m; gg.gain.value = v; o.connect(gg); gg.connect(g); o.start(t); o.stop(t + dur + .05); });
+}
+function songStep(s, t) {
+  const c = AU.ctx, i = s % 16, bar = Math.floor(s / 16), sec = bar % 16, ch = CH[bar % 4], full = sec >= 4 && sec < 12, brk = sec >= 12;
+  const out = MUSIC.bus;
+  // trống: kick nhẹ, clap ô 2-4, shaker
+  if (!brk && (i === 0 || i === 8 || (full && i === 10))) { const o = c.createOscillator(), g = c.createGain(); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(48, t + .12); env(g, t, .003, .8, .22); o.connect(g); g.connect(out); o.start(t); o.stop(t + .3); }
+  if (i === 4 || i === 12) { const sN = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(); sN.buffer = AU.noise; fl.type = 'bandpass'; fl.frequency.value = 1800; fl.Q.value = .9; env(g, t, .002, brk ? .22 : .32, .14); sN.connect(fl); fl.connect(g); g.connect(out); sN.start(t); sN.stop(t + .2); }
+  if (i % 2 === 1 || full) { const sN = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(); sN.buffer = AU.noise; fl.type = 'highpass'; fl.frequency.value = 8000; env(g, t, .002, i % 4 === 2 ? .1 : .05, .04); sN.connect(fl); fl.connect(g); g.connect(out); sN.start(t); sN.stop(t + .08); }
+  // bass nhún (gốc – quãng tám)
+  if (!brk && i % 2 === 0) { const o = c.createOscillator(), fl = c.createBiquadFilter(), g = c.createGain(); o.type = 'triangle'; o.frequency.value = mtof(ch[0] - 24 + (i % 4 === 2 ? 12 : 0)); fl.type = 'lowpass'; fl.frequency.value = 700; env(g, t, .005, .42, .18); o.connect(fl); fl.connect(g); g.connect(out); o.start(t); o.stop(t + .25); }
+  // marimba rải hợp âm
+  if (i % 2 === 0) { const arp = [ch[0], ch[1], ch[2], ch[0] + 12, ch[2], ch[1], ch[0] + 12, ch[1] + 12]; pluck(mtof(arp[i / 2] + 12), t, brk ? .08 : .13); }
+  // pad nền ở đầu mỗi ô nhịp
+  if (i === 0) { const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = brk ? 1400 : 900; fl.connect(out); ch.forEach(m => { const o = c.createOscillator(), g = c.createGain(); o.type = 'sawtooth'; o.frequency.value = mtof(m); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.022, t + .3); g.gain.linearRampToValueAtTime(.0001, t + MUSIC.bar); o.connect(g); g.connect(fl); o.start(t); o.stop(t + MUSIC.bar + .05); }); }
+  // giai điệu chính
+  if (full && i % 2 === 0) { const n = MEL[bar % 4][i / 2]; if (n) { const o = c.createOscillator(), g = c.createGain(), v = c.createOscillator(), vg = c.createGain(); o.type = 'triangle'; o.frequency.value = mtof(n); v.frequency.value = 5.5; vg.gain.value = 3; v.connect(vg); vg.connect(o.frequency); env(g, t, .01, .12, .3); o.connect(g); g.connect(out); o.start(t); v.start(t); o.stop(t + .36); v.stop(t + .36); pluck(mtof(n), t, .05, .2); } }
 }
 async function musicStart() {
   if (MUSIC.on) return;
@@ -172,10 +166,18 @@ async function musicStart() {
   MUSIC.useCtx = !!(c && c.state === 'running');
   MUSIC.on = true;
   if (!MUSIC.useCtx) { MUSIC.t0 = performance.now() / 1000; return; }
+  if (!MUSIC.bus) { MUSIC.bus = c.createGain(); MUSIC.bus.gain.value = 0; MUSIC.bus.connect(AU.master); }
+  MUSIC.bus.gain.setTargetAtTime(MUSIC.want, c.currentTime, .5);
   MUSIC.step = 0; MUSIC.t0 = MUSIC.next = c.currentTime + .1;
-  MUSIC.timer = setInterval(() => { while (MUSIC.next < c.currentTime + .12) { schedStep(MUSIC.step, MUSIC.next); MUSIC.next += MUSIC.spb / 4; MUSIC.step++; } }, 25);
+  MUSIC.timer = setInterval(() => { while (MUSIC.next < c.currentTime + .15) { songStep(MUSIC.step, MUSIC.next); MUSIC.next += MUSIC.spb / 4; MUSIC.step++; } }, 25);
 }
-function musicStop() { MUSIC.on = false; clearInterval(MUSIC.timer); }
+// âm lượng nhạc nền theo từng màn (0 = tắt tạm)
+function bgmLevel(v, ms = 900) {
+  MUSIC.want = v;
+  if (MUSIC.bus && AU.ctx) { MUSIC.bus.gain.cancelScheduledValues(AU.ctx.currentTime); MUSIC.bus.gain.setTargetAtTime(v, AU.ctx.currentTime, ms / 3000); }
+}
+function bgmKick() { if (!MUSIC.on) musicStart(); }
+addEventListener('pointerdown', bgmKick, { capture: true });
 const now = () => MUSIC.useCtx ? AU.ctx.currentTime : performance.now() / 1000;
 
 function paintMute() { $('#btnMute').innerHTML = icon(AU.muted ? 'mute' : 'sound'); }
@@ -183,7 +185,7 @@ paintMute();
 $('#btnMute').onclick = () => {
   AU.muted = !AU.muted; store.set('muted', AU.muted); paintMute();
   if (AU.master) AU.master.gain.value = AU.muted ? 0 : .55;
-  BGM.el.volume = AU.muted ? 0 : BGM.want; $('#memVideo').muted = AU.muted;
+  $('#memVideo').muted = AU.muted;
 };
 
 /* ================= CHIBI HƯỚNG DẪN + BONG BÓNG THOẠI ================= */
@@ -211,8 +213,8 @@ function hush() { $('#bubble').classList.remove('on'); const a = speaker(); a &&
 /* ================= ĐIỀU HƯỚNG ================= */
 const S = { stage: '', rsvp: store.get('rsvp', null), cls: store.get('cls', null), bonus: store.get('bonus', 0), best: store.get('best', 0), skip: false };
 const SCENE = { intro: ['airport', { cam: 'wide' }], checkin: ['airport', { variant: 'checkin' }], quiz: ['airport', { variant: 'customs' }], door: ['door'] };
-const MODE = { lobby: 'photo', game: 'photo', review: 'paper', wall: 'paper', memory: 'film', letter: 'paper' };
-const NO_PIP = ['cine', 'memory', 'letter'];
+const MODE = { lobby: 'photo', game: 'photo', review: 'paper', wall: 'paper', memory: 'film' };
+const NO_PIP = ['cine', 'memory'];
 const ENTER = {}, LEAVE = {};
 async function go(id) {
   hush();
@@ -221,7 +223,6 @@ async function go(id) {
   const app = $('#app'); app.classList.remove('photo', 'paper', 'film'); if (MODE[id]) app.classList.add(MODE[id]);
   $('#pip').classList.toggle('hide', NO_PIP.includes(id));
   $('#btnSkip').style.visibility = ['intro', 'checkin', 'quiz', 'flight', 'lobby'].includes(id) ? 'visible' : 'hidden';
-  if (id !== 'game') musicStop();
   if (SCENE[id]) { try { await W.show(SCENE[id][0], SCENE[id][1] || {}); } catch (e) { window.__errs.push(id + ': ' + e); } }
   else if (MODE[id]) W.clear();
   $$('.stage').forEach(s => s.classList.toggle('on', s.id === 's-' + id));
@@ -247,7 +248,7 @@ function renderGuest() {
   $('#ckQ').textContent = T('{Ban} xác nhận lên chuyến bay chứ?');
   updateClass();
 }
-ENTER.intro = () => { bgmLevel(.42); setGuide('Chào {ban}! Đây là vé máy bay của {ban}. Bấm "Đến quầy check-in" để bắt đầu nhé.'); };
+ENTER.intro = () => { bgmLevel(.5); setGuide('Chào {ban}! Đây là vé máy bay của {ban}. Bấm "Đến quầy check-in" để bắt đầu nhé.'); };
 (function tilt() {
   const p = $('#pass');
   const move = (x, y) => { p.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 8}deg)`; p.style.setProperty('--sh', (x * 80) + '%'); };
@@ -390,7 +391,7 @@ ENTER.flight = async () => {
   $('#fScore').innerHTML = biz ? '<span class="coin"></span><b>0</b>' : hearts(3);
   $('#fTime').textContent = 20;
   setGuide(biz ? 'Kéo nút tròn để lái, nhặt càng nhiều tiền càng được cộng điểm.' : 'Kéo nút tròn để né chướng ngại vật. Chỉ có 3 mạng thôi nhé.', 'CƠ TRƯỞNG · CƯỜNG');
-  bgmLevel(.18);
+  bgmLevel(.25);
   flightApi = await W.show('flight', {
     mode: biz ? 'coins' : 'obstacles', duration: 20, sfx: { coin: SFX.coin, hit: SFX.hit },
     onHud: h => {
@@ -430,7 +431,7 @@ joy.addEventListener('pointermove', e => { if (e.pointerId === joyId) { e.stopPr
 let cineDone = false, cineT = [];
 ENTER.cine = async () => {
   cineDone = false; $('#facade').classList.remove('on'); $('#cineCap').classList.remove('on');
-  engineStart(.4); bgmLevel(.3);
+  engineStart(.4); bgmLevel(.4);
   await W.show('cinematic', { duration: 6, onEnd: () => {} });
   cineT = [
     setTimeout(() => { SFX.swoosh(); }, 1200),
@@ -464,7 +465,7 @@ function lobbyCam() {
 }
 let lobbyT = [];
 ENTER.lobby = () => {
-  $('#lRules').classList.remove('on'); bgmLevel(.42);
+  $('#lRules').classList.remove('on'); bgmLevel(.5);
   cancelAnimationFrame(PAR.raf); PAR.t0 = performance.now(); lobbyCam();
   setGuide('Mình đang ở sảnh TR007. Lễ tân sẽ giao nhiệm vụ trước khi nhận phòng.');
   lobbyT = [
@@ -489,7 +490,7 @@ const GS = { on: false, r: 0, seq: [], pos: 0, views: 0, combo: 0, rStart: 0, lo
 })();
 ENTER.game = () => {
   cancelAnimationFrame(PAR.raf); lobbyCam();
-  bgmLevel(0, 500); startGame();
+  bgmLevel(.75, 500); startGame();
   setGuide('Bấm mũi tên đúng thứ tự, rồi bấm ĐĂNG khi vạch trắng vào ô vàng.', 'LỄ TÂN · CƯỜNG');
 };
 LEAVE.game = () => { GS.on = false; cancelAnimationFrame(GS.raf); };
@@ -549,7 +550,7 @@ function rate(i) {
 }
 function endGame() {
   if (!GS.on) return;
-  GS.on = false; cancelAnimationFrame(GS.raf); setTimeout(musicStop, 300); bgmLevel(.42, 1500);
+  GS.on = false; cancelAnimationFrame(GS.raf); bgmLevel(.5, 1500);
   const total = GS.views + (S.bonus || 0);
   $('#gFinal').textContent = fmt(total);
   $('#gBreak').textContent = `Audition ${fmt(GS.views)} + thưởng chuyến bay ${fmt(S.bonus || 0)}`;
@@ -571,7 +572,7 @@ $('#gAgain').onclick = () => startGame();
 /* ================= 7. CỬA PHÒNG ================= */
 let doorApi = null, opened = false, zoneRaf = 0;
 ENTER.door = () => {
-  opened = false; doorApi = W.current(); bgmLevel(.3);
+  opened = false; doorApi = W.current(); bgmLevel(.4);
   const kc = $('#keycard'); kc.classList.remove('back'); kc.style.transform = ''; kc.style.opacity = '';
   setGuide('Kéo thẻ phòng chạm vào ổ khóa bên phải cửa để mở cửa.');
   cancelAnimationFrame(zoneRaf);
@@ -613,36 +614,40 @@ function unlock() {
   setTimeout(async () => { await go('memory'); setTimeout(() => $('#whiteout').classList.remove('on'), 200); }, 2600);
 }
 
-/* ================= 8. VIDEO KỶ NIỆM ================= */
+/* ================= 8. VIDEO KỶ NIỆM + THƯ CẢM ƠN (chữ hiện đè lên ảnh) ================= */
 const mv = $('#memVideo');
-ENTER.memory = () => {
-  mv.currentTime = 0; mv.muted = AU.muted;
-  mv.play().then(() => $('#tapPlay').classList.remove('on')).catch(() => $('#tapPlay').classList.add('on'));
-};
-LEAVE.memory = () => { mv.pause(); };
-$('#tapPlay').onclick = () => { mv.play().then(() => $('#tapPlay').classList.remove('on')).catch(() => {}); };
-mv.addEventListener('ended', () => { if (S.stage === 'memory') go('letter'); });
-$('#memSkip').onclick = () => go('letter');
-
-/* ================= 9. THƯ CẢM ƠN (hiện từng chữ) ================= */
-let letterTimer = 0;
-ENTER.letter = () => {
-  bgmLevel(.32, 2000);
-  const el = $('#letterTxt'), box = el.parentElement, full = T(CFG.letter); let i = 0;
-  $('#letterSig').classList.remove('on'); $('#letterBtn').classList.remove('on');
-  el.innerHTML = '<span class="cur"></span>'; clearTimeout(letterTimer);
+let letterTimer = 0, letterDone = false;
+function typeLetter() {
+  const el = $('#letterTxt'), box = $('#memLetter'), full = T(CFG.letter);
+  const pauses = (full.match(/\n/g) || []).length * 380 + (full.match(/[.,–]/g) || []).length * 200;
+  const avail = Math.max(14, (mv.duration || 40) - 6) * 1000;            // chữ chạy xong trước khi video hết ~6 giây
+  const per = Math.max(28, Math.min(70, (avail - pauses) / full.length));
+  let i = 0; letterDone = false; clearTimeout(letterTimer);
+  $('#letterSig').classList.remove('on'); $('#memDone').classList.remove('on');
+  el.innerHTML = '<span class="cur"></span>';
   const tick = () => {
-    if (S.stage !== 'letter') return;
+    if (S.stage !== 'memory') return;
+    if (mv.paused && !mv.ended && mv.currentTime > 0) { letterTimer = setTimeout(tick, 120); return; } // video tạm dừng thì chữ cũng chờ
     i++; const ch = full[i - 1];
     el.innerHTML = esc(full.slice(0, i)) + '<span class="cur"></span>';
     box.scrollTop = box.scrollHeight;
-    if (i >= full.length) { $('#letterSig').classList.add('on'); setTimeout(() => $('#letterBtn').classList.add('on'), 700); return; }
-    letterTimer = setTimeout(tick, ch === '\n' ? 280 : (ch === '.' || ch === ',') ? 160 : 36);
+    if (i >= full.length) { letterDone = true; $('#letterSig').classList.add('on'); maybeDone(); return; }
+    letterTimer = setTimeout(tick, ch === '\n' ? 380 : (ch === '.' || ch === ',' || ch === '–') ? per + 200 : per);
   };
-  letterTimer = setTimeout(tick, 600);
+  letterTimer = setTimeout(tick, 900);
+}
+function maybeDone() { if (letterDone && (mv.ended || mv.currentTime > mv.duration - 4)) $('#memDone').classList.add('on'); }
+ENTER.memory = () => {
+  mv.currentTime = 0; mv.muted = AU.muted; bgmLevel(0, 600);
+  const start = () => { $('#tapPlay').classList.remove('on'); typeLetter(); };
+  mv.play().then(start).catch(() => $('#tapPlay').classList.add('on'));
 };
-LEAVE.letter = () => clearTimeout(letterTimer);
-$('#letterBtn').onclick = () => go(store.get('reviewed', false) ? 'wall' : 'review');
+LEAVE.memory = () => { mv.pause(); clearTimeout(letterTimer); };
+$('#tapPlay').onclick = () => { mv.play().then(() => { $('#tapPlay').classList.remove('on'); typeLetter(); }).catch(() => {}); };
+mv.addEventListener('timeupdate', maybeDone);
+mv.addEventListener('ended', () => { letterDone ? maybeDone() : null; });
+$('#memSkip').onclick = () => go(store.get('reviewed', false) ? 'wall' : 'review');
+$('#memDone').onclick = () => go(store.get('reviewed', false) ? 'wall' : 'review');
 
 /* ================= 10. REVIEW ================= */
 let stars = 5;
@@ -653,7 +658,7 @@ let stars = 5;
 })();
 ENTER.review = () => {
   const no = S.rsvp && !S.rsvp.go;
-  bgmLevel(.32);
+  bgmLevel(.45);
   $('#rvTitle').textContent = no ? 'Tiếc ghê! Gửi Cường một lời chúc nhé' : 'Để lại một lời chúc cho Cường';
   setGuide(no ? 'Không đi được cũng không sao, gửi Cường vài lời chúc nhé.' : 'Viết vài lời chúc, sẽ được chiếu lên màn hình trong ngày lễ.');
 };
@@ -675,7 +680,7 @@ $('#lnkCal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE
   '&details=' + encodeURIComponent('Chuyến bay TXCC2026 – hẹn gặp lúc 15:00!');
 ENTER.wall = async () => {
   const no = S.rsvp && !S.rsvp.go;
-  bgmLevel(.32);
+  bgmLevel(.45);
   $('#wallTitle').textContent = no ? 'Cảm ơn lời chúc của bạn' : 'Hẹn gặp lúc 15:00 – 08/12';
   setGuide(no ? 'Cảm ơn {ban} nhiều nhé! Cường sẽ đọc lời chúc trong ngày lễ.' : 'Hẹn gặp {ban} lúc 15:00 ngày 08/12 ở Nhà hát Hòa Bình nhé!');
   let data = null; try { data = await apiGet({ a: 'wall' }); } catch {}
