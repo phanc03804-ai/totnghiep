@@ -99,14 +99,17 @@ export function mountChibi(el, kind, { wave = false } = {}) {
 
 // Tạo 3 texture (thường / nói / chớp mắt) cho cảnh Three.js
 export async function chibiTextures(THREE, kind) {
-  const load = svg => new Promise((res, rej) => {
+  const blank = () => { const c = document.createElement('canvas'); c.width = c.height = 4; return new THREE.CanvasTexture(c); };
+  const load = svg => new Promise(res => {
     const img = new Image();
+    const to = setTimeout(() => res(blank()), 4000);
+    img.onerror = () => { clearTimeout(to); res(blank()); };
     img.onload = () => {
+      clearTimeout(to);
       const c = document.createElement('canvas'); c.width = 400; c.height = 508;
       c.getContext('2d').drawImage(img, 0, 0, 400, 508);
       const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; res(t);
     };
-    img.onerror = rej;
     img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   });
   const [normal, talk, blink] = await Promise.all([

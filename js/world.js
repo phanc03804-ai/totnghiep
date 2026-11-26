@@ -1,5 +1,5 @@
 // Các cảnh 3D (Three.js): sân bay, game máy bay, cinematic, sảnh TR007, cửa phòng.
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 import { chibiTextures } from './chibi.js';
 
 let renderer = null, canvas = null, cur = null, last = 0;
@@ -8,9 +8,9 @@ export let glOK = false;
 export function initGL(c) {
   canvas = c;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas: c, antialias: true, powerPreference: 'high-performance' });
-  } catch (e) { return false; }
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer = new THREE.WebGLRenderer({ canvas: c, antialias: devicePixelRatio < 2, powerPreference: 'high-performance' });
+  } catch (e) { window.__errs && window.__errs.push('webgl: ' + e); return false; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -35,7 +35,9 @@ function loop(t) {
 }
 export async function show(name, opts = {}) {
   if (!glOK) return null;
-  const next = await BUILD[name](opts);
+  let next;
+  try { next = await BUILD[name](opts); }
+  catch (e) { console.error('scene', name, e); window.__errs && window.__errs.push('scene ' + name + ': ' + e); return null; }
   if (cur && cur.dispose) cur.dispose();
   cur = next; resize();
   return cur;
@@ -494,7 +496,7 @@ BUILD.lobby = async () => {
   }
   const signT = planeMesh(3.6, .9, new THREE.MeshBasicMaterial({ map: textTex('TR007 HOTEL', { size: 150, gold: true, glow: 'rgba(255,200,100,.6)' }), transparent: true }));
   signT.position.set(0, 3.55, -5.68); scene.add(signT);
-  const emblemTex = await new THREE.TextureLoader().loadAsync('img/troy-emblem.png'); emblemTex.colorSpace = THREE.SRGBColorSpace;
+  const emblemTex = new THREE.TextureLoader().load('img/troy-emblem.png'); emblemTex.colorSpace = THREE.SRGBColorSpace;
   const emblem = planeMesh(.95, .95, new THREE.MeshBasicMaterial({ map: emblemTex, color: '#F2CD84', transparent: true }));
   emblem.position.set(0, 4.35, -5.68); scene.add(emblem);
   // đồng hồ vàng

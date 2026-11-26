@@ -158,7 +158,7 @@ async function go(id) {
   $('#app').classList.toggle('paper', PAPER.includes(id));
   $('#btnSkip').style.visibility = ['intro', 'checkin', 'quiz', 'flight', 'lobby'].includes(id) ? 'visible' : 'hidden';
   if (id !== 'game') musicStop();
-  if (SCENE[id]) await W.show(SCENE[id][0], SCENE[id][1] || {});
+  if (SCENE[id]) { try { await W.show(SCENE[id][0], SCENE[id][1] || {}); } catch (e) { window.__errs.push(id + ': ' + e); } }
   $$('.stage').forEach(s => s.classList.toggle('on', s.id === 's-' + id));
   const sc = $('#s-' + id + ' .scroll'); if (sc) sc.scrollTop = 0;
   (ENTER[id] || (() => {}))();
@@ -542,15 +542,18 @@ $('#wGame').onclick = e => { e.preventDefault(); go('lobby'); };
 
 /* ================= KHỞI ĐỘNG ================= */
 (async function init() {
-  W.initGL($('#gl'));
+  const hide = () => $('#loading').classList.add('off');
+  setTimeout(hide, 9000); // chốt an toàn: không bao giờ kẹt màn chờ
+  try { W.initGL($('#gl')); } catch (e) { window.__errs.push('gl: ' + e); }
   const k = new URLSearchParams(location.search).get('k');
   if (k) {
-    try { const r = await apiGet({ a: 'guest', k }); if (r && r.ok) G = { ...DEMO_GUEST, ...r.guest, code: k }; } catch {}
-    if (G === DEMO_GUEST) G = { ...DEMO_GUEST, code: k };
+    G = { ...DEMO_GUEST, code: k };
+    try { const r = await Promise.race([apiGet({ a: 'guest', k }), wait(4000)]); if (r && r.ok) G = { ...DEMO_GUEST, ...r.guest, code: k }; } catch {}
   }
-  try { await document.fonts.ready; } catch {}
+  try { await Promise.race([document.fonts.ready, wait(1500)]); } catch {}
   renderGuest();
-  await go('intro');
-  $('#loading').classList.add('off');
+  try { await Promise.race([go('intro'), wait(5000)]); } catch (e) { window.__errs.push('intro: ' + e); }
+  if (S.stage !== 'intro' || !$('#s-intro').classList.contains('on')) { $$('.stage').forEach(s => s.classList.toggle('on', s.id === 's-intro')); S.stage = 'intro'; }
+  hide();
   window.__app = { go, S, GS, press, answer, W }; // tiện kiểm thử
 })();
