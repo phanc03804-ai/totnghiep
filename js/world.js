@@ -1,4 +1,4 @@
-// Các cảnh 3D (Three.js): sân bay, game máy bay, cinematic, sảnh TR007, cửa phòng.
+// Các cảnh 3D (Three.js): sân bay (check-in, thủ tục), ống lồng, cất cánh, 3 chặng bay.
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 let renderer = null, canvas = null, cur = null, last = 0;
@@ -76,13 +76,6 @@ function marbleTex(rep) {
     }
   }, rep);
 }
-function woodTex(rep, base = '#7A4A26', light = '#9C6535') {
-  return canvasTex(256, 512, (g, w, h) => {
-    const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, base); gr.addColorStop(.5, light); gr.addColorStop(1, base);
-    g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    for (let i = 0; i < 70; i++) { g.strokeStyle = `rgba(40,20,8,${rnd(.05, .18)})`; g.lineWidth = rnd(.5, 2); const x = rnd(0, w); g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + rnd(-8, 8), h / 3, x + rnd(-8, 8), h * 2 / 3, x + rnd(-6, 6), h); g.stroke(); }
-  }, rep);
-}
 function textTex(lines, { w = 1024, h = 256, bg = null, color = '#fff', size = 120, weight = 800, glow = null, gold = false, align = 'center' } = {}) {
   return canvasTex(w, h, (g) => {
     if (bg) { g.fillStyle = bg; g.fillRect(0, 0, w, h); }
@@ -99,19 +92,6 @@ function textTex(lines, { w = 1024, h = 256, bg = null, color = '#fff', size = 1
   });
 }
 function planeMesh(w, h, mat) { return new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); }
-
-function makeCloud(scale = 1, color = '#ffffff', opacity = 1) {
-  const g = new THREE.Group();
-  const m = new THREE.MeshStandardMaterial({ color, roughness: 1, flatShading: true, transparent: opacity < 1, opacity });
-  const n = 4 + Math.floor(Math.random() * 3);
-  for (let i = 0; i < n; i++) {
-    const s = rnd(1, 2.2) * scale;
-    const b = new THREE.Mesh(new THREE.IcosahedronGeometry(s, 1), m);
-    b.position.set(rnd(-2.4, 2.4) * scale, rnd(-.4, .6) * scale, rnd(-1, 1) * scale); b.scale.y = .7;
-    g.add(b);
-  }
-  return g;
-}
 
 // Cường bằng ảnh thật đã tách nền, dựng như một tấm đứng trong cảnh; khi nói thì nhún nhẹ
 let _cuongTex = null;
@@ -689,7 +669,7 @@ BUILD.flight = async ({ mode = 'memories', duration = 25, onHud = () => {}, onEn
   };
 };
 
-/* ---------------- CINEMATIC: bay qua mây rồi hạ cánh xuống đường băng lúc hoàng hôn ---------------- */
+/* ---------------- SÂN BAY (dùng cho cất cánh và hạ cánh) ---------------- */
 function makeAirport() {
   const g = new THREE.Group();
   const ground = planeMesh(900, 900, std('#4F6A45', { roughness: 1, map: groundTex() })); ground.material.map.wrapS = ground.material.map.wrapT = THREE.RepeatWrapping; ground.material.map.repeat.set(5, 5); ground.rotation.x = -Math.PI / 2; g.add(ground);
@@ -722,39 +702,3 @@ function makeAirport() {
   const tower = new THREE.Group(); const tb = box(3, 22, 3, std('#4A5566')); tb.position.y = 11; const tc = box(6, 3, 6, new THREE.MeshBasicMaterial({ color: '#9FD3FF' })); tc.position.y = 23.5; tower.add(tb, tc); tower.position.set(-40, 0, z0 - 230); g.add(tower);
   return { g, z0 };
 }
-
-BUILD.cinematic = async ({ duration = 8, onEnd = () => {} }) => {
-  const scene = new THREE.Scene();
-  const SUN = new THREE.Vector3(.25, .06, -1).normalize();
-  const sky = makeSkyDome({ top: '#18265E', mid: '#6A4E96', horizon: '#F49A58', bottom: '#3A2E44', sun: SUN, sunColor: '#FFC48A' });
-  scene.add(sky); const env = envFromSky(sky); scene.environment = env;
-  scene.fog = new THREE.Fog('#C9786A', 80, 520);
-  const camera = new THREE.PerspectiveCamera(60, 1, .1, 2000);
-  scene.add(new THREE.HemisphereLight('#FFD6B0', '#2A2A48', 1.0));
-  const sun = new THREE.DirectionalLight('#FFB070', 1.3); sun.position.set(30, 18, -120); scene.add(sun);
-  for (let i = 0; i < 70; i++) {
-    const c = makeSoftCloud(rnd(14, 30), i % 3 ? '#FFE6D2' : '#FFD0B0', '#B98A8E', .9);
-    c.position.set(rnd(-70, 70), rnd(26, 62), rnd(-280, 30)); scene.add(c);
-  }
-  const ap = makeAirport(); scene.add(ap.g);
-  const jet = makeJetHD(.9, env); scene.add(jet);
-  const TD = ap.z0 - 25;                              // điểm chạm bánh
-  let t = 0, ended = false;
-  return {
-    scene, camera,
-    update(dt) {
-      t += dt; const k = Math.min(1, t / duration);
-      // máy bay: hạ độ cao từ trên mây xuống, chạm bánh ở ~78% thời gian rồi lăn bánh
-      const kd = Math.min(1, k / .78), e = ease(kd);
-      const jz = THREE.MathUtils.lerp(40, TD, kd) - Math.max(0, k - .78) * 120;
-      const jy = k < .78 ? THREE.MathUtils.lerp(48, .9, e) : .9;
-      jet.position.set(Math.sin(t * .7) * 2 * (1 - kd), jy, jz);
-      jet.rotation.set(k < .7 ? -.07 : k < .78 ? .08 : 0, 0, Math.sin(t * .7) * .12 * (1 - kd));
-      // camera bám phía sau – trên máy bay, cuối cảnh lùi lại nhìn máy bay lăn trên đường băng
-      const back = THREE.MathUtils.lerp(16, 22, k), up = THREE.MathUtils.lerp(6, 3.2, k);
-      camera.position.set(jet.position.x * .4 + (k > .8 ? (k - .8) * 30 : 0), jy + up, jz + back);
-      camera.lookAt(jet.position.x, jy + .5, jz - 30);
-      if (!ended && t >= duration) { ended = true; onEnd(); }
-    },
-  };
-};
