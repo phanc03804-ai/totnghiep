@@ -1,4 +1,4 @@
-// Các cảnh 3D (Three.js): sân bay (check-in, thủ tục), ống lồng, cất cánh, 3 chặng bay.
+// Các cảnh 3D (Three.js): sân bay (check-in, thủ tục), ống lồng, cất cánh, chặng bay, phim hạ cánh.
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 let renderer = null, canvas = null, cur = null, last = 0;
@@ -469,34 +469,33 @@ BUILD.takeoff = async ({ duration = 7, onEnd = () => {} }) => {
   };
 };
 
-/* ---------------- 3 CHẶNG BAY ----------------
-   mode 'memories' : sáng sớm, nhặt xu + 6 ngôi sao kỷ niệm (onStar)
-   mode 'storm'    : giông bão, né mây áp lực (chữ), vệt sáng hồi mạng, 3 mạng, chớp (onFlash)
-   mode 'landing'  : hoàng hôn, bay qua vòng vàng, hạ cánh xuống đường băng, chấm điểm chạm bánh */
-function labelSprite(text, { color = '#FFFFFF', bg = 'rgba(0,0,0,0)', size = 64, w = 512, h = 128, glow = null } = {}) {
-  const tex = textTex(text, { w, h, size, color, bg, glow, weight: 800 });
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false })); sp.scale.set(w / 128, h / 128, 1); return sp;
+/* ---------------- CHẶNG BAY ----------------
+   mode 'memories' : trời trong, nhặt xu + lần lượt từng vật phẩm kỷ niệm. Ăn đúng vật phẩm thì game dừng (onItem), app gọi resume()
+   mode 'storm'    : giông bão chỉ để xem (mưa, chớp); calm(k) làm trời quang dần khi khách chạm giữ */
+let _glowTex = null;
+function glowTexture() {
+  return _glowTex || (_glowTex = canvasTex(128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,240,210,.9)'); gr.addColorStop(.3, 'rgba(255,220,170,.35)'); gr.addColorStop(1, 'rgba(255,200,150,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); }));
 }
-BUILD.flight = async ({ mode = 'memories', duration = 25, onHud = () => {}, onEnd = () => {}, onStar = () => {}, onFlash = () => {}, sfx = {}, words = [], heals = [] }) => {
+function emojiTex(ch) {
+  return canvasTex(128, 128, (g) => { g.font = '92px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(ch, 64, 72); });
+}
+BUILD.flight = async ({ mode = 'memories', items: ITEMS = [], onHud = () => {}, onItem = () => {}, onFlash = () => {}, sfx = {} }) => {
   const scene = new THREE.Scene();
-  const P = SKY[mode === 'storm' ? 'storm' : mode === 'landing' ? 'sunset' : 'morning'];
+  const P = SKY[mode === 'storm' ? 'storm' : 'morning'];
   const sky = makeSkyDome({ ...P, sun: P.sun.clone().normalize() }); scene.add(sky);
   const env = envFromSky(sky); scene.environment = env;
   scene.fog = new THREE.Fog(P.fog, mode === 'storm' ? 30 : 120, mode === 'storm' ? 260 : 620);
   const camera = new THREE.PerspectiveCamera(62, 1, .1, 1500);
   camera.position.set(0, 2.3, 7.5);
   const hemi = new THREE.HemisphereLight(mode === 'storm' ? '#8090B0' : '#DCEBFF', '#5A5448', mode === 'storm' ? .55 : .9); scene.add(hemi);
-  const sunL = new THREE.DirectionalLight(mode === 'landing' ? '#FFB27A' : '#FFE7C2', mode === 'storm' ? .5 : 2); sunL.position.copy(P.sun).multiplyScalar(100).setY(60); scene.add(sunL);
+  const sunL = new THREE.DirectionalLight('#FFE7C2', mode === 'storm' ? .5 : 2); sunL.position.copy(P.sun).multiplyScalar(100).setY(60); scene.add(sunL);
 
   const jet = makeJetHD(.55, env); scene.add(jet);
-  const speed = mode === 'landing' ? 40 : 46;
+  const speed = 46;
 
-  // mặt đất: thành phố cuộn (chặng 1, 2) hoặc sân bay đang tiến lại gần (chặng 3)
+  // mặt đất: thành phố cuộn
   const GROUND_Y = -46, TL = 500, tiles = [];
-  let airport = null;
-  if (mode !== 'landing') {
-    for (let k = 0; k < 3; k++) { const tile = makeCityTile(TL, 900, env, k === 1); tile.position.set(0, GROUND_Y, -k * TL + 120); scene.add(tile); tiles.push(tile); }
-  } else { airport = makeAirport(); scene.add(airport.g); }
+  for (let k = 0; k < 3; k++) { const tile = makeCityTile(TL, 900, env, k === 1); tile.position.set(0, GROUND_Y, -k * TL + 120); scene.add(tile); tiles.push(tile); }
 
   // mây
   const clouds = [];
@@ -504,13 +503,12 @@ BUILD.flight = async ({ mode = 'memories', duration = 25, onHud = () => {}, onEn
   for (let i = 0; i < nC; i++) {
     const low = i < nC * .6;
     const c = mode === 'storm' ? makeSoftCloud(low ? rnd(30, 50) : rnd(12, 22), '#5A6273', '#2E3442', .95)
-      : makeSoftCloud(low ? rnd(28, 46) : rnd(10, 18), mode === 'landing' ? '#FFE0CC' : '#FFFFFF', mode === 'landing' ? '#C59A9A' : '#D7DEEA', low ? .85 : .7);
+      : makeSoftCloud(low ? rnd(28, 46) : rnd(10, 18), '#FFFFFF', '#D7DEEA', low ? .85 : .7);
     const side = Math.random() < .5 ? -1 : 1;
     c.position.set(low ? rnd(-160, 160) : side * rnd(9, 40), low ? rnd(-30, -16) : rnd(-6, 14), rnd(-560, 20));
-    if (mode === 'landing') c.position.y += 30;
-    c.userData.spd = 1; scene.add(c); clouds.push(c);
+    scene.add(c); clouds.push(c);
   }
-  // mưa + vệt gió
+  // mưa
   let rain = null;
   if (mode === 'storm') {
     const RN = 500, rp = new Float32Array(RN * 6);
@@ -522,35 +520,50 @@ BUILD.flight = async ({ mode = 'memories', duration = 25, onHud = () => {}, onEn
   for (let i = 0; i < SN; i++) { const x = rnd(-14, 14), y = rnd(-6, 9), z = rnd(-90, 10); sp.set([x, y, z, x, y, z + 3.5], i * 6); }
   streakGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
   const streaks = new THREE.LineSegments(streakGeo, new THREE.LineBasicMaterial({ color: '#FFFFFF', transparent: true, opacity: .2 })); scene.add(streaks);
-  const glowTex = canvasTex(128, 128, (g) => { const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,240,210,.9)'); gr.addColorStop(.3, 'rgba(255,220,170,.35)'); gr.addColorStop(1, 'rgba(255,200,150,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); });
+  const glowTex = glowTexture();
   if (mode !== 'storm') { const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false })); fl.scale.set(260, 260, 1); fl.position.copy(P.sun).normalize().multiplyScalar(800); scene.add(fl); }
+
+  // trời quang dần (chặng giông bão): nội suy màu trời, sương, mây, mưa
+  const calmFrom = { top: new THREE.Color(P.top), mid: new THREE.Color(P.mid), hor: new THREE.Color(P.horizon), bot: new THREE.Color(P.bottom), fog: new THREE.Color(P.fog) };
+  const calmTo = { top: new THREE.Color('#4A86DA'), mid: new THREE.Color('#A9CDEE'), hor: new THREE.Color('#FFE3BC'), bot: new THREE.Color('#9FB6CA'), fog: new THREE.Color('#E6DCCB') };
+  const cloudMats = clouds.flatMap(c => c.children.map(s => ({ m: s.material, from: s.material.color.clone() })));
+  const white = new THREE.Color('#FFFFFF');
+  let calmK = 0;
+  function calm(k) {
+    calmK = k; const u = sky.material.uniforms;
+    u.top.value.lerpColors(calmFrom.top, calmTo.top, k); u.mid.value.lerpColors(calmFrom.mid, calmTo.mid, k);
+    u.hor.value.lerpColors(calmFrom.hor, calmTo.hor, k); u.bot.value.lerpColors(calmFrom.bot, calmTo.bot, k);
+    scene.fog.color.lerpColors(calmFrom.fog, calmTo.fog, k); scene.fog.near = 30 + 90 * k; scene.fog.far = 260 + 360 * k;
+    cloudMats.forEach(o => o.m.color.lerpColors(o.from, white, k * .85));
+    sunL.intensity = .5 + 1.5 * k;
+    if (rain) rain.material.opacity = .45 * (1 - k);
+  }
 
   // vật thể
   const coinGeo = new THREE.CylinderGeometry(.55, .55, .14, 28);
   const coinMat = new THREE.MeshStandardMaterial({ color: '#FFD24A', metalness: .85, roughness: .2, envMap: env, emissive: '#B07600', emissiveIntensity: .55 });
   const coinFace = canvasTex(128, 128, (g) => { g.fillStyle = '#FFC83D'; g.fillRect(0, 0, 128, 128); g.font = `900 80px ${FONT}`; g.fillStyle = '#B87900'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('₫', 64, 68); });
   const coinFaceMat = new THREE.MeshStandardMaterial({ map: coinFace, metalness: .8, roughness: .22, envMap: env, emissive: '#A06A00', emissiveIntensity: .5 });
-  const starTex = canvasTex(128, 128, (g) => { g.translate(64, 64); g.fillStyle = '#FFF4C8'; g.shadowColor = '#FFD27A'; g.shadowBlur = 18; g.beginPath(); for (let k = 0; k < 10; k++) { const r = k % 2 ? 22 : 50, a = k * Math.PI / 5 - Math.PI / 2; g.lineTo(Math.cos(a) * r, Math.sin(a) * r); } g.closePath(); g.fill(); });
   function makeCoin() { const m = new THREE.Group(); const c = new THREE.Mesh(coinGeo, [coinMat, coinFaceMat, coinFaceMat]); c.rotation.x = Math.PI / 2; m.add(c); const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#FFD27A', blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: .8 })); gl.scale.set(2.6, 2.6, 1); m.add(gl); m.userData = { kind: 'coin', r: .95 }; return m; }
-  function makeStar(i) { const m = new THREE.Group(); const s1 = new THREE.Sprite(new THREE.SpriteMaterial({ map: starTex, transparent: true, depthWrite: false })); s1.scale.set(2.4, 2.4, 1); m.add(s1); const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#FFE9A8', blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); gl.scale.set(6, 6, 1); m.add(gl); m.userData = { kind: 'star', r: 1.5, idx: i }; return m; }
-  function makePressure(word) { const g = makeSoftCloud(2.8, '#6C7486', '#3B4253', 1); const lb = labelSprite(word, { color: '#FFFFFF', size: 70, glow: 'rgba(0,0,0,.9)' }); lb.position.set(0, .2, 1.2); lb.scale.multiplyScalar(.9); g.add(lb); const bolt = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 1.6, 4), new THREE.MeshBasicMaterial({ color: '#FFF6A0' })); bolt.position.y = -1.6; bolt.rotation.z = .35; g.add(bolt); g.userData = { kind: 'bad', r: 1.35, bolt }; return g; }
-  function makeHeal(word) { const g = new THREE.Group(); const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#9FE8FF', blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); gl.scale.set(5, 5, 1); g.add(gl); const lb = labelSprite(word, { color: '#E6FBFF', size: 64, glow: '#5FD0FF' }); lb.position.y = .1; lb.scale.multiplyScalar(.8); g.add(lb); g.userData = { kind: 'heal', r: 1.4 }; return g; }
-  const ringMat = new THREE.MeshStandardMaterial({ color: '#FFD27A', emissive: '#FFB347', emissiveIntensity: 1.2, metalness: .6, roughness: .3 });
-  function makeRing() { const g = new THREE.Group(); g.add(new THREE.Mesh(new THREE.TorusGeometry(1.7, .12, 12, 48), ringMat)); g.userData = { kind: 'ring', r: 1.55 }; return g; }
+  const itemTex = ITEMS.map(it => emojiTex(it.emoji || '⭐'));
+  function makeItem(k) {
+    const m = new THREE.Group();
+    const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#FFE9A8', blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); gl.scale.set(5.5, 5.5, 1); m.add(gl);
+    const s1 = new THREE.Sprite(new THREE.SpriteMaterial({ map: itemTex[k], transparent: true, depthWrite: false })); s1.scale.set(2.3, 2.3, 1); m.add(s1);
+    m.userData = { kind: 'item', r: 1.5, k, ph: rnd(0, 6) }; return m;
+  }
 
-  const items = [], target = new THREE.Vector2(0, .6), pos = new THREE.Vector2(0, .6);
-  let BX = 4.2; const BYmin = -1.2, BYmax = 3;
-  let t = 0, spawnT = 0, score = 0, lives = 3, inv = 0, done = false, shake = 0, started = false, flashT = rnd(1.5, 3), stars = 0, rings = 0, ringsTotal = 0;
-  const starTimes = [3, 6.5, 10, 13.5, 17, 20.5];
-  let nextStar = 0, wordI = 0, healI = 0;
+  const items = [], Y0 = .6, target = new THREE.Vector2(0, Y0), pos = new THREE.Vector2(0, Y0);
+  let BX = 4.2;
+  let spawnT = 0, itemT = .8, score = 0, got = 0, started = false, paused = false, flashT = rnd(1.5, 3);
 
+  // kéo ngón tay sang trái / phải: máy bay bám theo vị trí ngón tay
   const onPtr = e => {
-    if (done || (e.pointerType !== 'mouse' && e.buttons === 0 && e.type === 'pointermove')) return;
+    if (e.pointerType !== 'mouse' && e.buttons === 0 && e.type === 'pointermove') return;
     const r = canvas.getBoundingClientRect();
-    const nx = ((e.clientX - r.left) / r.width) * 2 - 1, ny = ((e.clientY - r.top) / r.height) * 2 - 1;
-    target.set(nx * BX * 1.15, THREE.MathUtils.lerp(BYmax, BYmin, (ny + 1) / 2));
+    target.x = (((e.clientX - r.left) / r.width) * 2 - 1) * BX * 1.15;
   };
-  const keys = {}, stickV = new THREE.Vector2();
+  const keys = {};
   const onKey = e => { keys[e.key] = e.type === 'keydown'; };
   const area = document.getElementById('flyArea') || canvas;
   area.addEventListener('pointerdown', onPtr); area.addEventListener('pointermove', onPtr);
@@ -563,38 +576,34 @@ BUILD.flight = async ({ mode = 'memories', duration = 25, onHud = () => {}, onEn
       s2.position.copy(p); s2.userData.v = new THREE.Vector3(rnd(-4, 4), rnd(-2, 4), rnd(-2, 4)); s2.userData.life = .6; scene.add(s2); sparks.push(s2);
     }
   }
-  const hud = () => onHud({ time: Math.max(0, duration - t), score, lives, stars, rings, ringsTotal, mode });
+  const hud = () => onHud({ score, got, total: ITEMS.length });
   hud();
   function spawn(m, x, y) { m.position.set(x, y, -95); scene.add(m); items.push(m); }
 
   return {
     scene, camera,
     start() { started = true; },
-    stick(x, y) { stickV.set(x, y); },
+    resume() { paused = false; },
+    calm,
     update(dt, tt) {
-      if (!done && started) t += dt;
       BX = Math.min(4.2, Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 7.5 * camera.aspect * .78 / .55);
       if (keys.ArrowLeft) target.x -= 9 * dt; if (keys.ArrowRight) target.x += 9 * dt;
-      if (keys.ArrowUp) target.y += 7 * dt; if (keys.ArrowDown) target.y -= 7 * dt;
-      target.x += stickV.x * 10 * dt; target.y -= stickV.y * 7.5 * dt;
-      // giông bão: gió giật đẩy máy bay
-      if (mode === 'storm' && started && !done) { target.x += Math.sin(tt * 1.7) * 1.6 * dt; target.y += Math.sin(tt * 2.3) * 1.1 * dt; }
-      target.x = THREE.MathUtils.clamp(target.x, -BX, BX); target.y = THREE.MathUtils.clamp(target.y, BYmin, BYmax);
+      target.x = THREE.MathUtils.clamp(target.x, -BX, BX);
       const vx = (target.x - pos.x) * 6, vy = (target.y - pos.y) * 6;
       pos.x += vx * dt; pos.y += vy * dt;
-      const turb = mode === 'storm' ? (Math.sin(tt * 23) * .04 + Math.sin(tt * 37) * .03) : 0;
-      jet.position.set(pos.x, pos.y + turb, 0);
-      jet.rotation.z = THREE.MathUtils.clamp(-vx * .09, -.7, .7) + turb * 2; jet.rotation.x = THREE.MathUtils.clamp(vy * .05, -.3, .3);
-      jet.visible = inv <= 0 || Math.floor(tt * 14) % 2 === 0; inv -= dt;
-      const sh = (shake > 0 ? .15 : 0) + (mode === 'storm' ? .03 : 0);
+      const turb = mode === 'storm' ? (Math.sin(tt * 23) * .04 + Math.sin(tt * 37) * .03) * (1 - calmK) : 0;
+      jet.position.set(pos.x, pos.y + turb + Math.sin(tt * 1.3) * .05, 0);
+      jet.rotation.z = THREE.MathUtils.clamp(-vx * .09, -.7, .7) + turb * 2; jet.rotation.x = 0;
+      const sh = mode === 'storm' ? .03 * (1 - calmK) : 0;
       camera.position.x = pos.x * .45 + rnd(-sh, sh); camera.position.y = 2.3 + pos.y * .35 + rnd(-sh, sh) * .7;
-      camera.lookAt(pos.x * .6, pos.y * .5 + .5, -8); shake -= dt;
-      camera.fov = THREE.MathUtils.lerp(camera.fov, started && !done ? 66 : 62, .03); camera.updateProjectionMatrix();
+      camera.lookAt(pos.x * .6, pos.y * .5 + .5, -8);
+      camera.fov = THREE.MathUtils.lerp(camera.fov, started && !paused ? 66 : 62, .03); camera.updateProjectionMatrix();
 
-      clouds.forEach(c => { c.position.z += speed * dt; if (c.position.z > 40) c.position.z -= 600; });
-      tiles.forEach(tl => { tl.position.z += speed * .55 * dt; if (tl.position.z > TL * 1.1) tl.position.z -= TL * 3; });
+      const sf = paused ? .2 : 1;   // lúc mở kỷ niệm: cảnh trôi chậm lại
+      clouds.forEach(c => { c.position.z += speed * sf * dt; if (c.position.z > 40) c.position.z -= 600; });
+      tiles.forEach(tl => { tl.position.z += speed * .55 * sf * dt; if (tl.position.z > TL * 1.1) tl.position.z -= TL * 3; });
       const pa = streakGeo.attributes.position;
-      for (let i = 0; i < SN; i++) { let z = pa.getZ(i * 2) + speed * 1.6 * dt; if (z > 12) z -= 100; pa.setZ(i * 2, z); pa.setZ(i * 2 + 1, z + 3.5); }
+      for (let i = 0; i < SN; i++) { let z = pa.getZ(i * 2) + speed * 1.6 * sf * dt; if (z > 12) z -= 100; pa.setZ(i * 2, z); pa.setZ(i * 2 + 1, z + 3.5); }
       pa.needsUpdate = true;
       if (rain) {
         const ra = rain.geometry.attributes.position;
@@ -605,44 +614,32 @@ BUILD.flight = async ({ mode = 'memories', duration = 25, onHud = () => {}, onEn
         }
         ra.needsUpdate = true;
         flashT -= dt;
-        if (flashT <= 0) { flashT = rnd(1.8, 4); hemi.intensity = 3.2; onFlash(); sfx.thunder && setTimeout(sfx.thunder, rnd(80, 400)); }
-        hemi.intensity += (.55 - hemi.intensity) * Math.min(1, dt * 6);
-      }
-      // sân bay tiến lại gần + mặt đất dâng lên khi hạ độ cao (chặng 3)
-      if (airport) {
-        const k = Math.min(1, t / duration);
-        airport.g.position.y = THREE.MathUtils.lerp(-70, -1.2, Math.pow(k, 1.6));
-        airport.g.position.z = 128 + 6 - (duration - t) * speed;
+        if (flashT <= 0 && calmK < .05) { flashT = rnd(2.5, 5); hemi.intensity = 3.2; onFlash(); sfx.thunder && setTimeout(sfx.thunder, rnd(80, 400)); }
+        const base = .55 + calmK * .6;
+        hemi.intensity += (base - hemi.intensity) * Math.min(1, dt * 6);
       }
 
-      if (!done && started) {
-        spawnT -= dt;
-        if (mode === 'memories') {
-          if (nextStar < starTimes.length && t >= starTimes[nextStar]) { spawn(makeStar(nextStar), THREE.MathUtils.clamp(pos.x + rnd(-2, 2), -BX, BX), THREE.MathUtils.clamp(pos.y + rnd(-1, 1), BYmin, BYmax)); nextStar++; }
-          if (spawnT <= 0) { spawnT = .32; spawn(makeCoin(), rnd(-BX, BX), rnd(BYmin, BYmax)); }
-        } else if (mode === 'storm') {
-          if (spawnT <= 0) {
-            spawnT = Math.max(.42, .75 - t * .012);
-            if (Math.random() < .14 && heals.length) spawn(makeHeal(heals[healI++ % heals.length]), rnd(-BX, BX), rnd(BYmin, BYmax));
-            else spawn(makePressure(words[wordI++ % Math.max(1, words.length)] || 'Áp lực'), THREE.MathUtils.clamp(pos.x + rnd(-2.8, 2.8), -BX, BX), THREE.MathUtils.clamp(pos.y + rnd(-1.4, 1.4), BYmin, BYmax));
-          }
-        } else if (mode === 'landing') {
-          if (spawnT <= 0 && t < duration - 3) { spawnT = 2.2; ringsTotal++; spawn(makeRing(), rnd(-BX * .6, BX * .6), rnd(BYmin + .3, BYmax - .4)); }
-        }
+      if (mode === 'memories' && started && !paused && got < ITEMS.length) {
+        spawnT -= dt; itemT -= dt;
+        if (spawnT <= 0) { spawnT = .42; spawn(makeCoin(), rnd(-BX, BX), Y0 + rnd(-.5, .5)); }
+        // mỗi lượt chỉ có một loại vật phẩm bay tới, lặp lại tới khi ăn được
+        if (itemT <= 0) { itemT = 1.25; spawn(makeItem(got), THREE.MathUtils.clamp(pos.x + rnd(-3, 3), -BX * .9, BX * .9), Y0 + rnd(-.3, .4)); }
       }
       for (let i = items.length - 1; i >= 0; i--) {
-        const m = items[i]; m.position.z += speed * dt;
-        const u = m.userData;
+        const m = items[i]; const u = m.userData;
+        if (!paused) m.position.z += speed * dt;
         if (u.kind === 'coin') m.rotation.y += dt * 4;
-        if (u.bolt) u.bolt.visible = Math.random() < .3;
+        if (u.kind === 'item') m.children[1].position.y = Math.sin(tt * 3 + u.ph) * .12;
         const dz = Math.abs(m.position.z), d = Math.hypot(m.position.x - pos.x, m.position.y - pos.y);
-        if (!done && dz < 1.2 && d < u.r) {
+        if (started && !paused && dz < 1.2 && d < u.r) {
           if (u.kind === 'coin') { score += 1000; burst(m.position, '#FFD54F'); sfx.coin && sfx.coin(); }
-          else if (u.kind === 'star') { stars++; score += 10000; burst(m.position, '#FFF2B0'); sfx.star && sfx.star(); onStar(u.idx); }
-          else if (u.kind === 'heal') { if (lives < 3) lives++; score += 5000; burst(m.position, '#9FE8FF'); sfx.star && sfx.star(); }
-          else if (u.kind === 'ring') { rings++; score += 15000; burst(m.position, '#FFD27A'); sfx.coin && sfx.coin(); }
-          else if (u.kind === 'bad' && inv <= 0) { lives--; inv = 1.4; shake = .4; burst(m.position, '#FF5252'); sfx.hit && sfx.hit(); }
-          scene.remove(m); items.splice(i, 1); continue;
+          else if (u.kind === 'item' && u.k === got) {
+            got++; score += 10000; burst(m.position, '#FFF2B0'); sfx.star && sfx.star();
+            for (let j = items.length - 1; j >= 0; j--) if (items[j] !== m && items[j].userData.kind === 'item') { scene.remove(items[j]); items.splice(j, 1); }
+            paused = true; onItem(u.k, got);
+          }
+          scene.remove(m); items.splice(items.indexOf(m), 1); hud();
+          if (paused) break; continue;
         }
         if (m.position.z > 12) { scene.remove(m); items.splice(i, 1); }
       }
@@ -650,21 +647,68 @@ BUILD.flight = async ({ mode = 'memories', duration = 25, onHud = () => {}, onEn
         const s2 = sparks[i]; s2.userData.life -= dt; s2.position.addScaledVector(s2.userData.v, dt); s2.material.opacity = s2.userData.life / .6;
         if (s2.userData.life <= 0) { scene.remove(s2); sparks.splice(i, 1); }
       }
-      if (!done && started) {
-        hud();
-        const over = t >= duration || (mode === 'storm' && lives <= 0);
-        if (over) {
-          done = true;
-          let rating = null;
-          if (mode === 'landing') { const off = Math.abs(pos.x) + Math.abs(pos.y - .3) * .5; rating = off < .5 ? 0 : off < 1.3 ? 1 : 2; score += [30000, 15000, 5000][rating]; }
-          if (mode === 'storm') score += Math.round(t * 2000) + Math.max(0, lives) * 10000;
-          setTimeout(() => onEnd({ mode, score, lives: Math.max(0, lives), survived: lives > 0, stars, rings, ringsTotal, rating, time: Math.min(t, duration) }), mode === 'landing' ? 300 : 900);
-        }
-      }
     },
     dispose() {
       area.removeEventListener('pointerdown', onPtr); area.removeEventListener('pointermove', onPtr);
       removeEventListener('keydown', onKey); removeEventListener('keyup', onKey);
+    },
+  };
+};
+
+/* ---------------- HẠ CÁNH: đoạn phim nhiều góc máy, hoàng hôn ---------------- */
+BUILD.landing = async ({ duration = 12, onTouch = () => {}, onEnd = () => {} }) => {
+  const scene = new THREE.Scene(), P = SKY.sunset;
+  const sky = makeSkyDome({ ...P, sun: P.sun.clone().normalize() }); scene.add(sky);
+  const env = envFromSky(sky); scene.environment = env;
+  scene.fog = new THREE.Fog(P.fog, 160, 900);
+  scene.add(new THREE.HemisphereLight('#FFE2C8', '#4A3E48', .95));
+  const sun = new THREE.DirectionalLight('#FFB27A', 2.2); sun.position.set(30, 20, -100); scene.add(sun);
+  const ap = makeAirport(); scene.add(ap.g);
+  const jet = makeJetHD(1, env); scene.add(jet);
+  const glowTex = glowTexture();
+  const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, fog: false })); fl.scale.set(300, 300, 1); fl.position.copy(P.sun).normalize().multiplyScalar(850); scene.add(fl);
+  // đèn hạ cánh ở mũi máy bay
+  const lamp = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#FFF4DA', blending: THREE.AdditiveBlending, depthWrite: false, transparent: true })); lamp.scale.set(3, 3, 1); lamp.position.set(0, -.25, -2.75); jet.add(lamp);
+  for (let i = 0; i < 18; i++) { const c = makeSoftCloud(rnd(30, 60), '#FFE0CC', '#C59A9A', .8); c.position.set(rnd(-320, 320), rnd(45, 110), rnd(-700, 120)); scene.add(c); }
+  const camera = new THREE.PerspectiveCamera(50, 1, .1, 2000);
+
+  const TD = 7, V = 30, zTD = ap.z0 - 25;   // chạm bánh ở giây thứ 7, ngay sau vạch ngưỡng
+  const at = t => {
+    const a = TD - t;
+    if (a > 0) return { z: zTD + a * V, y: .9 + 1.6 * Math.pow(a, 1.2), pitch: .04 + .1 * Math.max(0, 1 - a / 1.5) };
+    const b = Math.min(-a, V / 3.8); return { z: zTD - (V * b - 1.9 * b * b), y: .9, pitch: Math.max(0, .14 - b * .25) };
+  };
+  // các góc máy: [bắt đầu, kết thúc, đặt camera]
+  const v3 = new THREE.Vector3();
+  const shots = [
+    [0, 3.2, p => { camera.position.set(-34, 10, 30); camera.fov = 38; camera.lookAt(p); }],
+    [3.2, 5.8, p => { camera.position.set(p.x + 4, p.y + 1.8, p.z + 13); camera.fov = 55; camera.lookAt(p.x, p.y, p.z - 12); }],
+    [5.8, 8.6, p => { camera.position.set(-22, 2.6, zTD - 24); camera.fov = 36; camera.lookAt(p); }],
+    [8.6, 1e9, p => { camera.position.set(7, 2.2, zTD - 150); camera.fov = 30; camera.lookAt(p.x, p.y + .4, p.z); }],
+  ];
+  const puffs = [], ptex = cloudTex();
+  let t = 0, touched = false, ended = false, shake = 0;
+  return {
+    scene, camera,
+    update(dt) {
+      t += dt;
+      const s = at(t);
+      jet.position.set(0, s.y, s.z); jet.rotation.set(s.pitch, 0, 0);
+      jet.userData.strobe.forEach(m => { m.visible = Math.floor(t * 1.6) % 2 === 0; });
+      if (!touched && t >= TD) {
+        touched = true; shake = .35; onTouch();
+        [-1.6, 1.6].forEach(x => { for (let i = 0; i < 4; i++) { const p = new THREE.Sprite(new THREE.SpriteMaterial({ map: ptex, color: '#D9D2CC', transparent: true, opacity: .7, depthWrite: false })); p.position.set(x + rnd(-.3, .3), .3, s.z + 1 + i * .6); p.userData.life = 1.6; scene.add(p); puffs.push(p); } });
+      }
+      for (let i = puffs.length - 1; i >= 0; i--) {
+        const p = puffs[i]; p.userData.life -= dt; const k = 1 - p.userData.life / 1.6;
+        p.scale.setScalar(1 + k * 6); p.material.opacity = .7 * (1 - k); p.position.y += dt * .6;
+        if (p.userData.life <= 0) { scene.remove(p); puffs.splice(i, 1); }
+      }
+      v3.set(0, s.y, s.z);
+      shots.find(([a, b]) => t >= a && t < b)[2](v3);
+      if (shake > 0) { shake -= dt; camera.position.y += rnd(-.06, .06); camera.position.x += rnd(-.06, .06); }
+      camera.updateProjectionMatrix();
+      if (!ended && t >= duration) { ended = true; onEnd(); }
     },
   };
 };

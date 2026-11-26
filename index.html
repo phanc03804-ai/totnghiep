@@ -187,57 +187,153 @@ p{margin:.45em 0;line-height:1.55}
 .tap-play.on{display:grid}
 .v-skip{position:absolute;right:14px;top:max(64px,calc(env(safe-area-inset-top) + 52px));z-index:5}
 
-/* ---------- 3 chặng bay ---------- */
+/* ---------- chặng 2: mở khoá kỷ niệm ---------- */
 #flyArea{position:absolute;inset:0;z-index:11;touch-action:none}
 .hud{position:absolute;top:70px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;z-index:12;pointer-events:none}
 .hud .pill{display:flex;align-items:center;gap:7px;background:rgba(6,12,28,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:8px 13px;font-weight:700;font-size:14px}
 .hud .pill .ic{color:var(--gold-l)}
 .hud .mid{font-size:10px;letter-spacing:.24em;color:var(--gold-l);font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.6)}
-.hearts{display:flex;gap:4px}
-.hearts i{width:16px;height:16px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23FF5A5F' d='M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.2 4.3 2.4h2c.7-1.2 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z'/%3E%3C/svg%3E")}
-.hearts i.off{filter:grayscale(1) brightness(.5);opacity:.6}
-.joy{position:absolute;left:50%;bottom:44px;width:128px;height:128px;margin-left:-64px;border-radius:50%;z-index:13;background:radial-gradient(circle,rgba(255,255,255,.08),rgba(255,255,255,.03) 60%,transparent 70%);border:1.5px solid rgba(255,255,255,.28);touch-action:none;display:none}
-#s-flight.playing .joy{display:block}
-.joy:before{content:"";position:absolute;inset:16px;border-radius:50%;border:1px dashed rgba(255,255,255,.18)}
-.joy .knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:linear-gradient(180deg,#F1D79E,var(--gold));box-shadow:0 8px 20px rgba(0,0,0,.4);display:grid;place-items:center;color:#3A2600}
-.joy .knob .ic{width:22px;height:22px;transform:rotate(45deg)}
+.prog{position:absolute;top:116px;left:14px;right:14px;height:6px;border-radius:9px;background:rgba(6,12,28,.45);z-index:12;overflow:hidden;pointer-events:none}
+.prog i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,#F1D79E,var(--gold));transition:width .6s}
+.find{position:absolute;top:132px;left:0;right:0;text-align:center;z-index:12;color:#fff;font-size:13px;font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.7);pointer-events:none;opacity:0;transition:opacity .4s}
+#s-flight.playing .find{opacity:1}
+.find b{color:var(--gold-l)}
+.drag-hint{position:absolute;left:50%;bottom:48px;transform:translateX(-50%);z-index:12;display:flex;gap:8px;align-items:center;white-space:nowrap;color:#fff;font-size:13px;font-weight:600;background:rgba(6,12,28,.55);border-radius:999px;padding:9px 14px;pointer-events:none;opacity:0;transition:opacity .5s}
+#s-flight.playing .drag-hint.on{opacity:1;animation:sway 1.6s ease-in-out infinite}
+@keyframes sway{50%{transform:translateX(calc(-50% + 14px))}}
 .card-ov{position:absolute;inset:0;z-index:15;display:flex;align-items:flex-end;padding:0 12px 24px;background:linear-gradient(transparent 25%,rgba(3,7,15,.65));opacity:0;pointer-events:none;transition:opacity .45s}
 .card-ov.on{opacity:1;pointer-events:auto}
 .card-ov .sheet{position:relative;left:auto;right:auto;bottom:auto;width:100%}
 .rules{display:grid;gap:8px;margin:14px 0 4px}
 .rules>div{display:flex;gap:11px;align-items:flex-start;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.9)}
 .rules .ic{color:var(--gold-l);margin-top:1px}
-.bigscore{font-family:var(--serif);font-size:38px;line-height:1.15;color:var(--gold-l);text-align:center;margin:4px 0}
-.memcard{position:absolute;left:14px;right:14px;top:118px;z-index:16;display:flex;gap:12px;align-items:center;background:rgba(255,253,248,.96);border-radius:16px;padding:10px;box-shadow:0 16px 40px rgba(0,0,0,.4);transform:translateY(-20px) scale(.96);opacity:0;transition:all .4s;pointer-events:none}
-.memcard.on{transform:none;opacity:1}
-.memcard img{width:96px;height:72px;object-fit:cover;border-radius:10px;flex:none}
-.memcard small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.18em;color:var(--gold)}
-.memcard b{display:block;color:var(--navy);font-size:14px;margin-top:2px}
-.memcard p{margin:2px 0 0;font-size:12.5px;line-height:1.4;color:#4A5064}
+.poster-ov{position:absolute;inset:0;z-index:16;display:grid;place-items:center;padding:96px 22px 30px;background:rgba(3,7,15,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .45s}
+.poster-ov.on{opacity:1;pointer-events:auto}
+.poster{width:100%;max-width:330px;background:#FFFDF8;border-radius:6px;padding:12px 12px 16px;box-shadow:0 30px 70px rgba(0,0,0,.55);transform:rotate(-2deg) scale(.9);transition:transform .5s cubic-bezier(.2,1.4,.4,1)}
+.poster-ov.on .poster{transform:rotate(-2deg)}
+.poster .ph{aspect-ratio:4/4.4;border-radius:3px;background:center/cover #E9E1D2;display:grid;place-items:center;overflow:hidden}
+.poster .ph .empty{text-align:center;color:#9A8466;font-size:12px;font-weight:600}
+.poster .ph .empty span{display:block;font-size:64px;line-height:1.1;margin-bottom:6px}
+.poster .pb{padding:12px 4px 0}
+.poster small{font-size:10px;font-weight:800;letter-spacing:.2em;color:var(--gold)}
+.poster h2{font-size:21px;color:var(--navy);margin-top:3px}
+.poster p{margin:6px 0 0;font-size:14px;line-height:1.5;color:#4A5064}
+.pbar{height:3px;border-radius:9px;background:#EFE6D4;margin:12px 4px 0;overflow:hidden}
+.pbar i{display:block;height:100%;width:100%;background:var(--gold);transform-origin:left}
+.dusk{position:absolute;inset:0;z-index:20;background:#05070D;opacity:0;pointer-events:none;transition:opacity 1.6s}
+.dusk.on{opacity:1}
 .flash{position:absolute;inset:0;background:#E8F0FF;z-index:14;opacity:0;pointer-events:none}
 .flash.go{animation:flashA .45s}
 @keyframes flashA{0%{opacity:0}10%{opacity:.75}30%{opacity:.1}45%{opacity:.5}100%{opacity:0}}
 .whiteout{position:absolute;inset:0;background:#FFF6E4;z-index:40;opacity:0;pointer-events:none;transition:opacity .8s}
 .whiteout.on{opacity:1}
 
-/* ---------- thư cuối + pháo hoa ---------- */
-#s-letter{z-index:30;background:radial-gradient(120% 70% at 50% 30%,rgba(10,16,40,.35),rgba(3,7,15,.85))}
-.fireworks{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-.fw{position:absolute;width:4px;height:4px;border-radius:50%}
-.fw i{position:absolute;left:0;top:0;width:4px;height:4px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:burst 1.6s ease-out forwards}
-@keyframes burst{0%{transform:translate(0,0);opacity:1}80%{opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
-.letter{position:absolute;left:22px;right:22px;top:96px;bottom:110px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;-webkit-mask-image:linear-gradient(transparent,#000 14%);mask-image:linear-gradient(transparent,#000 14%)}
-.letter .lt{font-family:var(--serif);font-style:italic;font-weight:500;font-size:19px;line-height:1.6;color:#fff;white-space:pre-wrap;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+/* ---------- chặng 3: giông bão ---------- */
+#s-storm>div{position:absolute;inset:0;pointer-events:none}
+.st-dark{background:#05070D;opacity:1;transition:opacity 1.5s}
+.st-words{overflow:hidden}
+.st-words span{position:absolute;left:0;white-space:nowrap;color:rgba(220,228,245,.55);font-family:var(--serif);font-style:italic;font-weight:600;filter:blur(1.5px);animation:drift linear infinite;text-shadow:0 0 18px rgba(0,0,0,.6)}
+@keyframes drift{from{transform:translateX(480px)}to{transform:translateX(-110%)}}
+.st-rain{overflow:hidden}
+.st-rain i{position:absolute;top:-10%;width:2px;border-radius:2px;background:linear-gradient(transparent,rgba(200,215,240,.6));animation:drop linear infinite}
+.st-rain b{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.55),rgba(170,190,220,.12) 60%,transparent 70%);animation:slide ease-in infinite}
+@keyframes drop{to{transform:translateY(120vh)}}
+@keyframes slide{0%,40%{transform:translateY(0)}100%{transform:translateY(60vh);opacity:0}}
+.st-light{opacity:0;background:radial-gradient(70% 55% at 50% 50%,rgba(255,226,170,.55),rgba(255,200,130,.12) 60%,transparent 80%)}
+.st-lead{display:flex;align-items:flex-start;justify-content:center;padding:120px 28px 0;text-align:center;font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.6;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.9);opacity:0;transition:opacity 1.2s}
+.st-lead.on{opacity:1}
+.st-hold{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:max(70px,env(safe-area-inset-bottom));opacity:0;transition:opacity .8s}
+.st-hold.on{opacity:1}
+#s-storm.on .st-hold.on .hold-btn{pointer-events:auto!important}
+.st-hold p{color:#fff;font-weight:600;font-size:14.5px;margin-top:14px;text-shadow:0 1px 8px rgba(0,0,0,.8)}
+.hold-btn{position:relative;width:132px;height:132px;border-radius:50%;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.hold-btn svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.hold-btn circle{fill:none;stroke-width:5}
+.hold-btn .bg{stroke:rgba(255,255,255,.18)}
+.hold-btn .fg{stroke:#FFE2A6;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:339.3;filter:drop-shadow(0 0 6px #FFD27A)}
+.hold-btn .core{position:absolute;inset:26px;border-radius:50%;background:radial-gradient(circle,#FFF4D6,#FFC66B 55%,rgba(255,180,80,.2));box-shadow:0 0 30px 8px rgba(255,200,110,.55);animation:glow 1.8s ease-in-out infinite}
+.hold-btn.down .core{animation:none;transform:scale(1.12);box-shadow:0 0 60px 22px rgba(255,210,130,.75)}
+@keyframes glow{50%{transform:scale(.9);box-shadow:0 0 18px 4px rgba(255,200,110,.4)}}
+.st-frames{display:flex;gap:10px;justify-content:center;align-items:flex-start;padding:112px 14px 0}
+.st-frames .pf{width:31%;background:#FFFDF8;padding:6px 6px 10px;border-radius:4px;box-shadow:0 16px 40px rgba(0,0,0,.4);opacity:0;transform:translateY(24px) rotate(var(--r));transition:all 1s cubic-bezier(.2,1,.3,1)}
+.st-frames .pf.on{opacity:1;transform:rotate(var(--r))}
+.st-frames .ph{aspect-ratio:3/4;border-radius:2px;background:center/cover;display:grid;place-items:center;filter:sepia(.25) saturate(1.1)}
+.st-frames .ph.empty{background:linear-gradient(160deg,#F6D9A8,#E8A877)}
+.st-frames .ph.empty .ic{width:30px;height:30px;color:#fff}
+.st-frames b{display:block;text-align:center;font-family:var(--serif);color:var(--navy);font-size:14px;margin-top:6px}
+.st-frames small{display:block;text-align:center;font-size:10.5px;line-height:1.35;color:#6D7486;margin-top:2px}
+.st-end{display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px max(28px,env(safe-area-inset-bottom));opacity:0;transition:opacity 1s}
+.st-end.on{opacity:1}
+#s-storm.on .st-end.on .btn{pointer-events:auto!important}
+.st-end p{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.6;color:#fff;text-align:center;text-shadow:0 2px 14px rgba(0,0,0,.85);margin-bottom:18px}
+
+/* ---------- chặng 4: đáp cánh ---------- */
+.bars:before,.bars:after{content:"";position:absolute;left:0;right:0;height:9%;background:#000;z-index:2;transition:transform .8s}
+.bars:before{top:0}.bars:after{bottom:0}
+#s-landing.done .bars:before{transform:translateY(-100%)}#s-landing.done .bars:after{transform:translateY(100%)}
+.ld-cap{position:absolute;left:0;right:0;bottom:13%;text-align:center;color:#fff;z-index:3;text-shadow:0 2px 14px rgba(0,0,0,.7);transition:opacity .8s}
+.ld-cap small{font-size:10px;letter-spacing:.34em;font-weight:700;color:var(--gold-l)}
+.ld-cap h2{font-size:26px;margin-top:6px}
+#s-landing.done .ld-cap{opacity:0}
+.ld-done{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;gap:14px;padding:72px 18px max(24px,env(safe-area-inset-bottom));background:linear-gradient(rgba(10,16,40,.15),rgba(10,16,40,.75));opacity:0;pointer-events:none;transition:opacity 1s}
+#s-landing.done .ld-done{opacity:1;pointer-events:auto}
+.notice{display:flex;gap:12px;align-items:center;background:rgba(6,12,28,.82);border:1px solid var(--stroke);border-radius:16px;padding:12px 14px;color:#fff;transform:translateY(-16px);transition:transform .8s .2s}
+#s-landing.done .notice{transform:none}
+.notice .logo{width:38px;height:38px;flex:none;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#F1D79E,var(--gold));color:#2A1A00}
+.notice .logo .ic{transform:rotate(45deg)}
+.notice small{display:block;font-size:9.5px;letter-spacing:.2em;font-weight:700;color:var(--gold-l)}
+.notice b{font-size:14.5px;line-height:1.4}
+.grad{flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center}
+.grad img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 18px 40px rgba(0,0,0,.5));transform:scale(.94);transition:transform 1.4s .3s}
+#s-landing.done .grad img{transform:none}
+
+/* ---------- thư cảm ơn trên nền montage ---------- */
+#s-letter{z-index:29;background:#05070D}
+.montage{position:absolute;inset:0;overflow:hidden}
+.montage video,.montage .slides div{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;filter:blur(3px) brightness(.5)}
+.montage .slides div{background:center/cover;opacity:0;transition:opacity 1.4s}
+.montage .slides div.on{opacity:1;animation:kb 7s linear forwards}
+@keyframes kb{from{transform:scale(1)}to{transform:scale(1.1)}}
+.letter{position:absolute;left:24px;right:24px;top:96px;bottom:110px;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.letter .lt{font-family:var(--serif);font-style:italic;font-weight:500;font-size:20px;line-height:1.65;color:#fff;white-space:pre-wrap;text-shadow:0 2px 14px rgba(0,0,0,.85)}
 .letter .lt .cur{display:inline-block;width:1.5px;height:19px;background:#fff;vertical-align:-3px;animation:pulse .8s infinite}
-.letter-btn{position:absolute;left:16px;right:16px;bottom:max(28px,env(safe-area-inset-bottom));opacity:0;transform:translateY(10px);transition:all .5s}
+.letter-btn{position:absolute;left:16px;right:16px;width:auto;bottom:max(28px,env(safe-area-inset-bottom));opacity:0;transform:translateY(10px);transition:all .5s}
 .letter-btn.on{opacity:1;transform:none}
 
-/* ---------- trang cuối ---------- */
+/* ---------- đánh giá chuyến bay ---------- */
+.rate{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px 18px;margin-top:50px;text-align:center}
+.cap-pf{width:76px;height:76px;margin:-60px auto 10px;border-radius:50%;background:url(img/cuong-face.jpg) center/cover;border:3px solid #fff;box-shadow:0 0 0 2px var(--gold),0 10px 24px rgba(10,26,63,.2)}
+.rate .kick:before{display:none}
+.rate h2{font-size:22px}
+.rate .sub{color:var(--muted);font-size:13.5px}
+.rate label{display:block;text-align:left;font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--navy);margin:4px 0 6px;text-transform:uppercase}
+.linkbtn{display:block;margin:12px auto 0;color:var(--muted);font-size:13px;font-weight:600;text-decoration:underline}
+
+/* ---------- thiệp mời ---------- */
 .paperpg .kick{color:var(--gold)}
+.invite{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 18px 44px rgba(10,26,63,.14);border:1px solid var(--line);margin-top:6px}
+.iv-hd{display:flex;justify-content:space-between;align-items:center;background:var(--navy);color:#fff;padding:14px 18px}
+.iv-hd b{display:block;letter-spacing:.18em;font-size:15px;color:var(--gold-l)}
+.iv-hd small{font-size:9.5px;letter-spacing:.24em;opacity:.75}
+.iv-hd .ic{width:26px;height:26px;color:var(--gold-l)}
+.iv-bd{padding:6px 18px 10px}
+.iv-msg{font-family:var(--serif);font-style:italic;font-size:17.5px;line-height:1.55;color:var(--navy);margin:14px 0 10px}
+.iv-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px dashed var(--line)}
+.iv-row .ic{color:var(--gold);margin-top:3px}
+.iv-row small{display:block;font-size:9.5px;font-weight:700;letter-spacing:.16em;color:var(--muted)}
+.iv-row b{color:var(--navy);font-size:15px}
+.iv-row b a{color:inherit}
+.iv-row span{display:block;color:var(--muted);font-size:13px}
+.iv-ft{display:flex;justify-content:space-between;align-items:center;background:var(--cream);border-top:2px dashed var(--line);padding:12px 18px}
+.iv-ft span{font-size:9.5px;font-weight:700;letter-spacing:.2em;color:var(--muted)}
+.iv-ft b{font-family:var(--serif);font-size:19px;color:var(--navy)}
+.save-ov{position:absolute;inset:0;z-index:55;display:grid;place-items:center;padding:60px 20px 30px;background:rgba(3,7,15,.82);opacity:0;pointer-events:none;transition:opacity .3s}
+.save-ov.on{opacity:1;pointer-events:auto}
+.save-ov img{max-width:100%;max-height:62vh;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.save-ov p{color:#fff;font-weight:600;font-size:14px;margin:14px 0 4px}
+.save-ov .info-btns a,.save-ov .info-btns button{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.25)}
+
 .paperpg h2{font-size:25px;color:var(--navy)}
-.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}
-.info .r{display:flex;gap:12px;align-items:flex-start;margin:8px 0;font-size:14px}
-.info .r .ic{color:var(--gold);margin-top:2px}
 .info-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .info-btns a,.info-btns button{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border-radius:12px;background:var(--cream);border:1px solid var(--line);color:var(--navy);font-weight:600;font-size:13px;text-decoration:none}
 .scoreline{display:flex;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px;font-size:13px;color:var(--muted)}
@@ -291,6 +387,8 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   <symbol id="i-ring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="3.5"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10zM14 7l3 3"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
   <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 9M20 4v5h-5M20 12a8 8 0 0 1-13.7 5.6L4 15M4 20v-5h5"/></symbol>
 </svg>
 <div class="app" id="app">
@@ -376,55 +474,102 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
     <button class="chip v-skip" id="vSkip">Bỏ qua <svg class="ic"><use href="#i-skip"/></svg></button>
   </section>
 
-  <!-- 3 CHẶNG BAY -->
+  <!-- CHẶNG 2: MỞ KHOÁ KỶ NIỆM -->
   <section class="stage" id="s-flight">
     <div id="flyArea"></div>
-    <div class="hud"><div class="pill"><svg class="ic"><use href="#i-clock"/></svg><b id="fTime">25</b>s</div><div class="mid" id="fStage">CHẶNG 1</div><div class="pill" id="fScore"></div></div>
-    <div class="memcard" id="memcard"><img id="mcImg" alt=""><div><small id="mcKind">KỶ NIỆM</small><b id="mcTitle"></b><p id="mcText"></p></div></div>
-    <div class="flash" id="flash"></div>
-    <div class="joy" id="joy"><div class="knob" id="knob"><svg class="ic"><use href="#i-plane"/></svg></div></div>
+    <div class="hud"><div class="pill"><svg class="ic"><use href="#i-star"/></svg><b id="fProg">0%</b></div><div class="mid">CHẶNG 2 · KỶ NIỆM</div><div class="pill"><svg class="ic"><use href="#i-coin"/></svg><b id="fScore">0</b></div></div>
+    <div class="prog"><i id="fBar"></i></div>
+    <div class="find" id="fFind">Đang bay tới: <b id="fFindName"></b></div>
+    <div class="drag-hint" id="dragHint"><svg class="ic"><use href="#i-touch"/></svg>Kéo ngón tay sang trái / phải</div>
     <div class="card-ov on" id="fIntro"><div class="sheet">
-      <div class="kick" id="fKick">Chặng 1</div><h2 id="fTitle">Cất cánh</h2>
-      <div class="rules" id="fRules"></div>
+      <div class="kick">Chặng 2</div><h2>Ổn định – Mở khoá kỷ niệm</h2>
+      <div class="rules">
+        <div><svg class="ic"><use href="#i-touch"/></svg><div><b>Kéo ngón tay</b> sang trái / phải để lái máy bay.</div></div>
+        <div><svg class="ic"><use href="#i-star"/></svg><div>Mỗi lượt chỉ có <b>một loại vật phẩm</b> bay tới. Ăn được là mở một kỷ niệm của Cường. Đủ <b id="fTotal">5</b> vật phẩm là 100%.</div></div>
+        <div><svg class="ic"><use href="#i-coin"/></svg><div>Nhặt thêm <b>xu vàng</b> để lên bảng xếp hạng.</div></div>
+      </div>
       <button class="btn mt" id="fStart">Bắt đầu <svg class="ic"><use href="#i-play"/></svg></button>
     </div></div>
-    <div class="card-ov" id="fEnd"><div class="sheet center">
-      <div class="kick" style="justify-content:center" id="feKick">Hoàn thành chặng</div>
-      <div class="bigscore" id="fFinal">0</div>
-      <p id="fVerdict" class="muted" style="font-size:14px"></p>
-      <button class="btn mt" id="fNext">Tiếp tục <svg class="ic"><use href="#i-arrow"/></svg></button>
+    <div class="poster-ov" id="poster"><div class="poster">
+      <div class="ph" id="pImg"></div>
+      <div class="pb"><small id="pKind"></small><h2 id="pTitle"></h2><p id="pText"></p></div>
+      <div class="pbar"><i id="pBar"></i></div>
     </div></div>
+    <div class="dusk" id="dusk"></div>
   </section>
 
-  <!-- THƯ CUỐI -->
-  <section class="stage" id="s-letter">
-    <div class="fireworks" id="fireworks"></div>
-    <div class="letter"><div class="lt" id="letterTxt"></div></div>
-    <button class="btn letter-btn" id="letterBtn">Xem thông tin lễ <svg class="ic"><use href="#i-arrow"/></svg></button>
-  </section>
-
-  <!-- TRANG CUỐI -->
-  <section class="stage paperpg" id="s-end"><div class="scroll">
-    <div class="kick">Hẹn gặp tại Nhà hát Hòa Bình</div>
-    <h2 id="endTitle">Hẹn gặp lúc 15:00 – 08/12</h2>
-    <div class="info">
-      <div class="r"><svg class="ic"><use href="#i-clock"/></svg><div><b>15:00 · Thứ Ba, 08/12/2026</b></div></div>
-      <div class="r"><svg class="ic"><use href="#i-pin"/></svg><div><b>Nhà hát Hòa Bình</b><br><span style="color:var(--muted);font-size:13px">240 Đường 3 Tháng 2, P. Hòa Hưng, TP.HCM</span></div></div>
-      <div class="r"><svg class="ic"><use href="#i-grad"/></svg><div>Lễ tốt nghiệp của <b>Phan Ngọc Cao Cường</b><br><span style="color:var(--muted);font-size:13px">Tiếng Anh Thương Mại · CĐ Kinh tế Đối ngoại</span></div></div>
-      <div class="info-btns"><a id="lnkMap" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>Chỉ đường</a><a id="lnkCal" target="_blank" rel="noopener"><svg class="ic"><use href="#i-cal"/></svg>Lưu vào lịch</a></div>
+  <!-- CHẶNG 3: GIÔNG BÃO (chạm giữ) -->
+  <section class="stage" id="s-storm">
+    <div class="st-dark" id="stDark"></div>
+    <div class="flash" id="flash"></div>
+    <div class="st-words" id="stWords"></div>
+    <div class="st-rain" id="stRain"></div>
+    <div class="st-light" id="stLight"></div>
+    <div class="st-lead" id="stLead"></div>
+    <div class="st-frames" id="stFrames"></div>
+    <div class="st-hold" id="stHold">
+      <button class="hold-btn" id="holdBtn" aria-label="Chạm và giữ"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="holdFg" cx="60" cy="60" r="54"/></svg><span class="core"></span></button>
+      <p>Chạm và giữ để bật đèn dẫn đường</p>
     </div>
+    <div class="st-end" id="stEnd"><p id="stEndTx"></p><button class="btn" id="stNext">Tiếp tục hành trình <svg class="ic"><use href="#i-arrow"/></svg></button></div>
+  </section>
+
+  <!-- CHẶNG 4: ĐÁP CÁNH (phim 3D) -->
+  <section class="stage" id="s-landing">
+    <div class="bars"></div>
+    <div class="ld-cap" id="ldCap"><small>CHẶNG 4</small><h2>Đáp cánh an toàn</h2></div>
+    <div class="ld-done" id="ldDone">
+      <div class="notice"><span class="logo"><svg class="ic"><use href="#i-plane"/></svg></span><div><small>THÔNG BÁO HỆ THỐNG</small><b id="ldMsg"></b></div></div>
+      <div class="grad"><img id="ldImg" alt="Cường trong lễ phục cử nhân"></div>
+      <button class="btn" id="ldNext">Mở thư của Cường <svg class="ic"><use href="#i-arrow"/></svg></button>
+    </div>
+  </section>
+
+  <!-- THƯ CẢM ƠN TRÊN NỀN MONTAGE -->
+  <section class="stage" id="s-letter">
+    <div class="montage"><video id="montage" muted playsinline loop preload="none"></video><div class="slides" id="slides"></div></div>
+    <div class="letter"><div class="lt" id="letterTxt"></div></div>
+    <button class="btn letter-btn" id="letterBtn">Đánh giá chuyến bay <svg class="ic"><use href="#i-arrow"/></svg></button>
+  </section>
+
+  <!-- ĐÁNH GIÁ CHUYẾN BAY -->
+  <section class="stage paperpg" id="s-review"><div class="scroll">
+    <div class="rate">
+      <div class="cap-pf"></div>
+      <div class="kick" style="justify-content:center">TXCC2026 · Đã hạ cánh</div>
+      <h2>Đánh giá chuyến bay cùng cơ trưởng Cường</h2>
+      <p class="sub">Chuyến bay hôm nay thế nào?</p>
+      <div class="stars" id="stars"></div>
+      <label for="rvText">Góp ý / Lời nhắn gửi cơ trưởng</label>
+      <textarea id="rvText" rows="5" maxlength="500" placeholder="Viết lời chúc tốt nghiệp…"></textarea>
+      <button class="btn mt" id="rvSend">Gửi lời chúc</button>
+      <button class="linkbtn" id="rvLater">Để sau</button>
+    </div>
+  </div></section>
+
+  <!-- THIỆP MỜI CHÍNH THỨC -->
+  <section class="stage paperpg" id="s-end"><div class="scroll">
+    <div class="invite">
+      <div class="iv-hd"><div><b>TXCC2026</b><small>THIỆP MỜI CHÍNH THỨC</small></div><svg class="ic"><use href="#i-grad"/></svg></div>
+      <div class="iv-bd">
+        <p class="iv-msg" id="ivMsg"></p>
+        <div class="iv-row"><svg class="ic"><use href="#i-clock"/></svg><div><small>THỜI GIAN</small><b>15:00 · Thứ Ba, 08/12/2026</b></div></div>
+        <div class="iv-row"><svg class="ic"><use href="#i-pin"/></svg><div><small>ĐỊA ĐIỂM</small><b>Nhà hát Hòa Bình</b><span>240 Đường 3 Tháng 2, P. Hòa Hưng, TP.HCM</span></div></div>
+        <div class="iv-row" id="ivPhoneRow"><svg class="ic"><use href="#i-phone"/></svg><div><small>LIÊN HỆ</small><b><a id="ivPhone"></a></b></div></div>
+        <div class="iv-row"><svg class="ic"><use href="#i-grad"/></svg><div><small>LỄ TỐT NGHIỆP</small><b>Phan Ngọc Cao Cường</b><span>Tiếng Anh Thương Mại · CĐ Kinh tế Đối ngoại</span></div></div>
+      </div>
+      <div class="iv-ft"><span>KHÁCH MỜI</span><b id="ivName"></b></div>
+    </div>
+    <div class="info-btns"><button id="btnSave"><svg class="ic"><use href="#i-down"/></svg>Lưu ảnh thiệp mời</button><a id="lnkMap" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>Xem bản đồ</a></div>
+    <div class="info-btns" style="grid-template-columns:1fr;margin-top:10px"><a id="lnkCal" target="_blank" rel="noopener"><svg class="ic"><use href="#i-cal"/></svg>Lưu vào lịch</a></div>
     <div class="scoreline" id="scoreline"></div>
-    <h2 style="font-size:20px;margin-top:22px" id="wishTitle">Gửi Cường một lời chúc</h2>
-    <p style="color:var(--muted);font-size:13px">Lời chúc sẽ được chiếu lên màn hình trong ngày lễ.</p>
-    <div class="stars" id="stars"></div>
-    <textarea id="rvText" rows="4" maxlength="500" placeholder="Viết lời chúc tốt nghiệp…"></textarea>
-    <button class="btn mt" id="rvSend">Gửi lời chúc</button>
     <div class="tabs"><button class="on" data-t="rv">Lời chúc</button><button data-t="lb">Bảng xếp hạng</button></div>
     <div id="wallRv"></div>
     <div id="wallLb" hidden></div>
-    <div class="info-btns mt2"><button id="wAgain"><svg class="ic"><use href="#i-repeat"/></svg>Bay lại từ đầu</button><button id="wFly"><svg class="ic"><use href="#i-plane"/></svg>Chơi lại chặng bay</button></div>
+    <div class="info-btns mt2"><button id="wAgain"><svg class="ic"><use href="#i-repeat"/></svg>Bay lại từ đầu</button><button id="wFly"><svg class="ic"><use href="#i-plane"/></svg>Chơi lại chặng 2</button></div>
   </div></section>
 
+  <div class="save-ov" id="saveOv"><div class="center"><img id="saveImg" alt="Thiệp mời"><p>Nhấn giữ ảnh để lưu vào máy</p><div class="info-btns"><a id="saveDl" download="thiep-moi-tot-nghiep-cuong.png"><svg class="ic"><use href="#i-down"/></svg>Tải xuống</a><button id="saveClose">Đóng</button></div></div></div>
   <div class="dlg" id="dlg"><div class="pf" id="dlgPf"></div><div style="flex:1;min-width:0"><div class="who" id="dlgWho"></div><div class="tx" id="dlgTx"></div><div class="ch" id="dlgCh"></div></div><span class="nx">Chạm để tiếp ▸</span></div>
   <div class="scanok" id="scanok"><svg class="ic"><use href="#i-check"/></svg>Đã quét vé</div>
   <div class="whiteout" id="whiteout"></div>

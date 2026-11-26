@@ -11,38 +11,39 @@ const CFG = {
     { q: '5 năm nữa {khach} vẫn đồng hành cùng {cuong} chứ?', yn: true },
   ],
   qTime: 10,
-  // video mở đầu mỗi chặng: đặt file media/video1.mp4, video2.mp4, video3.mp4 – chưa có thì hiện thẻ tiêu đề
-  stages: [
-    { kick: 'CHẶNG 1', title: 'Cất cánh', line: 'Những điều mới mẻ, vươn ra thế giới mới.', mode: 'memories', duration: 25 },
-    { kick: 'CHẶNG 2', title: 'Giông bão', line: 'Không phải chuyến bay nào cũng êm.', mode: 'storm', duration: 25 },
-    { kick: 'CHẶNG 3', title: 'Hạ cánh an toàn', line: 'Sau tất cả, mình đã về tới nơi.', mode: 'landing', duration: 22 },
+  flight: 'TXCC2026',
+  phone: '',          // [xác nhận] số điện thoại in trên thiệp mời, để trống thì ẩn dòng Liên hệ
+  years: 3,           // [xác nhận] số năm đi học, dùng trong thư cảm ơn
+  // Chặng 1: video media/video1.mp4 (~20 giây, dọc 9:16). Chưa có file thì hiện thẻ tiêu đề này
+  intro: { kick: 'CHẶNG 1', title: 'Khởi hành', line: 'Những ngày đầu bỡ ngỡ.' },
+  // Chặng 2: lần lượt từng vật phẩm bay tới; ăn được thì game dừng, hiện poster posterTime giây.
+  // img: đường dẫn ảnh poster (ví dụ 'media/posters/p1.jpg'), để trống thì hiện khung chờ ảnh
+  items: [
+    { emoji: '🧋', name: 'Ly trà sữa', kind: 'NHỮNG NGƯỜI BẠN', title: 'Hội bạn xuyên trưa', text: 'Những buổi cúp tiết, tám chuyện xuyên trưa cùng hội bạn.', img: '' },
+    { emoji: '📚', name: 'Cuốn giáo trình', kind: 'NĂM NHẤT', title: 'Đồ án nhóm đầu tiên', text: 'Lần đầu tiên làm đồ án nhóm, học được bao nhiêu điều mới.', img: '' },
+    { emoji: '📷', name: 'Chiếc máy ảnh', kind: 'THANH XUÂN', title: 'Chuyến đi xa đầu tiên', text: 'Chuyến đi chơi xa đầu tiên, nơi tụi mình trở thành một phần thanh xuân của nhau.', img: '' },
+    { emoji: '🏅', name: 'Huy chương', kind: 'THÀNH TÍCH', title: 'Đại hội Hội Sinh viên', text: 'Đại biểu Đại hội Hội Sinh viên trường lần VI.', img: '' },
+    { emoji: '⭐', name: 'Ngôi sao', kind: 'GIA ĐÌNH THỨ HAI', title: 'Đoàn khoa Ngoại ngữ', text: 'Vào Đoàn khoa Ngoại ngữ, quen thêm cả một gia đình thứ hai.', img: '' },
   ],
-  cards: [
-    { kind: 'CUỘC SỐNG MỚI', title: 'Ngày đầu nhập học', text: 'Lần đầu mặc đồng phục, lần đầu lạc đường trong trường.' },
-    { kind: 'CUỘC SỐNG MỚI', title: 'Chiếc áo xanh', text: 'Vào Đoàn khoa Ngoại ngữ, quen thêm cả một gia đình thứ hai.' },
-    { kind: 'THÀNH TÍCH', title: 'Đại hội Hội Sinh viên 2025', text: 'Đại biểu Đại hội Hội Sinh viên trường lần VI.' },
-    { kind: 'THÀNH TÍCH', title: 'Tập thể tiên tiến', text: 'Cùng tập thể nhận danh hiệu tiên tiến Tháng Thanh niên 2025.' },
-    { kind: 'NIỀM VUI', title: 'Những người bạn', text: 'Những bữa cơm, những trận cười không cần lý do.' },
-    { kind: 'NIỀM VUI', title: 'Cầm máy ảnh', text: 'Đam mê chụp và dựng video bắt đầu từ đây.' },
-  ],
-  pressures: ['Deadline', 'Thi cử', 'Khoá luận', 'Đi làm thêm', 'Mất ngủ', 'Áp lực điểm số', 'Lo lắng tương lai', 'Mệt mỏi'],
-  heals: ['Gia đình', 'Bạn bè', 'Thầy cô'],
-  letter: {
-    family: `Gửi cả nhà,
-
-Cảm ơn cả nhà đã là nơi Cường cất cánh và cũng là nơi Cường hạ cánh. Những năm qua Cường đi sớm về khuya, ít khi nói ra, nhưng Cường biết cả nhà luôn chờ.
-
-Tấm bằng này là của cả nhà. Hẹn cả nhà lúc 15:00, thứ Ba 08/12/2026 tại Nhà hát Hòa Bình.
-
-Thương, Cường.`,
-    friend: `Gửi {ten},
-
-Cảm ơn bạn đã ngồi cạnh tui suốt chuyến bay này – lúc trời đẹp cũng như lúc giông bão. Những buổi trực, những bữa cơm, những tin nhắn lúc nửa đêm, tui nhớ hết.
-
-Hẹn bạn lúc 15:00, thứ Ba 08/12/2026 tại Nhà hát Hòa Bình. Nhớ tới nha!
-
-Cường.`,
+  posterTime: 10,
+  // Chặng 3: không chơi game, chạm giữ hold giây để trời quang
+  storm: {
+    words: ['Deadline', 'Thi lại', 'Áp lực điểm số', 'Mất phương hướng', 'Những đêm thức trắng', 'Khoá luận', 'Đi làm thêm', 'Lo lắng tương lai'],
+    lead: 'Không có chuyến bay nào chỉ toàn nắng đẹp. Đã có những lúc {cuong} tưởng chừng muốn bỏ cuộc giữa vùng nhiễu động này…',
+    hold: 3.5,
+    frames: [
+      { label: 'Gia đình', text: 'Những bữa cơm, những lời hỏi thăm', img: '' },
+      { label: 'Thầy cô', text: 'Những lời chỉ bảo tận tình', img: '' },
+      { label: 'Bạn bè', text: 'Những cái ôm, những đêm cùng chạy deadline', img: '' },
+    ],
+    end: 'Nhưng {cuong} chưa bao giờ bay một mình. Cảm ơn Gia đình, Thầy cô và Bạn bè đã luôn là ánh sáng giúp {cuong} vững tay lái đi qua giông bão.',
   },
+  // Chặng 4: ảnh lễ phục cử nhân (chưa có thì dùng ảnh Cường tách nền)
+  gradPhoto: 'img/grad.jpg',
+  // Thư cảm ơn chạy trên nền media/montage.mp4 (30–45 giây). Chưa có thì trình chiếu các ảnh dưới đây
+  montageFallback: ['media/cards/c1.jpg', 'media/cards/c2.jpg', 'media/cards/c3.jpg', 'media/cards/c4.jpg', 'media/cards/c5.jpg', 'media/cards/c6.jpg'],
+  letter: 'Hành trình {nam} năm cuối cùng cũng đã đến trạm dừng chân đẹp nhất.\n\nCảm ơn {ten} vì đã là một phần không thể thiếu trong chuyến bay thanh xuân của {cuong}.\n\nMọi kỷ niệm, dù vui hay buồn, {cuong} đều sẽ cất giữ thật kỹ cho những chặng đường mới phía trước.',
+  invite: 'Chuyến bay ký ức đã khép lại, nhưng lễ mừng hạ cánh thì không thể thiếu {khach}! Hẹn gặp {ten} tại buổi lễ tốt nghiệp của {cuong} nhé.',
   map: 'https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+h%C3%A1t+H%C3%B2a+B%C3%ACnh+240+%C4%90%C6%B0%E1%BB%9Dng+3+Th%C3%A1ng+2+TP.HCM',
 };
 const REL = { family: { khach: 'cả nhà', cuong: 'Cường' }, friend: { khach: 'bạn', cuong: 'tui' } };
@@ -62,7 +63,7 @@ const icon = id => `<svg class="ic"><use href="#i-${id}"/></svg>`;
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
 const G = { code: store.get('id', null) || ('g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), name: store.get('name', ''), rel: store.get('rel', 'friend') };
 store.set('id', G.code);
-const T = s => { const r = REL[G.rel] || REL.friend; return s.replace(/\{Khach\}/g, cap(r.khach)).replace(/\{khach\}/g, r.khach).replace(/\{Cuong\}/g, cap(r.cuong)).replace(/\{cuong\}/g, r.cuong).replace(/\{ten\}/g, G.name || 'bạn'); };
+const T = s => { const r = REL[G.rel] || REL.friend; return s.replace(/\{Khach\}/g, cap(r.khach)).replace(/\{khach\}/g, r.khach).replace(/\{Cuong\}/g, cap(r.cuong)).replace(/\{cuong\}/g, r.cuong).replace(/\{ten\}/g, G.name || 'bạn').replace(/\{nam\}/g, CFG.years); };
 function seatOf(code) { let h = 0; for (const c of code) h = (h * 31 + c.charCodeAt(0)) >>> 0; return (1 + h % 30) + 'ABCDEF'[h % 6]; }
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); }
 function confetti(n = 60) {
@@ -262,23 +263,23 @@ function ask(role, text, choices) {
 }
 
 /* ================= ĐIỀU HƯỚNG ================= */
-const S = { stage: '', rsvp: store.get('rsvp', null), cls: null, scores: [0, 0, 0], best: store.get('best', 0) };
+const S = { stage: '', rsvp: store.get('rsvp', null), cls: null, game: 0, best: store.get('best', 0) };
 const ENTER = {}, LEAVE = {};
 async function go(id, arg) {
   dlgHide();
   (LEAVE[S.stage] || (() => {}))();
   S.stage = id;
   const app = $('#app'); app.classList.remove('paper', 'film', 'blur');
-  if (id === 'end') app.classList.add('paper');
-  if (id === 'video') app.classList.add('film');
+  if (id === 'end' || id === 'review') app.classList.add('paper');
+  if (id === 'video' || id === 'letter') app.classList.add('film');
   if (id === 'ticket') app.classList.add('blur');
-  $('#btnSkip').style.visibility = ['checkin', 'quiz', 'board', 'takeoff', 'fly', 'video'].includes(id) ? 'visible' : 'hidden';
-  const stageEl = { ticket: 's-ticket', checkin: 's-ground', quiz: 's-quiz', board: 's-ground', takeoff: 's-takeoff', video: 's-video', fly: 's-flight', letter: 's-letter', end: 's-end' }[id];
+  $('#btnSkip').style.visibility = ['checkin', 'quiz', 'board', 'takeoff', 'video', 'fly', 'storm', 'landing', 'letter'].includes(id) ? 'visible' : 'hidden';
+  const stageEl = { ticket: 's-ticket', checkin: 's-ground', quiz: 's-quiz', board: 's-ground', takeoff: 's-takeoff', video: 's-video', fly: 's-flight', storm: 's-storm', landing: 's-landing', letter: 's-letter', review: 's-review', end: 's-end' }[id];
   $$('.stage').forEach(s => s.classList.toggle('on', s.id === stageEl));
   const sc = $('#' + stageEl + ' .scroll'); if (sc) sc.scrollTop = 0;
   await (ENTER[id] || (() => {}))(arg);
 }
-$('#btnSkip').onclick = () => go(G.name ? 'end' : 'ticket');
+$('#btnSkip').onclick = () => go(!G.name ? 'ticket' : store.get('reviewed', false) ? 'end' : 'review');
 
 /* ================= CẢNH 0: VÉ TRÊN ĐIỆN THOẠI ================= */
 ENTER.ticket = async () => {
@@ -402,7 +403,7 @@ async function finishQuiz() {
   setTimeout(() => {
     st.classList.add('hit');
     setTimeout(() => { SFX.stamp(); $('#ppBook').classList.add('shake'); setTimeout(() => $('#ppBook').classList.remove('shake'), 400); }, 260);
-    $('#ppRes').innerHTML = S.cls === 'biz' ? '<h2>Hạng Thương gia</h2><p class="muted">Được cộng 20.000 điểm khởi đầu.</p>' : '<h2>Hạng Phổ thông</h2><p class="muted">Ai cũng bay đủ 3 chặng như nhau.</p>';
+    $('#ppRes').innerHTML = S.cls === 'biz' ? '<h2>Hạng Thương gia</h2><p class="muted">Được cộng 20.000 điểm khởi đầu.</p>' : '<h2>Hạng Phổ thông</h2><p class="muted">Ai cũng bay đủ 4 chặng như nhau.</p>';
     setTimeout(() => { $('#ppRes').classList.add('on'); $('#ppNext').hidden = false; }, 500);
   }, 700);
 }
@@ -416,30 +417,30 @@ ENTER.board = async () => {
   await arrived; clearInterval(stepT);
   if (S.stage !== 'board') return;
   SFX.ding();
-  await say(ROLE.captain, 'Kính chào quý khách, tôi là Cường, cơ trưởng chuyến bay TXCC2026. Hành trình hôm nay đi qua 3 chặng: cất cánh, giông bão và hạ cánh. Thắt dây an toàn vào, chúng ta cất cánh!');
+  await say(ROLE.captain, 'Kính chào quý khách, tôi là Cường, cơ trưởng chuyến bay TXCC2026. Hành trình hôm nay có 4 chặng: khởi hành, mở khoá kỷ niệm, vượt giông bão và đáp cánh. Thắt dây an toàn vào, chúng ta cất cánh!');
   if (S.stage === 'board') go('takeoff');
 };
 ENTER.takeoff = async () => {
   musicPlay('bgm', .2); engineStart(.25);
   // mở khoá video ngay khi còn trong lượt chạm gần nhất, để lát nữa phát được có tiếng
   const v = $('#vid'); v.muted = AU.muted;
-  await W.show('takeoff', { duration: 7.5, onEnd: async () => { $('#whiteout').classList.add('on'); await wait(800); go('video', 0); setTimeout(() => $('#whiteout').classList.remove('on'), 300); } });
+  await W.show('takeoff', { duration: 6, onEnd: async () => { $('#whiteout').classList.add('on'); await wait(800); go('video'); setTimeout(() => $('#whiteout').classList.remove('on'), 300); } });
   setTimeout(() => engineStart(.65), 600);
   setTimeout(() => { $('#cabinCap').querySelector('h2').textContent = 'Chúng ta đang cất cánh'; }, 3500);
 };
 
-/* ================= VIDEO MỞ ĐẦU MỖI CHẶNG ================= */
+/* ================= CHẶNG 1: VIDEO KHỞI HÀNH ================= */
 let vidDone = null;
-ENTER.video = async (n) => {
+ENTER.video = async () => {
   engineStop(1.5); W.clear();
-  const st = CFG.stages[n], v = $('#vid');
+  const st = CFG.intro, v = $('#vid');
   $('#vcKick').textContent = st.kick; $('#vcTitle').textContent = st.title; $('#vcLine').textContent = st.line;
   $('#tapPlay').classList.remove('on'); $('#vcard').classList.remove('on');
-  const next = () => { if (S.stage !== 'video') return; v.pause(); go('fly', n); };
+  const next = () => { if (S.stage !== 'video') return; v.pause(); go('fly'); };
   vidDone = next;
   const ok = await new Promise(res => {
     v.onloadeddata = () => res(true); v.onerror = () => res(false);
-    v.src = `media/video${n + 1}.mp4`; v.load(); setTimeout(() => res(false), 3500);
+    v.src = 'media/video1.mp4'; v.load(); setTimeout(() => res(false), 3500);
   });
   if (S.stage !== 'video') return;
   if (ok) {
@@ -457,116 +458,209 @@ LEAVE.video = () => { $('#vid').pause(); };
 $('#tapPlay').onclick = () => $('#vid').play().then(() => $('#tapPlay').classList.remove('on')).catch(() => {});
 $('#vSkip').onclick = () => vidDone && vidDone();
 
-/* ================= 3 CHẶNG BAY ================= */
-let flightApi = null, flyN = 0, cardT = 0;
-const hearts = n => `<span class="hearts">${[0, 1, 2].map(i => `<i class="${i < n ? '' : 'off'}"></i>`).join('')}</span>`;
-const RULES = [
-  `<div>${icon('touch')}<div>Kéo <b>nút tròn</b> (hoặc kéo ngón tay trên màn hình) để lái máy bay.</div></div><div>${icon('star')}<div>Nhặt <b>6 ngôi sao kỷ niệm</b> để mở lại những câu chuyện của Cường, nhặt <b>xu vàng</b> để lấy điểm.</div></div>`,
-  `<div>${icon('touch')}<div>Gió giật làm máy bay lệch hướng, giữ chắc tay lái.</div></div><div>${icon('bolt')}<div>Né những <b>đám mây áp lực</b>. Có <b>3 mạng</b>; vệt sáng <b>Gia đình · Bạn bè · Thầy cô</b> giúp hồi 1 mạng.</div></div>`,
-  `<div>${icon('ring')}<div>Bay xuyên qua các <b>vòng vàng</b> khi máy bay hạ độ cao.</div></div><div>${icon('plane')}<div>Cuối chặng giữ máy bay <b>chính giữa</b> để chạm bánh thật êm.</div></div>`,
-];
-ENTER.fly = async (n) => {
-  flyN = n; const st = CFG.stages[n];
-  $('#s-flight').classList.remove('playing');
-  $('#fIntro').classList.add('on'); $('#fEnd').classList.remove('on'); $('#memcard').classList.remove('on');
-  $('#fKick').textContent = `${st.kick} · ${st.duration} giây`; $('#fTitle').textContent = st.title; $('#fRules').innerHTML = RULES[n];
-  $('#fStage').textContent = st.kick + ' · ' + st.title.toUpperCase(); $('#fTime').textContent = st.duration;
-  $('#fScore').innerHTML = n === 1 ? hearts(3) : n === 0 ? `${icon('star')}<b>0/6</b>` : `${icon('ring')}<b>0</b>`;
+/* ================= CHẶNG 2: MỞ KHOÁ KỶ NIỆM ================= */
+let flightApi = null, posterT = 0, hintT = 0;
+const itemName = k => CFG.items[k] ? CFG.items[k].emoji + ' ' + CFG.items[k].name : '';
+ENTER.fly = async () => {
+  S.game = 0;
+  $('#s-flight').classList.remove('playing'); $('#fIntro').classList.add('on'); $('#poster').classList.remove('on'); $('#dusk').classList.remove('on');
+  $('#fTotal').textContent = CFG.items.length; $('#fProg').textContent = '0%'; $('#fBar').style.width = '0'; $('#fScore').textContent = '0';
+  $('#fFindName').textContent = itemName(0);
   musicPlay('bgm', .3);
   flightApi = await W.show('flight', {
-    mode: st.mode, duration: st.duration, words: CFG.pressures, heals: CFG.heals,
-    sfx: { coin: SFX.coin, star: SFX.star, hit: SFX.hit, thunder: SFX.thunder },
+    mode: 'memories', items: CFG.items,
+    sfx: { coin: SFX.coin, star: SFX.star },
     onHud: h => {
-      $('#fTime').textContent = Math.ceil(h.time);
-      $('#fScore').innerHTML = h.mode === 'storm' ? hearts(h.lives) : h.mode === 'memories' ? `${icon('star')}<b>${h.stars}/6</b>` : `${icon('ring')}<b>${h.rings}</b>`;
+      const pct = Math.round(h.got / h.total * 100);
+      $('#fProg').textContent = pct + '%'; $('#fBar').style.width = pct + '%'; $('#fScore').textContent = fmt(h.score);
+      $('#fFindName').textContent = itemName(h.got); S.game = h.score;
     },
-    onStar: i => showCard(i),
-    onFlash: () => { const f = $('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); },
-    onEnd: r => endStage(n, r),
+    onItem: (k, got) => showPoster(k, got === CFG.items.length),
   });
   engineStart(.18);
 };
-function showCard(i) {
-  const c = CFG.cards[i]; if (!c) return;
-  $('#mcImg').src = `media/cards/c${i + 1}.jpg`; $('#mcKind').textContent = c.kind; $('#mcTitle').textContent = c.title; $('#mcText').textContent = c.text;
-  const el = $('#memcard'); el.classList.add('on'); clearTimeout(cardT); cardT = setTimeout(() => el.classList.remove('on'), 3200);
+$('#fStart').onclick = () => {
+  $('#fIntro').classList.remove('on'); $('#s-flight').classList.add('playing'); engineStart(.38); musicPlay('game', .45);
+  $('#dragHint').classList.add('on'); clearTimeout(hintT); hintT = setTimeout(() => $('#dragHint').classList.remove('on'), 3500);
+  flightApi && flightApi.start();
+};
+// game dừng, bật poster kỷ niệm trong CFG.posterTime giây
+function showPoster(k, last) {
+  const it = CFG.items[k];
+  $('#pImg').style.backgroundImage = it.img ? `url(${it.img})` : '';
+  $('#pImg').innerHTML = it.img ? '' : `<div class="empty"><span>${it.emoji}</span>Ảnh sẽ được thêm sau</div>`;
+  $('#pKind').textContent = it.kind; $('#pTitle').textContent = it.title; $('#pText').textContent = T(it.text);
+  const bar = $('#pBar'); bar.style.transition = 'none'; bar.style.transform = 'scaleX(1)'; void bar.offsetWidth;
+  bar.style.transition = `transform ${CFG.posterTime}s linear`; bar.style.transform = 'scaleX(0)';
+  $('#poster').classList.add('on'); musicLevel(.2); engineStart(.12);
+  clearTimeout(posterT);
+  posterT = setTimeout(() => {
+    $('#poster').classList.remove('on');
+    if (last) return stage2Done();
+    musicLevel(.45); engineStart(.38); flightApi && flightApi.resume();
+  }, CFG.posterTime * 1000);
 }
-$('#fStart').onclick = () => { $('#fIntro').classList.remove('on'); $('#s-flight').classList.add('playing'); engineStart(.38); musicPlay('game', .45); flightApi && flightApi.start(); };
-async function endStage(n, r) {
-  $('#s-flight').classList.remove('playing'); engineStart(.12); musicPlay('bgm', .35);
-  S.scores[n] = r.score + (n === 0 && S.cls === 'biz' ? 20000 : 0);
-  const msg = n === 0 ? `Nhặt được ${r.stars}/6 kỷ niệm. Phía trước trời đang tối dần… xin thắt chặt dây an toàn.`
-    : n === 1 ? (r.survived ? 'Chúng ta đã ra khỏi vùng giông. Cảm ơn {khach} đã không buông tay lái.' : 'Máy bay rung lắc dữ dội… nhưng {cuong} vẫn đưa {khach} ra khỏi cơn bão.')
-    : ['Hạ cánh hoàn hảo!', 'Hạ cánh êm ái!', 'Hơi xóc một chút, nhưng đã về tới nơi an toàn!'][r.rating ?? 1];
-  $('#feKick').textContent = `Hoàn thành ${CFG.stages[n].kick.toLowerCase()}`;
-  $('#fFinal').textContent = fmt(S.scores[n]) + ' điểm';
-  $('#fVerdict').textContent = T(msg);
-  $('#fNext').innerHTML = n < 2 ? `Sang ${CFG.stages[n + 1].kick.toLowerCase()} ${icon('arrow')}` : `Mở thư của Cường ${icon('arrow')}`;
-  $('#fEnd').classList.add('on'); SFX.win();
-  if (n === 2) { engineStop(2); confetti(60); }
+// đủ vật phẩm: bầu trời tối sầm, sang chặng 3
+async function stage2Done() {
+  $('#s-flight').classList.remove('playing');
+  $('#dusk').classList.add('on'); musicLevel(0, 1400); engineStart(.1);
+  setTimeout(SFX.thunder, 900);
+  await wait(1800);
+  if (S.stage === 'fly') go('storm');
 }
-$('#fNext').onclick = () => { const v = $('#vid'); v.play().then(() => v.pause()).catch(() => {}); flyN < 2 ? go('video', flyN + 1) : go('letter'); };
-LEAVE.fly = () => { joyReset(); clearTimeout(cardT); };
-const joy = $('#joy'), knob = $('#knob'); let joyId = null;
-function joyReset() { joyId = null; knob.style.transform = ''; flightApi && flightApi.stick && flightApi.stick(0, 0); }
-function joyMove(e) {
-  const r = joy.getBoundingClientRect(), R = r.width / 2 - 14;
-  let dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
-  const d = Math.hypot(dx, dy); if (d > R) { dx *= R / d; dy *= R / d; }
-  knob.style.transform = `translate(${dx}px,${dy}px)`;
-  flightApi && flightApi.stick && flightApi.stick(dx / R, dy / R);
-}
-joy.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); joyId = e.pointerId; try { joy.setPointerCapture(e.pointerId); } catch {} joyMove(e); });
-joy.addEventListener('pointermove', e => { if (e.pointerId === joyId) { e.stopPropagation(); joyMove(e); } });
-['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => joy.addEventListener(t, e => { if (e.pointerId === joyId) joyReset(); }));
+LEAVE.fly = () => { clearTimeout(posterT); clearTimeout(hintT); };
 
-/* ================= THƯ CUỐI + PHÁO HOA ================= */
-let letterT = 0, fwT = 0;
-function firework() {
-  const box = $('#fireworks'), fw = document.createElement('div'); fw.className = 'fw';
-  fw.style.left = 10 + Math.random() * 80 + '%'; fw.style.top = 8 + Math.random() * 40 + '%';
-  fw.style.color = ['#E9CF96', '#FFB347', '#8FC1FF', '#FFFFFF', '#FF8FA3'][Math.floor(Math.random() * 5)];
-  for (let i = 0; i < 26; i++) { const p = document.createElement('i'), a = i / 26 * Math.PI * 2, r = 60 + Math.random() * 50; p.style.setProperty('--dx', Math.cos(a) * r + 'px'); p.style.setProperty('--dy', Math.sin(a) * r + 30 + 'px'); fw.appendChild(p); }
-  box.appendChild(fw); SFX.pop(); setTimeout(() => fw.remove(), 1800);
+/* ================= CHẶNG 3: GIÔNG BÃO (chạm giữ) ================= */
+let stormApi = null;
+const ST = { k: 0, holding: false, loop: 0, done: false, buzz: 0, timers: [] };
+const vibrate = p => { try { navigator.vibrate && navigator.vibrate(p); } catch {} };
+ENTER.storm = async () => {
+  const s = CFG.storm;
+  Object.assign(ST, { k: 0, holding: false, done: false });
+  ['stLead', 'stHold', 'stEnd'].forEach(id => $('#' + id).classList.remove('on'));
+  $('#stLead').textContent = T(s.lead); $('#stEndTx').textContent = T(s.end);
+  $('#stDark').style.transition = 'none'; $('#stDark').style.opacity = 1;
+  $('#stLight').style.opacity = 0; $('#holdFg').style.strokeDashoffset = 339.3;
+  // chữ áp lực trôi mờ
+  $('#stWords').style.opacity = 1;
+  $('#stWords').innerHTML = s.words.map((w, i) => `<span style="top:${14 + (i * 67) % 72}%;font-size:${18 + (i % 3) * 7}px;animation-duration:${11 + (i % 4) * 3}s;animation-delay:${-i * 2.3}s">${esc(w)}</span>`).join('');
+  // mưa ngoài cửa sổ + giọt nước trượt trên kính
+  $('#stRain').style.opacity = 1;
+  $('#stRain').innerHTML = Array.from({ length: 50 }, (_, i) => `<i style="left:${Math.random() * 100}%;height:${40 + Math.random() * 60}px;animation-duration:${.5 + Math.random() * .5}s;animation-delay:${-Math.random()}s"></i>`).join('')
+    + Array.from({ length: 16 }, () => { const d = 6 + Math.random() * 12; return `<b style="left:${Math.random() * 100}%;top:${Math.random() * 60}%;width:${d}px;height:${d * 1.15}px;animation-duration:${3 + Math.random() * 4}s;animation-delay:${-Math.random() * 5}s"></b>`; }).join('');
+  $('#stFrames').innerHTML = s.frames.map((f, i) => `<div class="pf" style="--r:${[-4, 2, 5][i % 3]}deg"><div class="ph${f.img ? '' : ' empty'}" style="${f.img ? `background-image:url(${f.img})` : ''}">${f.img ? '' : icon('heart')}</div><b>${esc(f.label)}</b><small>${esc(T(f.text))}</small></div>`).join('');
+  musicPlay('bgm', .12); engineStart(.3);
+  stormApi = await W.show('flight', {
+    mode: 'storm', sfx: { thunder: SFX.thunder },
+    onFlash: () => { const f = $('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); vibrate(40); },
+  });
+  if (S.stage !== 'storm') return;
+  setTimeout(() => { $('#stDark').style.transition = ''; $('#stDark').style.opacity = .55; }, 30);
+  vibrate([60, 50, 60]); SFX.thunder();
+  ST.timers = [setTimeout(() => $('#stLead').classList.add('on'), 1200), setTimeout(() => $('#stHold').classList.add('on'), 4200)];
+  let last = performance.now();
+  ST.loop = setInterval(() => {
+    const now = performance.now(), dt = Math.min(.3, (now - last) / 1000); last = now;
+    if (!ST.done) {
+      ST.k = Math.max(0, Math.min(1, ST.k + (ST.holding ? dt / CFG.storm.hold : -dt / 2.5)));
+      if (ST.holding && (ST.buzz -= dt) <= 0) { ST.buzz = .45; vibrate(15); }
+      paintCalm(ST.k);
+      if (ST.k >= 1) stormClear();
+    }
+  }, 33);
+};
+function paintCalm(k) {
+  $('#holdFg').style.strokeDashoffset = 339.3 * (1 - k);
+  $('#stDark').style.opacity = .55 * (1 - k);
+  $('#stLight').style.opacity = k;
+  $('#stWords').style.opacity = 1 - k; $('#stRain').style.opacity = 1 - k;
+  stormApi && stormApi.calm(k);
+}
+async function stormClear() {
+  ST.done = true; ST.holding = false; $('#holdBtn').classList.remove('down');
+  paintCalm(1); SFX.star(); vibrate(0);
+  $('#stHold').classList.remove('on'); $('#stLead').classList.remove('on');
+  musicPlay('bgm', .4); engineStart(.2);
+  const frames = $$('#stFrames .pf');
+  for (const f of frames) { await wait(1100); if (S.stage !== 'storm') return; f.classList.add('on'); SFX.blip(4); }
+  await wait(1200);
+  if (S.stage === 'storm') $('#stEnd').classList.add('on');
+}
+const holdOn = e => { if (ST.done || !$('#stHold').classList.contains('on')) return; e.preventDefault(); ST.holding = true; $('#holdBtn').classList.add('down'); audio(); };
+const holdOff = () => { ST.holding = false; $('#holdBtn').classList.remove('down'); };
+$('#holdBtn').addEventListener('pointerdown', holdOn);
+['pointerup', 'pointercancel', 'pointerleave'].forEach(t => $('#holdBtn').addEventListener(t, holdOff));
+$('#holdBtn').addEventListener('contextmenu', e => e.preventDefault());
+$('#stNext').onclick = () => go('landing');
+LEAVE.storm = () => { clearInterval(ST.loop); ST.timers.forEach(clearTimeout); holdOff(); stormApi = null; };
+
+/* ================= CHẶNG 4: ĐÁP CÁNH AN TOÀN ================= */
+ENTER.landing = async () => {
+  const el = $('#s-landing'); el.classList.remove('done');
+  $('#ldMsg').textContent = `Chuyến bay ${CFG.flight} đã hạ cánh an toàn tại sân bay TỐT NGHIỆP!`;
+  const img = $('#ldImg'); img.onerror = () => { img.onerror = null; img.src = 'img/cuong.webp'; }; img.src = CFG.gradPhoto;
+  musicPlay('bgm', .3); engineStart(.55);
+  await W.show('landing', {
+    duration: 12,
+    onTouch: () => { SFX.hit(); vibrate(80); engineStart(.8); setTimeout(() => engineStart(.25), 1500); },
+    onEnd: () => {
+      if (S.stage !== 'landing') return;
+      el.classList.add('done'); engineStop(2); musicPlay('bgm', .5);
+      SFX.win(); confetti(90); setTimeout(() => confetti(60), 900);
+    },
+  });
+};
+
+$('#ldNext').onclick = () => go('letter');
+
+/* ================= THƯ CẢM ƠN TRÊN NỀN MONTAGE ================= */
+let letterT = 0, slideT = 0;
+function montageStart() {
+  const v = $('#montage'), box = $('#slides');
+  box.innerHTML = ''; clearInterval(slideT);
+  v.onloadeddata = () => { box.innerHTML = ''; clearInterval(slideT); v.play().catch(() => {}); };
+  v.onerror = () => {
+    // chưa có media/montage.mp4: trình chiếu ảnh kỷ niệm thay thế
+    box.innerHTML = CFG.montageFallback.map(src => `<div style="background-image:url(${src})"></div>`).join('');
+    const ds = [...box.children]; let i = 0;
+    if (!ds.length) return;
+    ds[0].classList.add('on');
+    slideT = setInterval(() => { ds[i].classList.remove('on'); i = (i + 1) % ds.length; ds[i].classList.add('on'); }, 4500);
+  };
+  v.src = 'media/montage.mp4'; v.load();
 }
 ENTER.letter = () => {
-  musicPlay('bgm', .4);
-  clearInterval(fwT); fwT = setInterval(firework, 900); firework();
-  const el = $('#letterTxt'), full = T(CFG.letter[G.rel] || CFG.letter.friend); let i = 0;
+  musicPlay('bgm', .45); W.clear(); montageStart();
+  const el = $('#letterTxt'), full = T(CFG.letter); let i = 0;
   $('#letterBtn').classList.remove('on'); el.innerHTML = '<span class="cur"></span>'; clearTimeout(letterT);
   const tick = () => {
     if (S.stage !== 'letter') return;
     i++; const ch = full[i - 1];
     el.innerHTML = esc(full.slice(0, i)) + '<span class="cur"></span>';
     if (i >= full.length) { setTimeout(() => $('#letterBtn').classList.add('on'), 600); return; }
-    letterT = setTimeout(tick, ch === '\n' ? 320 : (ch === '.' || ch === ',' || ch === '–') ? 200 : 42);
+    letterT = setTimeout(tick, ch === '\n' ? 320 : (ch === '.' || ch === ',' || ch === '–') ? 260 : 55);
   };
-  letterT = setTimeout(tick, 900);
+  letterT = setTimeout(tick, 1200);
 };
-LEAVE.letter = () => { clearTimeout(letterT); clearInterval(fwT); };
-$('#letterBtn').onclick = () => go('end');
+LEAVE.letter = () => { clearTimeout(letterT); clearInterval(slideT); $('#montage').pause(); };
+$('#letterBtn').onclick = () => go('review');
 
-/* ================= TRANG CUỐI ================= */
+/* ================= ĐÁNH GIÁ CHUYẾN BAY ================= */
 let stars = 5;
 (function () {
   const box = $('#stars');
   for (let i = 1; i <= 5; i++) { const b = document.createElement('button'); b.setAttribute('aria-label', i + ' sao'); b.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-star"/></svg>'; b.onclick = () => { stars = i; paint(); SFX.blip(i); }; box.appendChild(b); }
   const paint = () => [...box.children].forEach((b, i) => b.classList.toggle('on', i < stars)); paint();
 })();
+ENTER.review = () => { musicPlay('bgm', .35); W.clear(); };
+$('#rvSend').onclick = async () => {
+  const text = $('#rvText').value.trim();
+  if (text.length < 2) return toast('Viết vài chữ gửi cơ trưởng nhé');
+  $('#rvSend').disabled = true; $('#rvSend').textContent = 'Đang gửi…';
+  const name = G.name + (G.rel === 'family' ? ' (gia đình)' : '');
+  store.set('myReview', { name, stars, text }); store.set('reviewed', true);
+  await apiPost({ a: 'review', name, stars, text });
+  $('#rvSend').disabled = false; $('#rvSend').textContent = 'Gửi lời chúc'; $('#rvText').value = '';
+  confetti(); go('end');
+};
+$('#rvLater').onclick = () => go('end');
+
+/* ================= THIỆP MỜI CHÍNH THỨC ================= */
 $('#lnkMap').href = CFG.map;
 $('#lnkCal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent('Lễ tốt nghiệp của Cao Cường') +
-  '&dates=20261208T080000Z/20261208T100000Z&location=' + encodeURIComponent('Nhà hát Hòa Bình, 240 Đường 3 Tháng 2, TP.HCM') + '&details=' + encodeURIComponent('Chuyến bay TXCC2026 – hẹn gặp lúc 15:00!');
+  '&dates=20261208T080000Z/20261208T100000Z&location=' + encodeURIComponent('Nhà hát Hòa Bình, 240 Đường 3 Tháng 2, TP.HCM') + '&details=' + encodeURIComponent(`Chuyến bay ${CFG.flight} – hẹn gặp lúc 15:00!`);
 ENTER.end = async () => {
   musicPlay('bgm', .4); W.clear();
-  const total = S.scores.reduce((a, b) => a + b, 0);
+  const total = S.game + (S.cls === 'biz' ? 20000 : 0);
   if (total > 0) {
     if (total > S.best) { S.best = total; store.set('best', total); }
     apiPost({ a: 'score', views: total });
   }
-  $('#scoreline').innerHTML = CFG.stages.map((st, i) => `<div>${st.kick}<b>${fmt(S.scores[i])}</b></div>`).join('') + `<div>Tổng<b>${fmt(total)}</b></div>`;
-  const no = S.rsvp && !S.rsvp.go;
-  $('#endTitle').textContent = no ? 'Cảm ơn {khach} đã bay cùng Cường'.replace('{khach}', REL[G.rel].khach) : 'Hẹn gặp lúc 15:00 – 08/12';
-  $('#wishTitle').textContent = store.get('reviewed', false) ? 'Gửi thêm một lời chúc' : 'Gửi Cường một lời chúc';
+  $('#ivMsg').textContent = T(CFG.invite);
+  $('#ivName').textContent = G.name || '—';
+  $('#ivPhoneRow').style.display = CFG.phone ? '' : 'none';
+  $('#ivPhone').textContent = CFG.phone; $('#ivPhone').href = 'tel:' + CFG.phone.replace(/\s/g, '');
+  $('#scoreline').innerHTML = `<div>Kỷ niệm<b>${fmt(S.game)}</b></div><div>Hạng vé<b>${S.cls === 'biz' ? '+20K' : '—'}</b></div><div>Tổng<b>${fmt(total)}</b></div>`;
   loadWall();
 };
 async function loadWall() {
@@ -580,19 +674,47 @@ async function loadWall() {
   if (!data && S.best) lb = [{ name: G.name, views: S.best }];
   $('#wallLb').innerHTML = lb.length ? lb.map((r, i) => `<div class="lbr"><div class="r">${i + 1}</div><div class="n">${esc(r.name)}</div><div class="v">${fmt(+r.views)}</div></div>`).join('') : '<p style="text-align:center;color:var(--muted)">Chưa có ai chơi. Vào chiếm hạng nhất đi!</p>';
 }
-$('#rvSend').onclick = async () => {
-  const text = $('#rvText').value.trim();
-  if (text.length < 2) return toast('Viết vài chữ chúc mừng nhé');
-  $('#rvSend').disabled = true; $('#rvSend').textContent = 'Đang gửi…';
-  const name = G.name + (G.rel === 'family' ? ' (gia đình)' : '');
-  store.set('myReview', { name, stars, text }); store.set('reviewed', true);
-  await apiPost({ a: 'review', name, stars, text });
-  $('#rvSend').disabled = false; $('#rvSend').textContent = 'Gửi lời chúc'; $('#rvText').value = '';
-  confetti(); toast('Đã gửi lời chúc'); loadWall();
-};
 $$('.tabs button').forEach(b => b.onclick = () => { $$('.tabs button').forEach(x => x.classList.toggle('on', x === b)); $('#wallRv').hidden = b.dataset.t !== 'rv'; $('#wallLb').hidden = b.dataset.t !== 'lb'; });
-$('#wAgain').onclick = () => { S.scores = [0, 0, 0]; go('ticket'); };
-$('#wFly').onclick = () => { S.scores = [0, 0, 0]; go('video', 0); };
+$('#wAgain').onclick = () => go('ticket');
+$('#wFly').onclick = () => go('fly');
+
+// vẽ thiệp mời thành ảnh PNG để khách lưu về máy
+function wrapText(g, text, maxW) {
+  const out = []; let line = '';
+  for (const w of text.split(' ')) { const t = line ? line + ' ' + w : w; if (g.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t; }
+  if (line) out.push(line); return out;
+}
+async function inviteImage() {
+  const W2 = 1080, H2 = 1600, c = document.createElement('canvas'); c.width = W2; c.height = H2;
+  const g = c.getContext('2d'), serif = "'Playfair Display', Georgia, serif", sans = "'Be Vietnam Pro', Arial, sans-serif";
+  const bg = g.createLinearGradient(0, 0, 0, H2); bg.addColorStop(0, '#0E2150'); bg.addColorStop(1, '#060D22'); g.fillStyle = bg; g.fillRect(0, 0, W2, H2);
+  g.strokeStyle = '#C9A35B'; g.lineWidth = 4; g.strokeRect(48, 48, W2 - 96, H2 - 96); g.lineWidth = 1.5; g.strokeRect(64, 64, W2 - 128, H2 - 128);
+  g.textAlign = 'center'; g.fillStyle = '#E9CF96';
+  g.font = `800 34px ${sans}`; g.fillText(`${CFG.flight}  ·  THIỆP MỜI CHÍNH THỨC`, W2 / 2, 170);
+  g.fillStyle = '#FFFFFF'; g.font = `700 76px ${serif}`; g.fillText('Lễ Tốt Nghiệp', W2 / 2, 290);
+  g.font = `600 44px ${sans}`; g.fillStyle = '#E9CF96'; g.fillText('Phan Ngọc Cao Cường', W2 / 2, 370);
+  g.font = `500 30px ${sans}`; g.fillStyle = 'rgba(255,255,255,.7)'; g.fillText('Tiếng Anh Thương Mại · CĐ Kinh tế Đối ngoại', W2 / 2, 420);
+  g.font = `italic 500 42px ${serif}`; g.fillStyle = '#FFFFFF';
+  let y = 540; wrapText(g, T(CFG.invite), W2 - 240).forEach(l => { g.fillText(l, W2 / 2, y); y += 62; });
+  y += 40; g.fillStyle = 'rgba(233,207,150,.35)'; g.fillRect(200, y, W2 - 400, 2); y += 90;
+  const row = (label, val, sub) => {
+    g.font = `700 26px ${sans}`; g.fillStyle = '#C9A35B'; g.fillText(label, W2 / 2, y); y += 56;
+    g.font = `700 44px ${sans}`; g.fillStyle = '#FFFFFF'; g.fillText(val, W2 / 2, y); y += sub ? 48 : 80;
+    if (sub) { g.font = `500 30px ${sans}`; g.fillStyle = 'rgba(255,255,255,.7)'; g.fillText(sub, W2 / 2, y); y += 80; }
+  };
+  row('THỜI GIAN', '15:00 · Thứ Ba, 08/12/2026');
+  row('ĐỊA ĐIỂM', 'Nhà hát Hòa Bình', '240 Đường 3 Tháng 2, P. Hòa Hưng, TP.HCM');
+  if (CFG.phone) row('LIÊN HỆ', CFG.phone);
+  g.font = `700 26px ${sans}`; g.fillStyle = '#C9A35B'; g.fillText('KHÁCH MỜI', W2 / 2, H2 - 190);
+  g.font = `700 54px ${serif}`; g.fillStyle = '#FFFFFF'; g.fillText(G.name || '', W2 / 2, H2 - 120);
+  return c.toDataURL('image/png');
+}
+$('#btnSave').onclick = async () => {
+  try { await document.fonts.ready; } catch {}
+  const url = await inviteImage();
+  $('#saveImg').src = url; $('#saveDl').href = url; $('#saveOv').classList.add('on');
+};
+$('#saveClose').onclick = () => $('#saveOv').classList.remove('on');
 
 /* ================= KHỞI ĐỘNG ================= */
 (async function init() {
