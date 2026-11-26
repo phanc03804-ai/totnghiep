@@ -6,13 +6,11 @@
 <title>TXCC2026 · Chuyến bay tốt nghiệp</title>
 <meta name="description" content="Thư mời lễ tốt nghiệp của Phan Ngọc Cao Cường – 15:00, 08/12/2026, Nhà hát Hòa Bình">
 <meta property="og:title" content="TXCC2026 – Lễ tốt nghiệp của Cao Cường">
-<meta property="og:description" content="15:00 · 08/12/2026 · Nhà hát Hòa Bình. Check-in để nhận phòng tại TR007 HOTEL.">
-<meta property="og:image" content="img/facade.jpg">
+<meta property="og:description" content="15:00 · 08/12/2026 · Nhà hát Hòa Bình. Check-in và bay cùng Cường tới lễ tốt nghiệp.">
 <meta name="theme-color" content="#0A1A3F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,600&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
-<link rel="preload" href="img/lobby.jpg" as="image">
 <style>
 :root{
   --navy:#0A1A3F; --navy2:#13285A; --ink:#151A2C; --gold:#C9A35B; --gold-l:#E9CF96; --cream:#FBF6EE; --line:#EADFCB;
@@ -42,10 +40,10 @@ p{margin:.45em 0;line-height:1.55}
 .topbar>*{pointer-events:auto}
 .app.paper .topbar{background:none}
 .brand{display:flex;align-items:center;gap:9px;color:#fff}
-.brand img{width:30px;height:30px;filter:drop-shadow(0 1px 4px rgba(0,0,0,.4))}
+.brand .logo{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#F1D79E,var(--gold));color:#2A1A00;box-shadow:0 2px 10px rgba(201,163,91,.45)}
+.brand .logo .ic{width:17px;height:17px;transform:rotate(45deg)}
 .brand b{font-family:var(--brand);font-size:14px;letter-spacing:.14em;display:block;font-weight:700;color:var(--gold-l)}
 .brand small{font-size:8.5px;letter-spacing:.3em;color:rgba(255,255,255,.65);font-weight:600}
-.app.paper .brand img{filter:brightness(0) saturate(100%) invert(65%) sepia(40%) saturate(500%) hue-rotate(5deg)}
 .app.paper .brand b{color:var(--gold)}.app.paper .brand small{color:var(--muted)}
 .chips{display:flex;gap:6px}
 .chip{display:flex;align-items:center;gap:5px;white-space:nowrap;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:600;color:#fff}
@@ -223,10 +221,6 @@ p{margin:.45em 0;line-height:1.55}
 .lb{position:absolute;left:0;right:0;height:12%;background:#000;z-index:14;transition:transform .9s}
 .lb.t{top:0;transform:translateY(-100%)}.lb.b{bottom:0;transform:translateY(100%)}
 #s-cine.on .lb{transform:none}
-.facade{position:absolute;inset:0;z-index:13;opacity:0;transition:opacity 1.2s;overflow:hidden;background:#05070C}
-.facade.on{opacity:1}
-.facade img{position:absolute;left:50%;top:0;height:118%;transform:translateX(-50%) scale(1.08);transform-origin:50% 85%;transition:transform 4.5s cubic-bezier(.3,.6,.3,1),top 4.5s}
-.facade.on img{transform:translateX(-50%) scale(1.22);top:-14%}
 .cine-cap{position:absolute;left:0;right:0;bottom:15%;text-align:center;color:#fff;z-index:15;text-shadow:0 2px 16px rgba(0,0,0,.7);opacity:0;transition:opacity 1.2s}
 .cine-cap.on{opacity:1}
 .cine-cap small{font-size:10px;letter-spacing:.34em;font-weight:600;color:var(--gold-l)}
@@ -234,64 +228,6 @@ p{margin:.45em 0;line-height:1.55}
 .cine-skip{position:absolute;right:14px;top:14%;z-index:16}
 .whiteout{position:absolute;inset:0;background:#FFF6E4;z-index:40;opacity:0;pointer-events:none;transition:opacity .9s}
 .whiteout.on{opacity:1}
-
-/* ---------- sảnh (ảnh thật nhiều lớp) ---------- */
-.photo-stage{position:absolute;inset:0;overflow:hidden;background:#1A120B;z-index:1}
-.photo-stage:before{content:"";position:absolute;inset:-40px;background:url(img/lobby.jpg) center 40%/cover;filter:blur(26px) brightness(.45) saturate(1.1)}
-.photo-stage .world{position:absolute;top:6%;height:72%;left:50%;aspect-ratio:3/2;transform-origin:50% 60%;will-change:transform;-webkit-mask-image:linear-gradient(transparent,#000 7%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 7%,#000 86%,transparent)}
-.photo-stage .layer{position:absolute;inset:0;background-size:100% 100%}
-.photo-stage .bg{background-image:url(img/lobby.jpg)}
-.photo-stage .fg{background-image:url(img/lobby-fg.webp)}
-.photo-stage .rc{position:absolute;left:45.1%;top:35.4%;width:17%;aspect-ratio:200/254}
-.photo-stage .rc .chibi{position:absolute;inset:0}
-.photo-stage .shade{position:absolute;inset:0;background:linear-gradient(rgba(3,7,15,.35),transparent 30%,transparent 55%,rgba(3,7,15,.65))}
-#s-lobby,#s-game{z-index:11}
-.app.photo .photo-stage{display:block}
-.photo-stage{display:none}
-
-/* ---------- Audition ---------- */
-#s-game{background:linear-gradient(transparent 35%,rgba(3,7,15,.6))}
-#s-game .panel{position:absolute;left:12px;right:12px;bottom:94px;top:70px;display:flex;flex-direction:column;color:#fff}
-.gbar{display:flex;justify-content:space-between;align-items:center;background:var(--sheet);border:1px solid var(--stroke);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:14px;padding:10px 14px}
-.gbar small{display:block;font-size:8.5px;letter-spacing:.2em;color:rgba(255,255,255,.6);font-weight:700}
-.gbar .views{font-family:var(--serif);font-size:24px;color:var(--gold-l)}
-.gbar .rd{font-weight:700;font-size:18px}
-.gtime{height:3px;border-radius:9px;background:rgba(255,255,255,.15);margin-top:8px;overflow:hidden}
-.gtime i{display:block;height:100%;background:linear-gradient(90deg,var(--gold-l),var(--orange));width:100%}
-.gstage{text-align:center;font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-l);text-shadow:0 1px 6px rgba(0,0,0,.6)}
-.seq{display:flex;justify-content:center;gap:8px;margin:10px 0;min-height:54px}
-.seq b{width:48px;height:52px;border-radius:12px;background:var(--sheet);border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;transition:all .12s}
-.seq b .ic{width:22px;height:22px;stroke-width:2.4}
-.seq b.done{background:var(--gold);color:#2A1A00;border-color:var(--gold);box-shadow:0 0 18px rgba(201,163,91,.7);transform:translateY(-4px)}
-.seq b.err{background:var(--bad)}
-.beat{position:relative;height:30px;border-radius:999px;background:var(--sheet);border:1px solid rgba(255,255,255,.12);overflow:hidden;margin:4px 2px}
-.beat .zone{position:absolute;top:0;bottom:0}
-.beat .z3{background:rgba(30,107,224,.28)}.beat .z2{background:rgba(30,107,224,.5)}.beat .z1{background:var(--gold)}
-.beat .cur{position:absolute;top:-2px;bottom:-2px;width:4px;margin-left:-2px;background:#fff;border-radius:3px;box-shadow:0 0 12px #fff}
-.beat .tick{position:absolute;top:9px;bottom:9px;width:1.5px;background:rgba(255,255,255,.3)}
-.rating{height:44px;text-align:center;font-family:var(--serif);font-style:italic;font-weight:700;font-size:28px;text-shadow:0 2px 14px rgba(0,0,0,.6)}
-.rating.pop{animation:pop .5s}
-@keyframes pop{0%{transform:scale(.4);opacity:0}40%{transform:scale(1.2);opacity:1}100%{transform:scale(1)}}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,58px);gap:9px}
-.pad button{border-radius:14px;background:var(--sheet);color:#fff;border:1px solid rgba(255,255,255,.18);display:grid;place-items:center}
-.pad button .ic{width:24px;height:24px;stroke-width:2.4}
-.pad button:active{background:rgba(201,163,91,.55)}
-.pad .u{grid-column:2;grid-row:1}.pad .l{grid-column:1;grid-row:2}.pad .d{grid-column:2;grid-row:2}.pad .r{grid-column:3;grid-row:2}
-.pad .post{font-size:12.5px;font-weight:800;letter-spacing:.08em;color:#2A1A00;background:linear-gradient(180deg,#F1D79E,var(--gold));border:0}
-
-/* ---------- cửa phòng ---------- */
-.keycard{position:absolute;left:50%;bottom:104px;width:min(320px,82%);transform:translateX(-50%);border-radius:16px;padding:15px 17px;color:#fff;background:linear-gradient(135deg,#0A1A3F,#16336F 60%,#7B5A26);border:1px solid rgba(233,207,150,.35);box-shadow:0 20px 44px rgba(0,0,0,.55);touch-action:none;user-select:none;-webkit-user-select:none;z-index:13;overflow:hidden;cursor:grab}
-.keycard:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.18) 48%,transparent 60%);pointer-events:none}
-.keycard.back{transition:transform .4s,opacity .4s}
-.keycard .hn{display:flex;align-items:center;gap:8px;font-family:var(--brand);font-weight:700;letter-spacing:.14em;font-size:13px;color:var(--gold-l)}
-.keycard .hn img{width:24px}
-.keycard .room{font-family:var(--serif);font-size:34px;margin:6px 0 2px}
-.keycard .row{display:flex;justify-content:space-between;font-size:10.5px;gap:8px;margin-top:5px;color:rgba(255,255,255,.7)}
-.keycard .row b{display:block;font-size:13px;color:#fff;font-weight:600}
-.keycard .chipc{position:absolute;right:17px;top:17px;width:34px;height:25px;border-radius:5px;background:linear-gradient(135deg,#F4E2B5,var(--gold));box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
-.keycard .hint{margin-top:10px;font-size:11px;font-weight:600;letter-spacing:.06em;text-align:center;color:var(--gold-l);animation:pulse 1.6s infinite;display:flex;justify-content:center;gap:6px;align-items:center}
-.lockzone{position:absolute;z-index:12;border:1.5px dashed transparent;border-radius:12px;transition:all .2s;transform:translate(-50%,-50%)}
-.lockzone.hover{border-color:var(--gold-l);background:rgba(233,207,150,.14)}
 
 /* ---------- video kỷ niệm + thư ---------- */
 #s-memory{background:#000;z-index:35}
@@ -343,7 +279,7 @@ textarea:focus,input:focus{outline:2px solid var(--gold);border-color:transparen
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 .loading{position:absolute;inset:0;z-index:60;display:grid;place-items:center;background:var(--navy);color:#fff;transition:opacity .7s}
 .loading.off{opacity:0;pointer-events:none}
-.loading img{width:64px;opacity:.9;animation:pulse 1.6s infinite}
+.loading .logo{animation:pulse 1.6s infinite}
 .loading p{font-size:12px;letter-spacing:.24em;color:var(--gold-l);font-weight:600;margin-top:16px}
 </style>
 </head>
@@ -376,19 +312,10 @@ textarea:focus,input:focus{outline:2px solid var(--gold);border-color:transparen
 <div class="app" id="app">
   <canvas id="gl"></canvas>
 
-  <!-- sảnh khách sạn dựng từ ảnh thật: nền + chibi lễ tân + tiền cảnh quầy -->
-  <div class="photo-stage" id="photoStage">
-    <div class="world" id="pWorld">
-      <div class="layer bg"></div>
-      <div class="rc"><div id="rcChibi"></div></div>
-      <div class="layer fg"></div>
-    </div>
-    <div class="shade"></div>
-  </div>
   <div class="fx"></div>
 
   <div class="topbar">
-    <div class="brand"><img src="img/tr007-emblem.png" alt=""><div><b>TR007 HOTEL</b><small>TXCC2026 AIRLINES</small></div></div>
+    <div class="brand"><span class="logo"><svg class="ic"><use href="#i-plane"/></svg></span><div><b>TXCC2026</b><small>GRADUATION AIRLINES</small></div></div>
     <div class="chips"><button class="chip" id="btnMute" aria-label="Âm thanh"><svg class="ic"><use href="#i-sound"/></svg></button><button class="chip" id="btnSkip"><svg class="ic"><use href="#i-skip"/></svg>Bỏ qua</button></div>
   </div>
 
@@ -478,68 +405,15 @@ textarea:focus,input:focus{outline:2px solid var(--gold);border-color:transparen
       <div class="kick" style="justify-content:center">Kết thúc chuyến bay</div>
       <div class="bigscore" id="fFinal">0</div>
       <p id="fVerdict" class="muted" style="font-size:14px"></p>
-      <button class="btn mt" id="fNext">Hạ cánh xuống TR007 <svg class="ic"><use href="#i-arrow"/></svg></button>
+      <button class="btn mt" id="fNext">Hạ cánh <svg class="ic"><use href="#i-arrow"/></svg></button>
     </div></div>
   </section>
 
   <!-- 4. CINEMATIC -->
   <section class="stage" id="s-cine">
-    <div class="facade" id="facade"><img src="img/facade.jpg" alt=""></div>
     <div class="lb t"></div><div class="lb b"></div>
-    <div class="cine-cap" id="cineCap"><small>TXCC2026 · ĐÃ HẠ CÁNH</small><h2>TR007 HOTEL</h2></div>
+    <div class="cine-cap" id="cineCap"><small>TXCC2026 · ĐÃ HẠ CÁNH</small><h2>LỄ TỐT NGHIỆP</h2><p style="margin-top:6px;font-size:13px;color:rgba(255,255,255,.8)">15:00 · 08.12.2026 · Nhà hát Hòa Bình</p></div>
     <button class="chip cine-skip" id="cineSkip">Bỏ qua <svg class="ic"><use href="#i-skip"/></svg></button>
-  </section>
-
-  <!-- 5. SẢNH -->
-  <section class="stage" id="s-lobby">
-    <div class="card-ov" id="lRules"><div class="sheet">
-      <div class="kick">Lễ tân TR007 · Nhiệm vụ nhận phòng</div><h2>Chiến dịch Viral</h2>
-      <div class="rules">
-        <div><svg class="ic"><use href="#i-up"/></svg><div>Bấm <b>các mũi tên</b> đúng thứ tự trên màn hình. Bấm sai là phải làm lại từ đầu.</div></div>
-        <div><svg class="ic"><use href="#i-target"/></svg><div>Bấm <b>ĐĂNG</b> đúng lúc vạch trắng chạy vào <b>ô vàng</b> để được Viral.</div></div>
-        <div><svg class="ic"><use href="#i-clock"/></svg><div><b>20 giây</b>, 5 vòng: 1 → 2 → 3 → 4 → 5 mũi tên.</div></div>
-      </div>
-      <button class="btn mt" id="lStart">Bắt đầu <svg class="ic"><use href="#i-play"/></svg></button>
-      <button class="btn ghost mt" id="lSkip">Bỏ qua game</button>
-    </div></div>
-  </section>
-
-  <!-- 6. AUDITION -->
-  <section class="stage" id="s-game">
-    <div class="panel">
-      <div class="gbar"><div><small>LƯỢT XEM</small><div class="views" id="gViews">0</div></div><div style="text-align:right"><small>VÒNG</small><div class="rd" id="gRound">1/5</div></div></div>
-      <div class="gtime"><i id="gTimeBar"></i></div>
-      <div style="flex:1"></div>
-      <div class="gstage" id="gStage"></div>
-      <div class="seq" id="gSeq"></div>
-      <div class="beat" id="gBeat"><div class="zone z3"></div><div class="zone z2"></div><div class="zone z1"></div><div class="cur" id="gCur"></div></div>
-      <div class="rating" id="gRate"></div>
-      <div class="pad">
-        <button class="post" data-k="post">ĐĂNG</button><button class="u" data-k="0"><svg class="ic"><use href="#i-up"/></svg></button><button class="post" data-k="post">ĐĂNG</button>
-        <button class="l" data-k="1"><svg class="ic"><use href="#i-left"/></svg></button><button class="d" data-k="2"><svg class="ic"><use href="#i-down"/></svg></button><button class="r" data-k="3"><svg class="ic"><use href="#i-right"/></svg></button>
-      </div>
-    </div>
-    <div class="card-ov" id="gEnd"><div class="sheet center">
-      <div class="kick" style="justify-content:center">Tổng điểm chiến dịch</div>
-      <div class="bigscore" id="gFinal">0</div>
-      <p id="gBreak" class="muted"></p>
-      <p id="gVerdict" style="font-weight:600"></p>
-      <button class="btn mt" id="gNext">Lên phòng 0812 <svg class="ic"><use href="#i-key"/></svg></button>
-      <button class="btn ghost mt" id="gAgain"><svg class="ic"><use href="#i-repeat"/></svg>Chơi lại để leo top</button>
-    </div></div>
-  </section>
-
-  <!-- 7. CỬA PHÒNG -->
-  <section class="stage" id="s-door">
-    <div class="lockzone" id="lockzone"></div>
-    <div class="keycard" id="keycard">
-      <div class="chipc"></div>
-      <div class="hn"><img src="img/tr007-emblem.png" alt="">TR007 HOTEL</div>
-      <div class="room">0812</div>
-      <div class="row"><div>Khách<b id="kcName">—</b></div><div style="text-align:right">Hạng<b id="kcClass">—</b></div></div>
-      <div class="row"><div>Thứ Ba, 08/12/2026<b>15:00 · Nhà hát Hòa Bình</b></div></div>
-      <div class="hint"><svg class="ic"><use href="#i-up"/></svg>Kéo thẻ chạm vào ổ khóa</div>
-    </div>
   </section>
 
   <!-- 8. VIDEO KỶ NIỆM -->
@@ -554,7 +428,7 @@ textarea:focus,input:focus{outline:2px solid var(--gold);border-color:transparen
 
   <!-- 10. REVIEW -->
   <section class="stage paperpg" id="s-review"><div class="scroll">
-    <div class="kick">Đánh giá kỳ nghỉ tại TR007</div>
+    <div class="kick">Lời chúc gửi cơ trưởng</div>
     <h2 id="rvTitle">Để lại một lời chúc cho Cường</h2>
     <p style="color:var(--muted);font-size:13.5px">Lời chúc sẽ được chiếu lên màn hình trong ngày lễ.</p>
     <div class="stars" id="stars"></div>
@@ -580,10 +454,12 @@ textarea:focus,input:focus{outline:2px solid var(--gold);border-color:transparen
   </div></section>
 
   <div class="pip" id="pip"><div class="cam"><span class="live"></span><div id="pipChibi"></div></div><div class="txt"><small id="pipWho">HƯỚNG DẪN · CƯỜNG</small><div id="pipTxt"></div></div></div>
+  <audio id="bgm" src="media/bgm.mp3" loop preload="auto"></audio>
+  <audio id="gameMusic" src="media/game.mp3" loop preload="auto"></audio>
   <div class="whiteout" id="whiteout"></div>
   <div class="confetti" id="confetti"></div>
   <div class="toast" id="toast"></div>
-  <div class="loading" id="loading"><div class="center"><img src="img/tr007-emblem.png" alt=""><p>TXCC2026 · ĐANG CHUẨN BỊ</p></div></div>
+  <div class="loading" id="loading"><div class="center"><span class="brand" style="justify-content:center"><span class="logo" style="width:58px;height:58px"><svg class="ic" style="width:28px;height:28px"><use href="#i-plane"/></svg></span></span><p>TXCC2026 · ĐANG CHUẨN BỊ</p></div></div>
 </div>
 <script>
   // Nếu trình duyệt không chạy được trang (máy cũ, mạng chậm), hiện nút thử lại + mã lỗi để dễ báo

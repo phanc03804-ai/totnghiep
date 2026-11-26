@@ -389,7 +389,7 @@ BUILD.flight = async ({ mode = 'coins', duration = 20, onHud = () => {}, onEnd =
         onHud({ time: Math.max(0, duration - t), score, lives, mode });
         if (t >= duration || lives <= 0) {
           done = true;
-          setTimeout(() => onEnd({ mode, score, lives: Math.max(0, lives), survived: lives > 0 }), 900);
+          setTimeout(() => onEnd({ mode, score, lives: Math.max(0, lives), survived: lives > 0, time: Math.min(t, duration) }), 900);
         }
       }
     },
@@ -401,234 +401,70 @@ BUILD.flight = async ({ mode = 'coins', duration = 20, onHud = () => {}, onEnd =
   };
 };
 
-/* ---------------- CINEMATIC bay qua mây tới khách sạn ---------------- */
-function archShape(w, h) {
-  const s = new THREE.Shape();
-  s.moveTo(-w / 2, 0); s.lineTo(-w / 2, h - w / 2); s.absarc(0, h - w / 2, w / 2, Math.PI, 0, true); s.lineTo(w / 2, 0); s.lineTo(-w / 2, 0);
-  return s;
-}
-function makeHotel() {
+/* ---------------- CINEMATIC: bay qua mây rồi hạ cánh xuống đường băng lúc hoàng hôn ---------------- */
+function makeAirport() {
   const g = new THREE.Group();
-  const white = std('#F3F1EC', { roughness: .8 });
-  const tower = box(8, 24, 7, white); tower.position.y = 12; g.add(tower);
-  const glow = new THREE.MeshBasicMaterial({ color: '#FFD28A' });
-  const rim = new THREE.MeshBasicMaterial({ color: '#FFF0C8' });
-  [4.2, 9.6, 15, 20.2].forEach((y, i) => {
-    const w = i === 0 ? 5.4 : 4.4, h = i === 0 ? 4.6 : 4.2;
-    const ring = archShape(w + .5, h + .3); ring.holes.push(archShape(w, h));
-    const rm = new THREE.Mesh(new THREE.ExtrudeGeometry(ring, { depth: .15, bevelEnabled: false }), rim); rm.position.set(i % 2 ? .6 : -.4, y - h / 2, 3.52); g.add(rm);
-    const win = new THREE.Mesh(new THREE.ShapeGeometry(archShape(w, h)), glow); win.position.set(rm.position.x, y - h / 2, 3.51); g.add(win);
-    const sm = planeMesh(1.1, 1.6, glow); sm.position.set(i % 2 ? -3 : 3, y, 3.51); g.add(sm);
-  });
-  const sign = planeMesh(5.6, 1, new THREE.MeshBasicMaterial({ map: textTex('TR007 HOTEL', { size: 150, color: '#FFFFFF', glow: '#FFD28A' }), transparent: true }));
-  sign.position.set(0, 1.9, 3.6); g.add(sign);
-  const lobby = planeMesh(6, 1.6, new THREE.MeshBasicMaterial({ color: '#FFE0A8' })); lobby.position.set(0, .8, 3.52); g.add(lobby);
-  const ground = planeMesh(300, 300, std('#24323A', { roughness: 1 })); ground.rotation.x = -Math.PI / 2; g.add(ground);
-  for (let i = 0; i < 18; i++) {
-    const tr = new THREE.Mesh(new THREE.ConeGeometry(rnd(.8, 1.4), rnd(2.5, 4), 7), std('#1E4A2E')); const sd = Math.random() < .5 ? -1 : 1;
-    tr.position.set(sd * rnd(6, 30), 1.5, rnd(-20, 30)); g.add(tr);
-  }
-  const lamp = new THREE.PointLight('#FFC873', 40, 30); lamp.position.set(0, 4, 7); g.add(lamp);
-  return g;
+  const ground = planeMesh(900, 900, std('#1C2A30', { roughness: 1 })); ground.rotation.x = -Math.PI / 2; g.add(ground);
+  const RW = 16, RL = 420, z0 = -120;               // đường băng chạy từ z0 về phía trước
+  const asphalt = canvasTex(256, 1024, (c, w, h) => {
+    c.fillStyle = '#2B2E33'; c.fillRect(0, 0, w, h);
+    for (let i = 0; i < 4000; i++) { c.fillStyle = `rgba(255,255,255,${Math.random() * .04})`; c.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
+    c.fillStyle = '#E8E8E8'; for (let y = 0; y < h; y += 64) c.fillRect(w / 2 - 3, y, 6, 34);   // vạch tim đứt quãng
+    c.fillRect(10, 0, 5, h); c.fillRect(w - 15, 0, 5, h);                                      // vạch biên
+  }, [1, 6]);
+  const rw = planeMesh(RW, RL, std('#fff', { map: asphalt, roughness: .9 })); rw.rotation.x = -Math.PI / 2; rw.position.set(0, .02, z0 - RL / 2); g.add(rw);
+  // vạch ngưỡng đường băng
+  for (let k = -6; k <= 6; k++) { if (!k) continue; const b = planeMesh(.8, 10, new THREE.MeshBasicMaterial({ color: '#E8E8E8' })); b.rotation.x = -Math.PI / 2; b.position.set(k * 1.1, .03, z0 - 8); g.add(b); }
+  // đèn biên + đèn tiếp cận
+  const white = new THREE.MeshBasicMaterial({ color: '#FFF4D6' }), amber = new THREE.MeshBasicMaterial({ color: '#FFB347' }), green = new THREE.MeshBasicMaterial({ color: '#5CFF9D' });
+  const bulb = new THREE.SphereGeometry(.22, 8, 6);
+  for (let z = z0; z > z0 - RL; z -= 10) [-RW / 2 - .6, RW / 2 + .6].forEach(x => { const m = new THREE.Mesh(bulb, white); m.position.set(x, .25, z); g.add(m); });
+  for (let k = -7; k <= 7; k++) { const m = new THREE.Mesh(bulb, green); m.position.set(k * 1.1, .25, z0 + .5); g.add(m); }
+  for (let z = z0 + 8; z < z0 + 90; z += 9) for (let k = -2; k <= 2; k++) { const m = new THREE.Mesh(bulb, amber); m.position.set(k * 1.6, .3, z); g.add(m); }
+  // đèn thành phố xa xa
+  const city = new THREE.Group(), dots = [new THREE.MeshBasicMaterial({ color: '#FFD08A' }), new THREE.MeshBasicMaterial({ color: '#FFE9C4' }), new THREE.MeshBasicMaterial({ color: '#9CC8FF' })];
+  const dg = new THREE.SphereGeometry(.35, 6, 4);
+  for (let i = 0; i < 420; i++) { const m = new THREE.Mesh(dg, dots[i % 3]); const side = Math.random() < .5 ? -1 : 1; m.position.set(side * rnd(30, 260), .4, rnd(-560, 60)); city.add(m); }
+  g.add(city);
+  // nhà ga có chữ TXCC2026
+  const term = box(70, 9, 18, std('#3A4656', { roughness: .6 })); term.position.set(-58, 4.5, z0 - 170); g.add(term);
+  const glass = planeMesh(66, 5, new THREE.MeshBasicMaterial({ color: '#FFD9A0' })); glass.rotation.y = Math.PI / 2; glass.position.set(-22.9, 4.2, z0 - 170); g.add(glass);
+  const sign = planeMesh(26, 3.2, new THREE.MeshBasicMaterial({ map: textTex('TXCC2026 · GRADUATION', { size: 96, color: '#FFFFFF', glow: '#E9CF96' }), transparent: true }));
+  sign.rotation.y = Math.PI / 2; sign.position.set(-22.8, 11, z0 - 170); g.add(sign);
+  const tower = new THREE.Group(); const tb = box(3, 22, 3, std('#4A5566')); tb.position.y = 11; const tc = box(6, 3, 6, new THREE.MeshBasicMaterial({ color: '#9FD3FF' })); tc.position.y = 23.5; tower.add(tb, tc); tower.position.set(-40, 0, z0 - 230); g.add(tower);
+  return { g, z0 };
 }
 
-BUILD.cinematic = async ({ duration = 7.5, onEnd = () => {} }) => {
+BUILD.cinematic = async ({ duration = 8, onEnd = () => {} }) => {
   const scene = new THREE.Scene();
-  scene.background = skyTex([[0, '#16245E'], [.45, '#6A4C9C'], [.75, '#F2864A'], [1, '#FFD39A']]);
-  scene.fog = new THREE.Fog('#E9967A', 60, 230);
-  const camera = new THREE.PerspectiveCamera(58, 1, .1, 500);
-  scene.add(new THREE.HemisphereLight('#FFD6B0', '#30305A', 1.0));
-  const sun = new THREE.DirectionalLight('#FFB070', 1.4); sun.position.set(10, 6, -20); scene.add(sun);
+  scene.background = skyTex([[0, '#131F52'], [.42, '#5E4691'], [.72, '#EE8448'], [1, '#FFD39A']]);
+  scene.fog = new THREE.Fog('#C9786A', 80, 520);
+  const camera = new THREE.PerspectiveCamera(60, 1, .1, 1200);
+  scene.add(new THREE.HemisphereLight('#FFD6B0', '#2A2A48', 1.0));
+  const sun = new THREE.DirectionalLight('#FFB070', 1.3); sun.position.set(30, 18, -120); scene.add(sun);
   for (let i = 0; i < 70; i++) {
     const c = makeCloud(rnd(1.5, 4), i % 3 ? '#FFF4EA' : '#FFD9C2');
-    c.position.set(rnd(-40, 40), rnd(6, 34), rnd(-200, 0)); scene.add(c);
+    c.position.set(rnd(-50, 50), rnd(30, 60), rnd(-260, 20)); scene.add(c);
   }
-  const hotel = makeHotel(); hotel.position.set(0, 0, -250); scene.add(hotel);
-  const jet = makeJet(.6); scene.add(jet);
+  const ap = makeAirport(); scene.add(ap.g);
+  const jet = makeJet(.9); scene.add(jet);
+  const TD = ap.z0 - 25;                              // điểm chạm bánh
   let t = 0, ended = false;
   return {
     scene, camera,
     update(dt) {
-      t += dt; const k = Math.min(1, t / duration), e = ease(k);
-      const z = THREE.MathUtils.lerp(10, -228, e), y = THREE.MathUtils.lerp(26, 8, ease(Math.max(0, (k - .35) / .65)));
-      camera.position.set(Math.sin(t * .6) * 2 * (1 - k), y, z);
-      const lk = new THREE.Vector3(0, THREE.MathUtils.lerp(20, 9, k), z - 40);
-      if (k > .5) lk.lerp(new THREE.Vector3(0, 10, -246), (k - .5) * 2);
-      camera.lookAt(lk);
-      jet.position.set(Math.sin(t * .9) * 1.5, y - 1.6, z - 9 - k * 10);
-      jet.rotation.z = Math.sin(t * .9) * .3; jet.rotation.x = -.05;
-      jet.visible = k < .78;
+      t += dt; const k = Math.min(1, t / duration);
+      // máy bay: hạ độ cao từ trên mây xuống, chạm bánh ở ~78% thời gian rồi lăn bánh
+      const kd = Math.min(1, k / .78), e = ease(kd);
+      const jz = THREE.MathUtils.lerp(40, TD, kd) - Math.max(0, k - .78) * 120;
+      const jy = k < .78 ? THREE.MathUtils.lerp(48, .9, e) : .9;
+      jet.position.set(Math.sin(t * .7) * 2 * (1 - kd), jy, jz);
+      jet.rotation.set(k < .7 ? -.07 : k < .78 ? .08 : 0, 0, Math.sin(t * .7) * .12 * (1 - kd));
+      // camera bám phía sau – trên máy bay, cuối cảnh lùi lại nhìn máy bay lăn trên đường băng
+      const back = THREE.MathUtils.lerp(16, 22, k), up = THREE.MathUtils.lerp(6, 3.2, k);
+      camera.position.set(jet.position.x * .4 + (k > .8 ? (k - .8) * 30 : 0), jy + up, jz + back);
+      camera.lookAt(jet.position.x, jy + .5, jz - 30);
       if (!ended && t >= duration) { ended = true; onEnd(); }
-    },
-  };
-};
-
-/* ---------------- SẢNH TR007 (mô phỏng sảnh Troy) ---------------- */
-BUILD.lobby = async () => {
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#2A1C12');
-  const camera = new THREE.PerspectiveCamera(64, 1, .1, 100);
-  scene.add(new THREE.HemisphereLight('#FFF0DA', '#4A3424', .75));
-  const spot = new THREE.SpotLight('#FFE2B0', 60, 20, .7, .5); spot.position.set(0, 6.5, 2); spot.target.position.set(0, 1, -5); scene.add(spot, spot.target);
-  const fill = new THREE.PointLight('#FFD9A0', 25, 14); fill.position.set(0, 3.5, -2); scene.add(fill);
-
-  const W = 12, H = 6.2, D = 18;
-  const floor = planeMesh(W, D, std('#EDE6DA', { roughness: .2, metalness: .05, map: canvasTex(256, 256, (g, w, h) => { g.fillStyle = '#EFE8DC'; g.fillRect(0, 0, w, h); g.strokeStyle = '#D8CDBB'; g.lineWidth = 4; g.strokeRect(0, 0, w, h); g.strokeStyle = 'rgba(150,140,120,.25)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(0, 60); g.bezierCurveTo(80, 90, 160, 30, 256, 110); g.stroke(); }, [6, 9]) }));
-  floor.rotation.x = -Math.PI / 2; floor.position.z = -D / 2 + 6; scene.add(floor);
-  // thảm hoa văn trước sofa như ảnh thật
-  const rug = planeMesh(3.2, 2.2, std('#fff', { map: canvasTex(256, 176, (g, w, h) => { g.fillStyle = '#F2EEE6'; g.fillRect(0, 0, w, h); for (let x = 0; x < w; x += 22) for (let y = 0; y < h; y += 22) { g.fillStyle = (x / 22 + y / 22) % 2 ? '#2E3A44' : '#C9C2B4'; g.beginPath(); g.moveTo(x + 11, y); g.lineTo(x + 22, y + 11); g.lineTo(x + 11, y + 22); g.lineTo(x, y + 11); g.fill(); } g.strokeStyle = '#B8963E'; g.lineWidth = 8; g.strokeRect(4, 4, w - 8, h - 8); }) }));
-  rug.rotation.x = -Math.PI / 2; rug.position.set(-3.4, .01, .6); scene.add(rug);
-  const ceil = planeMesh(W, D, std('#F6F1EA')); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, H, -D / 2 + 6); scene.add(ceil);
-  const cove = box(W - 1, .05, .12, new THREE.MeshBasicMaterial({ color: '#FFE7B8' })); cove.position.set(0, H - .3, -5.9); scene.add(cove);
-  for (let i = -1; i <= 1; i++) for (let j = 0; j < 3; j++) { const dl = new THREE.Mesh(new THREE.CircleGeometry(.12, 16), new THREE.MeshBasicMaterial({ color: '#FFF6E0' })); dl.rotation.x = Math.PI / 2; dl.position.set(i * 3, H - .01, -4 + j * 3); scene.add(dl); }
-
-  // tường sau: gỗ hai bên, nền kem giữa
-  const back = planeMesh(W, H, std('#E9DCC6', { roughness: .8 })); back.position.set(0, H / 2, -6); scene.add(back);
-  const wood = woodTex([3, 1]);
-  [-1, 1].forEach(s => {
-    const p = box(2.6, H, .2, std('#fff', { map: wood, roughness: .55 })); p.position.set(s * 4.7, H / 2, -5.85); scene.add(p);
-    const side = planeMesh(D, H, std(s < 0 ? '#E9DCC6' : '#fff', s < 0 ? { roughness: .8 } : { map: woodTex([8, 1]), roughness: .55 })); side.rotation.y = -s * Math.PI / 2; side.position.set(s * W / 2, H / 2, -D / 2 + 6); scene.add(side);
-  });
-
-  // vòm sau quầy: viền vàng phát sáng + lam gỗ dọc
-  const AW = 4.6, AH = 4.3;
-  const ringShape = archShape(AW + .36, AH + .18); ringShape.holes.push(archShape(AW, AH));
-  const ring = new THREE.Mesh(new THREE.ExtrudeGeometry(ringShape, { depth: .14, bevelEnabled: true, bevelSize: .03, bevelThickness: .03, bevelSegments: 2 }), new THREE.MeshStandardMaterial({ color: '#E8C27A', metalness: .9, roughness: .25, emissive: '#FFB84D', emissiveIntensity: .9 }));
-  ring.position.set(0, .6, -5.88); scene.add(ring);
-  const inner = new THREE.Mesh(new THREE.ShapeGeometry(archShape(AW, AH)), std('#C8A06A', { roughness: .7 })); inner.position.set(0, .6, -5.89); scene.add(inner);
-  const slatM = std('#D8B27A', { roughness: .5, map: woodTex([1, 1], '#C9A06A', '#E2BE86') });
-  for (let x = -AW / 2 + .14; x <= AW / 2 - .1; x += .2) {
-    const r = AW / 2, cy = AH - r;
-    const top = Math.abs(x) < r ? cy + Math.sqrt(r * r - x * x) - .08 : cy;
-    const sl = box(.09, top, .12, slatM); sl.position.set(x, .6 + top / 2, -5.8); scene.add(sl);
-  }
-  const signT = planeMesh(3.6, .9, new THREE.MeshBasicMaterial({ map: textTex('TR007 HOTEL', { size: 150, gold: true, glow: 'rgba(255,200,100,.6)' }), transparent: true }));
-  signT.position.set(0, 3.55, -5.68); scene.add(signT);
-  const emblemTex = new THREE.TextureLoader().load('img/troy-emblem.png'); emblemTex.colorSpace = THREE.SRGBColorSpace;
-  const emblem = planeMesh(.95, .95, new THREE.MeshBasicMaterial({ map: emblemTex, color: '#F2CD84', transparent: true }));
-  emblem.position.set(0, 4.35, -5.68); scene.add(emblem);
-  // đồng hồ vàng
-  const clock = new THREE.Group();
-  clock.add(new THREE.Mesh(new THREE.CylinderGeometry(.42, .42, .06, 32), std('#E8C27A', { metalness: .9, roughness: .2 })));
-  const face = new THREE.Mesh(new THREE.CircleGeometry(.34, 32), std('#FFF8E8')); face.rotation.x = -Math.PI / 2; face.position.y = .035; clock.add(face);
-  const hh = box(.03, .01, .2, std('#333')); hh.position.set(0, .04, -.08); clock.add(hh);
-  const mh = box(.02, .01, .28, std('#333')); mh.position.set(.08, .04, 0); mh.rotation.y = 1.2; clock.add(mh);
-  clock.rotation.x = Math.PI / 2; clock.position.set(-2.9, 4.6, -5.8); scene.add(clock);
-
-  // quầy đá trắng + 2 màn hình
-  const marble = marbleTex([2, 1]);
-  const ctr = box(5.6, 1.2, 1.1, std('#fff', { map: marble, roughness: .12, metalness: .05 })); ctr.position.set(0, .6, -3.6); scene.add(ctr);
-  const ctop = box(5.9, .1, 1.35, std('#fff', { map: marble, roughness: .1 })); ctop.position.set(0, 1.25, -3.6); scene.add(ctop);
-  [-1.75, 1.75].forEach(x => { const m = box(.75, .45, .05, std('#151515', { roughness: .3 })); m.position.set(x, 1.55, -3.85); m.rotation.y = -x * .12; scene.add(m); const st = box(.06, .2, .06, std('#222')); st.position.set(x, 1.35, -3.88); scene.add(st); });
-  const bell = new THREE.Mesh(new THREE.SphereGeometry(.13, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), std('#E8C27A', { metalness: .9, roughness: .2 })); bell.position.set(.2, 1.3, -3.2); scene.add(bell);
-
-  // lan hồ điệp trong bình vàng
-  function orchid(x, z, s, col) {
-    const g = new THREE.Group();
-    const vase = new THREE.Mesh(new THREE.LatheGeometry([[0, 0], [.32, .05], [.42, .45], [.3, .85], [.34, 1]].map(p => new THREE.Vector2(p[0], p[1])), 24), std('#E2B867', { metalness: .9, roughness: .25 }));
-    g.add(vase);
-    const leaf = std('#2E6B3A');
-    for (let i = 0; i < 4; i++) { const l = box(.9, .02, .22, leaf); l.position.set(0, 1.02, 0); l.rotation.set(0, i * Math.PI / 2 + .4, -.35); l.translateX(.35); g.add(l); }
-    const petal = std(col, { roughness: .6 }), petal2 = std('#F3D6F2', { roughness: .6 });
-    for (let k = 0; k < 6; k++) {
-      const a = k / 6 * Math.PI * 2;
-      for (let j = 0; j < 7; j++) {
-        const f = new THREE.Mesh(new THREE.SphereGeometry(.13, 8, 6), j % 3 ? petal : petal2); f.scale.z = .45;
-        const r = .15 + j * .11; f.position.set(Math.cos(a) * r, 1.4 + j * .16 - j * j * .022, Math.sin(a) * r); g.add(f);
-      }
-    }
-    g.position.set(x, 0, z); g.scale.setScalar(s); return g;
-  }
-  const o1 = orchid(2.45, -3.45, .62, '#8E2C8E'); o1.position.y = 1.3; const o2 = orchid(-4.3, -4.9, 1.3, '#B04FB4');
-  scene.add(o1, o2);
-  // sofa trắng viền đen bên trái
-  const sofa = new THREE.Group();
-  const sb = box(2.4, .45, .9, std('#EDE7DC')); sb.position.y = .45; sofa.add(sb);
-  const sback = box(2.4, .7, .18, std('#EDE7DC')); sback.position.set(0, .95, -.38); sofa.add(sback);
-  [-1, 1].forEach(s => { const a = box(.14, .75, .9, std('#1C1C1C', { roughness: .3 })); a.position.set(s * 1.25, .55, 0); sofa.add(a); });
-  sofa.position.set(-4.4, 0, .8); sofa.rotation.y = Math.PI / 2; scene.add(sofa);
-
-  const rc = await chibiActor('reception', 2.3);
-  rc.userData.baseY = 2.3; rc.position.set(0, 2.3, -4.45); scene.add(rc);
-
-  const from = new THREE.Vector3(0, 1.8, 11), to = new THREE.Vector3(0, 1.75, 4.6);
-  let t = 0;
-  return {
-    scene, camera, agent: rc,
-    update(dt, tt) {
-      t += dt; const k = Math.min(1, t / 3.2), e = ease(k);
-      camera.position.lerpVectors(from, to, e);
-      camera.position.y += Math.sin(t * 7) * .03 * (1 - k); // nhịp bước chân
-      camera.position.x = Math.sin(tt * .4) * .08;
-      camera.lookAt(0, 1.55, -5);
-      rc.userData.update(dt, tt);
-      ring.material.emissiveIntensity = .8 + Math.sin(tt * 2) * .15;
-    },
-  };
-};
-
-/* ---------------- CỬA PHÒNG 0812 ---------------- */
-BUILD.door = async () => {
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#120C08');
-  const camera = new THREE.PerspectiveCamera(64, 1, .1, 60);
-  scene.add(new THREE.HemisphereLight('#FFE6C8', '#20140C', .5));
-  const down = new THREE.SpotLight('#FFD9A0', 50, 12, .55, .6); down.position.set(0, 5.5, -1); down.target.position.set(0, 1.5, -3); scene.add(down, down.target);
-
-  const wallM = std('#fff', { map: woodTex([6, 1], '#3D2416', '#5A3622'), roughness: .6 });
-  const wall = planeMesh(14, 6, wallM); wall.position.set(0, 3, -3.05); scene.add(wall);
-  const floor = planeMesh(14, 10, std('#2A1E1A', { roughness: .9 })); floor.rotation.x = -Math.PI / 2; floor.position.z = 1; scene.add(floor);
-  [-1, 1].forEach(s => { const sc = box(.18, .5, .1, new THREE.MeshBasicMaterial({ color: '#FFD28A' })); sc.position.set(s * 2.4, 2.6, -2.98); scene.add(sc); const pl = new THREE.PointLight('#FFC873', 6, 4); pl.position.set(s * 2.4, 2.6, -2.6); scene.add(pl); });
-
-  // khung cửa + lỗ sáng phía sau
-  const frameM = std('#E2B867', { metalness: .8, roughness: .3 });
-  const fl = box(.12, 4.4, .25, frameM); fl.position.set(-1.16, 2.2, -3); const fr = fl.clone(); fr.position.x = 1.16; const ft = box(2.44, .12, .25, frameM); ft.position.set(0, 4.4, -3);
-  scene.add(fl, fr, ft);
-  const lightM = new THREE.MeshBasicMaterial({ color: '#FFF6E2' });
-  const behind = planeMesh(2.2, 4.3, lightM); behind.position.set(0, 2.15, -3.4); scene.add(behind);
-  const roomLight = new THREE.PointLight('#FFF0D0', 0, 18); roomLight.position.set(0, 2.2, -3.6); scene.add(roomLight);
-
-  const pivot = new THREE.Group(); pivot.position.set(-1.1, 0, -3); scene.add(pivot);
-  const doorTex = canvasTex(256, 512, (g, w, h) => {
-    const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#2E1A0E'); gr.addColorStop(.5, '#4A2C18'); gr.addColorStop(1, '#2E1A0E'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    for (let i = 0; i < 60; i++) { g.strokeStyle = `rgba(0,0,0,${rnd(.08, .2)})`; const x = rnd(0, w); g.beginPath(); g.moveTo(x, 0); g.lineTo(x + rnd(-6, 6), h); g.stroke(); }
-    g.strokeStyle = 'rgba(0,0,0,.5)'; g.lineWidth = 6; [60, 150, 240, 330, 420].forEach(y => { g.beginPath(); g.moveTo(24, y); g.lineTo(w - 24, y); g.stroke(); });
-  });
-  const door = box(2.2, 4.3, .12, std('#fff', { map: doorTex, roughness: .45 })); door.position.set(1.1, 2.15, 0); pivot.add(door);
-  const plate = planeMesh(.9, .45, new THREE.MeshBasicMaterial({ map: textTex([{ text: '0812', size: 150 }, { text: 'TR007 HOTEL', size: 50, weight: 700 }], { w: 512, h: 256, gold: true, bg: '#1A0F08' }) }));
-  plate.position.set(1.1, 3.4, .07); pivot.add(plate);
-  const handle = box(.45, .06, .08, frameM); handle.position.set(1.85, 1.95, .12); pivot.add(handle);
-
-  const lock = new THREE.Group();
-  lock.add(box(.26, .55, .06, std('#111', { roughness: .2, metalness: .5 })));
-  const led = new THREE.Mesh(new THREE.SphereGeometry(.035, 12, 8), new THREE.MeshBasicMaterial({ color: '#FF3B3B' })); led.position.set(0, .2, .04); lock.add(led);
-  const ico = planeMesh(.16, .16, new THREE.MeshBasicMaterial({ map: textTex('))))', { w: 128, h: 128, size: 70, color: '#8FB4FF' }), transparent: true })); ico.position.set(0, -.05, .035); lock.add(ico);
-  lock.position.set(1.52, 1.75, -2.98); scene.add(lock);
-
-  camera.position.set(0, 1.85, 5.2);
-  let opening = -1, camT = 0;
-  const camFrom = camera.position.clone();
-  return {
-    scene, camera,
-    lockScreenRect() {
-      const v = lock.getWorldPosition(new THREE.Vector3()).project(camera);
-      const r = canvas.getBoundingClientRect();
-      const x = (v.x + 1) / 2 * r.width + r.left, y = (1 - v.y) / 2 * r.height + r.top;
-      return { x, y, w: Math.max(56, r.width * .12), h: Math.max(90, r.height * .12) };
-    },
-    unlock() { led.material.color.set('#3DFF8B'); },
-    open() { opening = 0; },
-    update(dt, tt) {
-      camT += dt;
-      camera.position.x = camFrom.x + Math.sin(tt * .5) * .05;
-      if (opening >= 0) {
-        opening += dt;
-        const k = Math.min(1, opening / 1.6), e = ease(k);
-        pivot.rotation.y = e * 1.75;
-        roomLight.intensity = e * 120;
-        camera.position.z = THREE.MathUtils.lerp(camFrom.z, -1.4, ease(Math.min(1, opening / 2.2)));
-      }
-      camera.lookAt(0, 1.45, -3.5);
     },
   };
 };
