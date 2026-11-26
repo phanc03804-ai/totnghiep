@@ -43,9 +43,11 @@ export async function show(name, opts = {}) {
   return cur;
 }
 export function current() { return cur; }
+// tạm dừng vẽ 3D khi màn hình đang dùng ảnh thật / video (đỡ tốn pin)
+export function clear() { if (cur && cur.dispose) cur.dispose(); cur = null; }
 
 /* ---------------- tiện ích ---------------- */
-const FONT = 'Montserrat, Arial, sans-serif';
+const FONT = "'Be Vietnam Pro', Arial, sans-serif";
 function canvasTex(w, h, draw, repeat) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   draw(c.getContext('2d'), w, h);
@@ -184,7 +186,7 @@ BUILD.airport = async ({ variant = 'checkin', cam = 'counter' }) => {
 
   const board = planeMesh(5.2, 2.64, new THREE.MeshBasicMaterial({ map: departureBoard(variant) }));
   board.position.set(0, 4.75, -5.95); scene.add(board);
-  const sign = planeMesh(4.2, 0.7, new THREE.MeshBasicMaterial({ map: textTex(variant === 'customs' ? '🛂 HẢI QUAN' : '✈ TXCC2026 AIRLINES', { size: 92, color: '#FFFFFF', glow: '#FF8000' }), transparent: true }));
+  const sign = planeMesh(4.2, 0.7, new THREE.MeshBasicMaterial({ map: textTex(variant === 'customs' ? 'HẢI QUAN · IMMIGRATION' : 'TXCC2026 AIRLINES', { size: 84, color: '#FFFFFF', glow: '#E9CF96' }), transparent: true }));
   sign.position.set(0, 3.05, -5.9); scene.add(sign);
 
   // quầy
@@ -300,20 +302,21 @@ BUILD.flight = async ({ mode = 'coins', duration = 20, onHud = () => {}, onEnd =
 
   const items = [];
   const target = new THREE.Vector2(0, .6), pos = new THREE.Vector2(0, .6);
-  const BX = 4.2, BYmin = -1.2, BYmax = 3;
+  let BX = 4.2; const BYmin = -1.2, BYmax = 3;
   let t = 0, spawnT = 0, score = 0, lives = 3, inv = 0, done = false, shake = 0, started = false;
   const speed = 46;
 
   // điều khiển: kéo ngón tay / chuột, hoặc phím mũi tên
   const onPtr = e => {
-    if (done) return;
+    if (done || (e.pointerType !== 'mouse' && e.buttons === 0 && e.type === 'pointermove')) return;
     const r = canvas.getBoundingClientRect();
     const nx = ((e.clientX - r.left) / r.width) * 2 - 1, ny = ((e.clientY - r.top) / r.height) * 2 - 1;
     target.set(nx * BX * 1.15, THREE.MathUtils.lerp(BYmax, BYmin, (ny + 1) / 2));
   };
-  const keys = {};
+  const keys = {}, stickV = new THREE.Vector2();
   const onKey = e => { keys[e.key] = e.type === 'keydown'; };
-  canvas.addEventListener('pointerdown', onPtr); canvas.addEventListener('pointermove', onPtr);
+  const area = document.getElementById('flyArea') || canvas;
+  area.addEventListener('pointerdown', onPtr); area.addEventListener('pointermove', onPtr);
   addEventListener('keydown', onKey); addEventListener('keyup', onKey);
   canvas.style.touchAction = 'none';
 
@@ -330,10 +333,15 @@ BUILD.flight = async ({ mode = 'coins', duration = 20, onHud = () => {}, onEnd =
   return {
     scene, camera,
     start() { started = true; },
+    // cần gạt trên màn hình: x, y trong khoảng -1..1
+    stick(x, y) { stickV.set(x, y); },
     update(dt, tt) {
       if (!done && started) t += dt;
+      // vùng bay vừa với bề ngang màn hình (điện thoại dọc hẹp hơn máy tính)
+      BX = Math.min(4.2, Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 7.5 * camera.aspect * .78 / .55);
       if (keys.ArrowLeft) target.x -= 9 * dt; if (keys.ArrowRight) target.x += 9 * dt;
       if (keys.ArrowUp) target.y += 7 * dt; if (keys.ArrowDown) target.y -= 7 * dt;
+      target.x += stickV.x * 10 * dt; target.y -= stickV.y * 7.5 * dt;
       target.x = THREE.MathUtils.clamp(target.x, -BX, BX); target.y = THREE.MathUtils.clamp(target.y, BYmin, BYmax);
       const vx = (target.x - pos.x) * 6, vy = (target.y - pos.y) * 6;
       pos.x += vx * dt; pos.y += vy * dt;
@@ -386,7 +394,7 @@ BUILD.flight = async ({ mode = 'coins', duration = 20, onHud = () => {}, onEnd =
       }
     },
     dispose() {
-      canvas.removeEventListener('pointerdown', onPtr); canvas.removeEventListener('pointermove', onPtr);
+      area.removeEventListener('pointerdown', onPtr); area.removeEventListener('pointermove', onPtr);
       removeEventListener('keydown', onKey); removeEventListener('keyup', onKey);
       canvas.style.touchAction = '';
     },
