@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CC007 · Chuyến bay tốt nghiệp</title>
+<meta name="description" content="Thư mời lễ tốt nghiệp của Phan Ngọc Cao Cường - 15:00, 08/12/2026, Nhà hát Hòa Bình">
+<meta property="og:title" content="✈️ Chuyến bay CC007 – Lễ tốt nghiệp của Cao Cường">
+<meta property="og:description" content="15:00 · 08/12/2026 · Nhà hát Hòa Bình. Check-in để nhận thẻ phòng!">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#FF8000; --bronze:#D9823B; --blue:#008EFF; --doan:#1554B8; --navy:#0B1F4D;
+  --cream:#FFF7EC; --paper:#FFFDF9; --ink:#1B2238; --muted:#6B7280; --line:#EADBC8;
+  --ok:#16A34A; --bad:#DC2626;
+  --radius:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:Montserrat,system-ui,sans-serif;color:var(--ink);background:var(--navy);overflow:hidden;}
+button{font:inherit;cursor:pointer;border:0}
+.app{position:relative;max-width:480px;height:100dvh;margin:0 auto;background:var(--cream);overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.4)}
+.bg{position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(120% 60% at 100% 0%,rgba(255,128,0,.18),transparent 60%),
+  radial-gradient(100% 50% at 0% 100%,rgba(0,142,255,.16),transparent 60%);}
+.topbar{position:absolute;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top))}
+.logo{display:flex;align-items:center;gap:8px;font-family:Unbounded;font-weight:800;font-size:13px;color:var(--navy)}
+.logo .em{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--bronze));display:grid;place-items:center;color:#fff;font-size:10px;box-shadow:0 2px 8px rgba(217,130,59,.5)}
+.tb-btns{display:flex;gap:6px}
+.app.dark .logo{color:#fff}
+.chip{white-space:nowrap;background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700;color:var(--navy)}
+.stage{position:absolute;inset:0;padding:64px 18px 22px;overflow-y:auto;opacity:0;pointer-events:none;transform:translateY(24px);transition:opacity .45s,transform .45s}
+.stage.on{opacity:1;pointer-events:auto;transform:none}
+.stage::-webkit-scrollbar{display:none}
+h1,h2,.disp{font-family:Unbounded;font-weight:800;margin:0;line-height:1.15}
+h1{font-size:26px}h2{font-size:21px}
+.kicker{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--bronze);text-transform:uppercase;margin-bottom:6px}
+p{line-height:1.55;margin:.5em 0}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px;border-radius:14px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,var(--orange),var(--bronze));box-shadow:0 6px 18px rgba(255,128,0,.35);transition:transform .1s}
+.btn:active{transform:scale(.97)}
+.btn.blue{background:linear-gradient(135deg,var(--blue),var(--doan));box-shadow:0 6px 18px rgba(0,142,255,.35)}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line);box-shadow:none}
+.mt{margin-top:14px}.mt2{margin-top:22px}.center{text-align:center}
+.muted{color:var(--muted);font-size:13px}
+
+/* ---------- boarding pass ---------- */
+.pass{margin-top:18px;border-radius:var(--radius);background:var(--paper);box-shadow:0 10px 30px rgba(11,31,77,.15);overflow:hidden;position:relative}
+.pass-top{background:linear-gradient(120deg,var(--doan),var(--blue));color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.pass-top .air{font-family:Unbounded;font-weight:800;font-size:13px;white-space:nowrap}
+.pass-top .cls{white-space:nowrap;font-size:10px;font-weight:800;background:rgba(255,255,255,.2);padding:4px 9px;border-radius:999px}
+.route{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 6px}
+.route .code{font-family:Unbounded;font-weight:800;font-size:28px;color:var(--navy)}
+.route .city{font-size:11px;color:var(--muted);font-weight:600}
+.route .plane{flex:1;text-align:center;color:var(--orange);font-size:20px;position:relative}
+.route .plane:before{content:"";position:absolute;left:10%;right:10%;top:50%;border-top:2px dashed var(--line);z-index:0}
+.route .plane span{position:relative;background:var(--paper);padding:0 6px}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:10px 16px 14px}
+.grid .k{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.grid .v{font-weight:800;font-size:14px;color:var(--navy)}
+.grid .wide{grid-column:span 3}
+.tear{position:relative;border-top:2px dashed var(--line);margin:0 14px}
+.tear:before,.tear:after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--cream)}
+.tear:before{left:-25px}.tear:after{right:-25px}
+.barcode{height:44px;margin:14px 16px 16px;background:repeating-linear-gradient(90deg,var(--navy) 0 2px,transparent 2px 4px,var(--navy) 4px 7px,transparent 7px 8px,var(--navy) 8px 9px,transparent 9px 12px)}
+
+/* ---------- rsvp ---------- */
+.desk{margin-top:16px;background:#fff;border-radius:var(--radius);padding:18px;border:1px solid var(--line);position:relative;min-height:260px}
+.choices{position:relative;height:150px;margin-top:16px}
+#btnYes{position:absolute;left:0;top:0;width:56%;height:64px}
+#btnNo{position:absolute;right:0;top:0;width:38%;height:64px;background:#fff;color:var(--muted);border:1.5px solid var(--line);border-radius:14px;font-weight:700;box-shadow:none;transition:left .18s,top .18s,right .18s}
+.dodge-say{position:absolute;left:0;right:0;bottom:0;text-align:center;font-weight:700;color:var(--bronze);font-size:14px;min-height:20px}
+.stepper{display:flex;align-items:center;justify-content:center;gap:18px;margin:16px 0}
+.stepper button{width:48px;height:48px;border-radius:50%;background:var(--cream);font-size:24px;font-weight:800;color:var(--navy);border:1.5px solid var(--line)}
+.stepper .n{font-family:Unbounded;font-size:34px;min-width:50px;text-align:center}
+
+/* ---------- quiz ---------- */
+.prog{display:flex;gap:6px;margin:10px 0 16px}
+.prog i{flex:1;height:6px;border-radius:9px;background:var(--line)}
+.prog i.on{background:var(--orange)}
+.qcard{background:#fff;border-radius:var(--radius);padding:18px;border:1px solid var(--line)}
+.qtext{font-weight:800;font-size:18px;line-height:1.4}
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{padding:14px 16px;border-radius:12px;background:var(--cream);border:1.5px solid var(--line);text-align:left;font-weight:700;color:var(--navy);font-size:15px}
+.opt:active{background:#FFE7CC}
+.yn{position:relative;height:150px;margin-top:16px}
+.yn .yes{position:absolute;left:0;top:0;width:56%;height:60px}
+.yn .no{position:absolute;right:0;top:0;width:38%;height:60px;background:#fff;color:var(--muted);border:1.5px solid var(--line);border-radius:14px;font-weight:700;transition:left .18s,top .18s,right .18s}
+.passport{position:relative;margin-top:16px;background:linear-gradient(160deg,#fff,#FFF3E2);border-radius:var(--radius);padding:20px;border:1px solid var(--line);min-height:300px;overflow:hidden}
+.passport .wm{position:absolute;inset:0;opacity:.06;font-family:Unbounded;font-size:60px;font-weight:800;display:grid;place-items:center;transform:rotate(-20deg);color:var(--doan)}
+.stamp{position:absolute;left:50%;top:52%;width:200px;height:200px;margin:-100px 0 0 -100px;opacity:0;transform:scale(3) rotate(-30deg)}
+.stamp.hit{animation:stamp .45s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes stamp{to{opacity:.92;transform:scale(1) rotate(-12deg)}}
+.stamp svg{width:100%;height:100%}
+.stamp .face{position:absolute;left:44px;top:44px;width:112px;height:112px;border-radius:50%;overflow:hidden;background:#F3D2B3}
+.stamp .face img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.5) brightness(1.05);mix-blend-mode:multiply}
+.stamp .face:after{content:"";position:absolute;inset:0;background:var(--stampc,#E8590C);mix-blend-mode:screen}
+.stamp .face .ph{position:absolute;inset:0;display:grid;place-items:center;font-family:Unbounded;font-weight:800;font-size:36px;color:#7a2e00}
+.result{font-family:Unbounded;font-weight:800;font-size:22px;text-align:center;margin-top:12px;opacity:0;transition:opacity .4s .3s}
+.result.on{opacity:1}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translate(4px,2px)}50%{transform:translate(-3px,-2px)}75%{transform:translate(2px,-1px)}}
+
+/* ---------- flight ---------- */
+#s-fly{background:linear-gradient(180deg,#4FB3FF,#BFE4FF 60%,#FFE3C2);padding:0}
+.sky{position:absolute;inset:0;overflow:hidden}
+.cloud{position:absolute;background:#fff;border-radius:999px;opacity:.9;filter:blur(1px)}
+.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%}
+.cloud:before{width:55%;height:160%;left:15%;top:-70%}.cloud:after{width:40%;height:130%;right:12%;top:-45%}
+#s-fly.on .cloud{animation:cloud 3.8s linear forwards}
+@keyframes cloud{from{transform:translateX(120vw)}to{transform:translateX(-160vw)}}
+.bigplane{position:absolute;left:50%;top:42%;font-size:90px;transform:translate(-50%,-50%) rotate(0)}
+#s-fly.on .bigplane{animation:fly 3.8s ease-in-out forwards}
+@keyframes fly{0%{transform:translate(-160%,40%) rotate(-12deg) scale(.6)}35%{transform:translate(-50%,-50%) rotate(-4deg) scale(1)}70%{transform:translate(-50%,-40%) rotate(4deg) scale(1)}100%{transform:translate(140%,30%) rotate(18deg) scale(.5)}}
+.fly-txt{position:absolute;left:0;right:0;bottom:16%;text-align:center;color:var(--navy);padding:0 24px}
+
+/* ---------- game ---------- */
+#s-game{background:radial-gradient(120% 80% at 50% 0%,#1a3a8a,#0B1F4D 55%,#060f2a);color:#fff}
+#s-game .kicker{color:#FFB366}
+.feed{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:10px 14px;margin-top:10px}
+.feed .views{font-family:Unbounded;font-weight:800;font-size:22px;color:#FFB366}
+.feed small{display:block;font-size:10px;opacity:.7;letter-spacing:.1em}
+.stagep{margin-top:12px;text-align:center;font-weight:700;font-size:13px;opacity:.8}
+.seq{display:flex;justify-content:center;gap:6px;margin:14px 0;min-height:52px;flex-wrap:wrap}
+.seq b{width:42px;height:46px;border-radius:10px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:24px;transition:all .12s}
+.seq b.done{background:var(--orange);box-shadow:0 0 16px var(--orange);transform:translateY(-3px)}
+.seq b.err{background:var(--bad)}
+.beat{position:relative;height:34px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;margin:6px 4px}
+.beat .zone{position:absolute;top:0;bottom:0;border-radius:4px}
+.beat .z3{background:rgba(0,142,255,.25)}.beat .z2{background:rgba(0,142,255,.45)}.beat .z1{background:#FFB366}
+.beat .cur{position:absolute;top:-2px;bottom:-2px;width:5px;margin-left:-2px;background:#fff;border-radius:3px;box-shadow:0 0 12px #fff}
+.beat .tick{position:absolute;top:8px;bottom:8px;width:2px;background:rgba(255,255,255,.25)}
+.rating{height:52px;text-align:center;font-family:Unbounded;font-weight:800;font-size:30px;letter-spacing:.02em;margin:6px 0}
+.rating.pop{animation:pop .5s}
+@keyframes pop{0%{transform:scale(.4);opacity:0}40%{transform:scale(1.25);opacity:1}100%{transform:scale(1)}}
+.combo{text-align:center;font-weight:800;color:#FFB366;height:18px;font-size:13px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,64px);gap:10px;margin-top:12px}
+.pad button{border-radius:16px;background:rgba(255,255,255,.12);color:#fff;font-size:30px;border:1px solid rgba(255,255,255,.18)}
+.pad button:active{background:rgba(255,128,0,.6)}
+.pad .u{grid-column:2;grid-row:1}.pad .l{grid-column:1;grid-row:2}.pad .d{grid-column:2;grid-row:2}.pad .r{grid-column:3;grid-row:2}
+.pad .post{grid-column:1;grid-row:1;font-size:13px;font-weight:800}
+.pad .post2{grid-column:3;grid-row:1;font-size:13px;font-weight:800}
+.pad .post,.pad .post2{background:linear-gradient(135deg,var(--orange),var(--bronze));border:0}
+.howto{background:rgba(255,255,255,.07);border-radius:14px;padding:14px;margin-top:14px;font-size:14px;line-height:1.6}
+.howto b{color:#FFB366}
+
+/* ---------- key card ---------- */
+.lobby{position:relative;margin-top:14px}
+.door{position:relative;height:250px;border-radius:14px 14px 0 0;background:#3a2414;perspective:900px;overflow:hidden;border:6px solid #2a180c;border-bottom:0}
+.door .glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#fff,#FFD08A 40%,var(--orange) 70%,transparent);opacity:0;transition:opacity 1s}
+.door .leaf{position:absolute;top:0;bottom:0;left:0;right:0;background:linear-gradient(90deg,#7a4a26,#9b6236 50%,#7a4a26);transform-origin:left;transition:transform 1.4s cubic-bezier(.5,0,.2,1);display:flex;align-items:center;justify-content:center}
+.door .leaf .num{font-family:Unbounded;color:#F7D9A8;font-size:22px;border:2px solid #F7D9A8;padding:6px 14px;border-radius:8px}
+.door.open .leaf{transform:rotateY(-105deg)}
+.door.open .glow{opacity:1}
+.lock{position:absolute;right:16px;top:110px;width:46px;height:84px;border-radius:10px;background:#1b1b1b;border:2px solid #555;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:8px 0;z-index:3}
+.lock .led{width:10px;height:10px;border-radius:50%;background:var(--bad);box-shadow:0 0 8px var(--bad)}
+.lock.ok .led{background:#22c55e;box-shadow:0 0 12px #22c55e}
+.lock .slot{width:26px;height:30px;border:2px dashed #777;border-radius:4px}
+.lock.hover{outline:3px solid var(--orange)}
+.door.open .lock{opacity:0;transition:opacity .3s}
+.keycard{position:relative;margin:14px auto 0;width:100%;max-width:340px;border-radius:16px;padding:16px;color:#fff;background:linear-gradient(135deg,var(--doan),var(--blue) 55%,var(--orange));box-shadow:0 12px 30px rgba(21,84,184,.4);touch-action:none;user-select:none;z-index:5}
+.keycard.drag{box-shadow:0 20px 40px rgba(0,0,0,.35);transition:none}
+.keycard.back{transition:transform .35s}
+.keycard .hn{font-family:Unbounded;font-weight:800;font-size:14px;letter-spacing:.04em}
+.keycard .room{font-family:Unbounded;font-weight:800;font-size:34px;margin:6px 0}
+.keycard .row{display:flex;justify-content:space-between;font-size:12px;gap:8px;margin-top:6px}
+.keycard .row b{display:block;font-size:14px}
+.keycard .chipc{position:absolute;right:16px;top:16px;width:38px;height:28px;border-radius:6px;background:linear-gradient(135deg,#F7D9A8,var(--bronze))}
+.keycard .hint{margin-top:10px;font-size:12px;font-weight:700;text-align:center;opacity:.9}
+.info-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.info-btns a{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;background:#fff;border:1.5px solid var(--line);color:var(--navy);font-weight:700;font-size:13px;text-decoration:none}
+
+/* ---------- review / wall ---------- */
+.flash{position:absolute;inset:0;background:radial-gradient(circle,#fff,#FFD08A 50%,transparent 80%);opacity:0;pointer-events:none;z-index:30}
+.flash.go{animation:flash 1.3s ease-out}
+@keyframes flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+.stars{display:flex;gap:6px;justify-content:center;margin:14px 0;font-size:36px}
+.stars button{background:none;padding:0;filter:grayscale(1);opacity:.4;transition:all .15s}
+.stars button.on{filter:none;opacity:1;transform:scale(1.08)}
+textarea,input[type=text]{width:100%;font:inherit;font-size:15px;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);resize:none}
+textarea:focus,input:focus{outline:2px solid var(--orange);border-color:transparent}
+.tabs{display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px;margin-top:14px}
+.tabs button{flex:1;padding:10px;border-radius:9px;background:none;font-weight:800;color:var(--muted);font-size:13px}
+.tabs button.on{background:var(--navy);color:#fff}
+.rv{background:#fff;border-radius:14px;padding:14px;border:1px solid var(--line);margin-top:10px}
+.rv .h{display:flex;justify-content:space-between;align-items:center;font-weight:800}
+.rv .s{color:var(--orange);font-size:13px;letter-spacing:1px}
+.rv p{margin:6px 0 0;font-size:14px;white-space:pre-wrap}
+.lb{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 14px;border:1px solid var(--line);margin-top:8px;font-weight:700}
+.lb .r{font-family:Unbounded;width:28px;text-align:center;color:var(--bronze)}
+.lb .n{flex:1}
+.lb .v{font-family:Unbounded;font-size:13px;color:var(--doan)}
+.toast{position:absolute;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:12px 18px;border-radius:999px;font-weight:700;font-size:14px;z-index:40;transition:transform .3s;white-space:nowrap}
+.toast.on{transform:translateX(-50%)}
+.confetti{position:absolute;inset:0;pointer-events:none;z-index:35;overflow:hidden}
+.confetti i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="bg"></div>
+  <div class="topbar">
+    <div class="logo"><div class="em">007</div><span>CƯỜNG 007<br><small style="font-size:9px;letter-spacing:.2em;color:var(--bronze)">GRAD HOTEL</small></span></div>
+    <div class="tb-btns">
+      <button class="chip" id="btnMute" aria-label="Bật/tắt âm thanh">🔊</button>
+      <button class="chip" id="btnSkip">⏭ Bỏ qua</button>
+    </div>
+  </div>
+
+  <!-- 0. INTRO -->
+  <section class="stage" id="s-intro">
+    <div class="kicker">Mission: Graduation 🎓</div>
+    <h1 id="hello">Xin chào!</h1>
+    <p id="helloSub"></p>
+    <div class="pass" id="pass">
+      <div class="pass-top"><div class="air">✈ CC007 AIRLINES</div><div class="cls" id="passClass">CHƯA CHECK-IN</div></div>
+      <div class="route">
+        <div><div class="code">KTĐN</div><div class="city">Kinh tế Đối ngoại</div></div>
+        <div class="plane"><span>✈</span></div>
+        <div style="text-align:right"><div class="code">GRAD</div><div class="city">Tốt nghiệp</div></div>
+      </div>
+      <div class="grid">
+        <div class="wide"><div class="k">Hành khách</div><div class="v" id="passName">—</div></div>
+        <div><div class="k">Chuyến bay</div><div class="v">CC007</div></div>
+        <div><div class="k">Ghế</div><div class="v" id="passSeat">—</div></div>
+        <div><div class="k">Cổng</div><div class="v">HÒA BÌNH</div></div>
+        <div><div class="k">Ngày</div><div class="v">08.12.2026</div></div>
+        <div><div class="k">Lên máy bay</div><div class="v">15:00</div></div>
+        <div><div class="k">Phi công</div><div class="v">Cao Cường</div></div>
+      </div>
+      <div class="tear"></div>
+      <div class="barcode"></div>
+    </div>
+    <button class="btn mt2" id="goCheckin">Check-in ngay ✈️</button>
+    <p class="muted center mt">Mất khoảng 3 phút · có game · có quà cho top 1 🏆</p>
+  </section>
+
+  <!-- 1. RSVP -->
+  <section class="stage" id="s-rsvp">
+    <div class="kicker">Bước 1 · Quầy check-in</div>
+    <h2 id="rsvpQ">Lên máy bay cùng Cường nhé?</h2>
+    <div class="desk" id="desk">
+      <div id="rsvpAsk">
+        <p>Chuyến bay <b>CC007</b> cất cánh lúc <b>15:00 – thứ Ba, 08/12/2026</b> tại <b>Nhà hát Hòa Bình</b>.</p>
+        <div class="choices" id="choices">
+          <button class="btn" id="btnYes">Có, tui đi! 🙌</button>
+          <button id="btnNo">Không đi</button>
+          <div class="dodge-say" id="dodgeSay"></div>
+        </div>
+      </div>
+      <div id="rsvpCount" hidden>
+        <p class="center"><b>Tuyệt vời!</b> Tính cả mình thì đi mấy người?</p>
+        <div class="stepper"><button id="cMinus">−</button><div class="n" id="cNum">1</div><button id="cPlus">+</button></div>
+        <button class="btn" id="cOk">Xác nhận check-in ✅</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. QUIZ -->
+  <section class="stage" id="s-quiz">
+    <div class="kicker">Bước 2 · Cửa hải quan 🛂</div>
+    <h2>Trả lời để được đóng dấu visa</h2>
+    <div class="prog" id="prog"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="qcard" id="qcard">
+      <div class="muted" id="qNo">Câu 1/5</div>
+      <div class="qtext" id="qText"></div>
+      <div id="qBody"></div>
+    </div>
+    <div id="visa" hidden>
+      <div class="passport" id="passport">
+        <div class="wm">VISA</div>
+        <div class="muted">HỘ CHIẾU · PASSPORT</div>
+        <div style="font-weight:800;font-size:18px;margin-top:4px" id="ppName"></div>
+        <div class="muted" id="ppScore"></div>
+        <div class="stamp" id="stamp">
+          <svg viewBox="0 0 200 200" aria-hidden="true">
+            <defs><path id="cp" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs>
+            <circle cx="100" cy="100" r="96" fill="none" stroke="var(--stampc,#E8590C)" stroke-width="5"/>
+            <circle cx="100" cy="100" r="62" fill="none" stroke="var(--stampc,#E8590C)" stroke-width="3"/>
+            <text font-family="Unbounded" font-weight="800" font-size="15" fill="var(--stampc,#E8590C)" letter-spacing="2"><textPath href="#cp" id="stampText">★ APPROVED · CC007 · 08.12.2026 ★</textPath></text>
+          </svg>
+          <div class="face"><div class="ph">CC</div><img id="faceImg" src="face.jpg" alt="" onerror="this.remove()"></div>
+        </div>
+      </div>
+      <div class="result" id="classRes"></div>
+      <button class="btn mt" id="goFly" hidden>Lên máy bay ✈️</button>
+    </div>
+  </section>
+
+  <!-- 3. FLY -->
+  <section class="stage" id="s-fly">
+    <div class="sky">
+      <div class="cloud" style="width:160px;height:40px;top:14%"></div>
+      <div class="cloud" style="width:220px;height:54px;top:30%;animation-delay:.4s!important"></div>
+      <div class="cloud" style="width:120px;height:30px;top:62%;animation-delay:.9s!important"></div>
+      <div class="cloud" style="width:200px;height:46px;top:76%;animation-delay:.2s!important"></div>
+      <div class="bigplane">✈️</div>
+    </div>
+    <div class="fly-txt"><div class="kicker" style="color:var(--doan)">Đang bay…</div><h2>Chuẩn bị hạ cánh tại<br>CƯỜNG 007 HOTEL</h2></div>
+  </section>
+
+  <!-- 4. GAME -->
+  <section class="stage" id="s-game">
+    <div class="kicker">Bước 3 · Phòng Marketing 📣</div>
+    <h2>Chiến dịch Viral</h2>
+    <div id="gIntro">
+      <div class="howto">
+        Khách sạn cần một chiến dịch thật <b>viral</b>! Mỗi vòng:<br>
+        1️⃣ Bấm <b>các mũi tên</b> đúng thứ tự hiện trên màn hình<br>
+        2️⃣ Bấm <b>ĐĂNG!</b> đúng lúc vạch trắng chạy vào <b>ô cam</b><br>
+        Bấm sai mũi tên là phải làm lại từ đầu. Càng chuẩn nhịp, càng nhiều lượt xem 🔥
+      </div>
+      <button class="btn mt2" id="gStart">Bắt đầu chiến dịch 🎵</button>
+      <button class="btn ghost mt" id="gSkip">Bỏ qua game</button>
+    </div>
+    <div id="gPlay" hidden>
+      <div class="feed"><div><small>LƯỢT XEM</small><div class="views" id="gViews">0</div></div><div style="text-align:right"><small>VÒNG</small><div class="disp" id="gRound">1/8</div></div></div>
+      <div class="stagep" id="gStage">Lên ý tưởng</div>
+      <div class="seq" id="gSeq"></div>
+      <div class="beat" id="gBeat"><div class="zone z3"></div><div class="zone z2"></div><div class="zone z1"></div><div class="cur" id="gCur"></div></div>
+      <div class="rating" id="gRate"></div>
+      <div class="combo" id="gCombo"></div>
+      <div class="pad">
+        <button class="post" data-k="post">ĐĂNG!</button>
+        <button class="u" data-k="0">↑</button>
+        <button class="post2" data-k="post">ĐĂNG!</button>
+        <button class="l" data-k="1">←</button>
+        <button class="d" data-k="2">↓</button>
+        <button class="r" data-k="3">→</button>
+      </div>
+    </div>
+    <div id="gEnd" hidden class="center">
+      <div class="howto" style="text-align:center">
+        <div class="kicker">Kết quả chiến dịch</div>
+        <div class="disp" style="font-size:40px;color:#FFB366" id="gFinal">0</div>
+        <div>lượt xem</div>
+        <p id="gVerdict" style="font-weight:700"></p>
+      </div>
+      <button class="btn mt2" id="gNext">Nhận phòng khách sạn 🗝️</button>
+      <button class="btn ghost mt" id="gAgain">Chơi lại để leo top</button>
+    </div>
+  </section>
+
+  <!-- 5. KEY CARD -->
+  <section class="stage" id="s-key">
+    <div class="kicker">Bước 4 · Nhận phòng</div>
+    <h2>Chào mừng tới CƯỜNG 007 HOTEL</h2>
+    <p class="muted" id="keyHint">Kéo thẻ phòng chạm vào ổ khóa để mở cửa nhé 👇</p>
+    <div class="lobby">
+      <div class="door" id="door">
+        <div class="glow"></div>
+        <div class="leaf"><div class="num">ROOM 0812</div></div>
+        <div class="lock" id="lock"><div class="led"></div><div class="slot"></div><div></div></div>
+      </div>
+    </div>
+    <div class="keycard" id="keycard">
+      <div class="chipc"></div>
+      <div class="hn">CƯỜNG 007 HOTEL</div>
+      <div style="font-size:11px;opacity:.85">GRADUATION SUITE · <span id="kcClass">PHỔ THÔNG</span></div>
+      <div class="room">0812</div>
+      <div class="row"><div>Khách<b id="kcName">—</b></div><div style="text-align:right">Giờ<b>15:00</b></div></div>
+      <div class="row"><div>Ngày<b>Thứ Ba, 08/12/2026</b></div><div style="text-align:right">Ghế<b id="kcSeat">—</b></div></div>
+      <div class="row"><div>Địa điểm<b>Nhà hát Hòa Bình</b><span style="opacity:.85">240 Đường 3 Tháng 2, P. Hòa Hưng, TP.HCM</span></div></div>
+      <div class="hint">⇡ Kéo thẻ lên ổ khóa ⇡</div>
+    </div>
+    <div class="info-btns">
+      <a id="lnkMap" target="_blank" rel="noopener">📍 Chỉ đường</a>
+      <a id="lnkCal" target="_blank" rel="noopener">📅 Lưu vào lịch</a>
+    </div>
+    <p class="muted center mt" style="font-size:12px">Ngành Tiếng Anh Thương Mại · Trường Cao đẳng Kinh tế Đối ngoại</p>
+  </section>
+
+  <!-- 6. REVIEW -->
+  <section class="stage" id="s-review">
+    <div class="kicker">Bước 5 · Đánh giá khách sạn</div>
+    <h2 id="rvTitle">Để lại review 5 sao cho Cường nhé ⭐</h2>
+    <p class="muted" id="rvSub">Lời chúc của bạn sẽ được chiếu lên màn hình trong ngày lễ!</p>
+    <div class="stars" id="stars"></div>
+    <input type="text" id="rvName" maxlength="40" placeholder="Tên của bạn">
+    <textarea id="rvText" class="mt" rows="5" maxlength="500" placeholder="Viết lời chúc tốt nghiệp…"></textarea>
+    <button class="btn mt" id="rvSend">Gửi review 💌</button>
+  </section>
+
+  <!-- 7. WALL -->
+  <section class="stage" id="s-wall">
+    <div class="kicker">Hẹn gặp tại Nhà hát Hòa Bình</div>
+    <h2 id="wallTitle">Cảm ơn bạn! 🧡</h2>
+    <p class="muted" id="wallSub"></p>
+    <div class="tabs"><button class="on" data-t="rv">⭐ Tường review</button><button data-t="lb">🏆 Bảng xếp hạng</button></div>
+    <div id="wallRv"></div>
+    <div id="wallLb" hidden></div>
+    <div class="info-btns mt2">
+      <a href="#" id="wKey">🗝️ Xem thẻ phòng</a>
+      <a href="#" id="wGame">🎮 Chơi lại game</a>
+    </div>
+  </section>
+
+  <div class="flash" id="flash"></div>
+  <div class="confetti" id="confetti"></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ================= CẤU HÌNH ================= */
+const CFG = {
+  API: '', // dán URL Apps Script (…/exec) vào đây
+  host: 'Cường',
+  quiz: [
+    { q: '{Ban} có nhớ ngày sinh của Cường không?', opts: ['20/01/2004', '02/10/2004', '20/10/2003', '21/01/2004'], a: 0 },
+    { q: 'Cân nặng hiện tại của Cường là bao nhiêu?', opts: ['80 kg', '68 kg', '74 kg', '90 kg'], a: 0 },
+    { q: 'Nhà Cường ở đâu?', opts: ['TP. Hồ Chí Minh', 'Bà Rịa – Vũng Tàu', 'Đồng Nai', 'Bình Dương'], a: 0 },
+    { q: '{Ban} có thích Cường không? 😳', yn: true },
+    { q: '5 năm nữa {ban} sẽ vẫn đồng hành cùng Cường chứ? 🤝', yn: true },
+  ],
+  map: 'https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+h%C3%A1t+H%C3%B2a+B%C3%ACnh+240+%C4%90%C6%B0%E1%BB%9Dng+3+Th%C3%A1ng+2+TP.HCM',
+};
+const DEMO_GUEST = { code: 'demo', name: 'Bạn', toi: 'tui', ban: 'bạn', note: '' };
+
+/* ================= TIỆN ÍCH ================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('cc007_' + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('cc007_' + k, JSON.stringify(v)); } catch {} },
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const fmtViews = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.0', '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace('.0', '') + 'K' : String(n);
+let G = DEMO_GUEST;
+const T = s => s.replace(/\{Ban\}/g, cap(G.ban)).replace(/\{ban\}/g, G.ban).replace(/\{Toi\}/g, cap(G.toi)).replace(/\{toi\}/g, G.toi);
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); }
+function confetti(n = 70) {
+  const box = $('#confetti'), cols = ['#FF8000', '#D9823B', '#008EFF', '#1554B8', '#FFD08A', '#fff'];
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('i');
+    c.style.left = Math.random() * 100 + '%'; c.style.background = cols[i % cols.length];
+    c.style.animationDuration = 1.6 + Math.random() * 1.6 + 's'; c.style.animationDelay = Math.random() * .5 + 's';
+    box.appendChild(c); setTimeout(() => c.remove(), 4000);
+  }
+}
+function seatOf(code) { let h = 0; for (const c of code) h = (h * 31 + c.charCodeAt(0)) >>> 0; return (1 + h % 30) + 'ABCDEF'[h % 6]; }
+
+/* ================= API ================= */
+async function apiGet(params) {
+  if (!CFG.API) return null;
+  const r = await fetch(CFG.API + '?' + new URLSearchParams(params));
+  return r.json();
+}
+function apiPost(data) {
+  if (!CFG.API) return Promise.resolve({ ok: true, local: true });
+  return fetch(CFG.API, { method: 'POST', body: JSON.stringify({ ...data, k: G.code }) }).then(r => r.json()).catch(() => ({ ok: false }));
+}
+
+/* ================= ÂM THANH ================= */
+const AU = { ctx: null, muted: store.get('muted', false), master: null };
+function audio() {
+  if (!AU.ctx) {
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
+    AU.ctx = new C();
+    const comp = AU.ctx.createDynamicsCompressor(); comp.connect(AU.ctx.destination);
+    AU.master = AU.ctx.createGain(); AU.master.gain.value = AU.muted ? 0 : .55; AU.master.connect(comp);
+    AU.noise = AU.ctx.createBuffer(1, AU.ctx.sampleRate, AU.ctx.sampleRate);
+    const d = AU.noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  if (AU.ctx.state === 'suspended') AU.ctx.resume();
+  return AU.ctx;
+}
+function env(g, t, a, peak, dec) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + dec); }
+function tone(freq, t, dur, type = 'sine', vol = .3, dest) {
+  const c = AU.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t); env(g, t, .005, vol, dur);
+  o.connect(g); g.connect(dest || AU.master); o.start(t); o.stop(t + dur + .05); return o;
+}
+function noise(t, dur, vol, ftype, f, q = 1) {
+  const c = AU.ctx, s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain();
+  s.buffer = AU.noise; fl.type = ftype; fl.frequency.value = f; fl.Q.value = q; env(g, t, .002, vol, dur);
+  s.connect(fl); fl.connect(g); g.connect(AU.master); s.start(t); s.stop(t + dur + .05);
+}
+const SFX = {
+  stamp() { const c = audio(); if (!c) return; const t = c.currentTime; const o = tone(120, t, .25, 'sine', .9); o.frequency.exponentialRampToValueAtTime(40, t + .2); noise(t, .12, .6, 'lowpass', 900); },
+  beep() { const c = audio(); if (!c) return; const t = c.currentTime; tone(1760, t, .07, 'square', .12); tone(2093, t + .1, .12, 'square', .12); },
+  blip(i = 0) { const c = audio(); if (!c) return; tone([660, 784, 880, 988, 1175, 1319, 1480, 1760][i % 8], c.currentTime, .08, 'triangle', .25); },
+  err() { const c = audio(); if (!c) return; tone(110, c.currentTime, .2, 'sawtooth', .2); },
+  win() { const c = audio(); if (!c) return; const t = c.currentTime; [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * .08, .25, 'triangle', .25)); },
+  swoosh() { const c = audio(); if (!c) return; noise(c.currentTime, .6, .25, 'bandpass', 1200, .7); },
+};
+
+/* Nhạc nền tự tổng hợp (miễn phí bản quyền 100%) – house 124 BPM */
+const MUSIC = { bpm: 124, on: false, step: 0, next: 0, t0: 0, timer: null };
+MUSIC.spb = 60 / MUSIC.bpm; MUSIC.bar = MUSIC.spb * 4;
+const PROG = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]]; // Am F C G
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+function schedStep(s, t) {
+  const c = AU.ctx, i = s % 16, bar = Math.floor(s / 16), ch = PROG[bar % 4], intense = bar % 8 >= 4;
+  if (i % 4 === 0) { const o = tone(150, t, .3, 'sine', 1); o.frequency.exponentialRampToValueAtTime(42, t + .14); }
+  if (i === 4 || i === 12) noise(t, .16, .45, 'bandpass', 1600, .8);
+  if (i % 4 === 2) noise(t, .06, .28, 'highpass', 7000);
+  else if (intense) noise(t, .025, .08, 'highpass', 9000);
+  if (i % 2 === 0) { // bass
+    const f = mtof(ch[0] - 24), o = c.createOscillator(), fl = c.createBiquadFilter(), g = c.createGain();
+    o.type = 'sawtooth'; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.setValueAtTime(i % 4 === 2 ? 900 : 400, t);
+    env(g, t, .005, .32, .16); o.connect(fl); fl.connect(g); g.connect(AU.master); o.start(t); o.stop(t + .25);
+  }
+  if (i % 4 === 2) { // stab
+    const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = 2400; fl.connect(AU.master);
+    ch.forEach(m => { tone(mtof(m), t, .17, 'sawtooth', .05, fl); tone(mtof(m) * 1.006, t, .17, 'sawtooth', .04, fl); });
+  }
+  if (intense) { const arp = [ch[0], ch[1], ch[2], ch[1] + 12, ch[2] + 12, ch[0] + 12]; tone(mtof(arp[i % 6] + 12), t, .09, 'square', .045); }
+}
+function musicStart() {
+  if (MUSIC.on) return;
+  const c = AU.ctx;
+  MUSIC.useCtx = !!c;
+  if (!c) { MUSIC.t0 = performance.now() / 1000; return; }
+  MUSIC.on = true; MUSIC.step = 0; MUSIC.t0 = MUSIC.next = c.currentTime + .1;
+  MUSIC.timer = setInterval(() => {
+    while (MUSIC.next < c.currentTime + .12) { schedStep(MUSIC.step, MUSIC.next); MUSIC.next += MUSIC.spb / 4; MUSIC.step++; }
+  }, 25);
+}
+function musicStop() { MUSIC.on = false; clearInterval(MUSIC.timer); }
+$('#btnMute').textContent = AU.muted ? '🔇' : '🔊';
+$('#btnMute').onclick = () => {
+  AU.muted = !AU.muted; store.set('muted', AU.muted); $('#btnMute').textContent = AU.muted ? '🔇' : '🔊';
+  if (AU.master) AU.master.gain.value = AU.muted ? 0 : .55;
+};
+
+/* ================= ĐIỀU HƯỚNG ================= */
+const S = { stage: 'intro', rsvp: store.get('rsvp', null), cls: store.get('cls', null), score: store.get('score', 0), skip: false };
+function go(id) {
+  $$('.stage').forEach(s => s.classList.toggle('on', s.id === 's-' + id));
+  S.stage = id; const el = $('#s-' + id); el.scrollTop = 0;
+  $('#btnSkip').style.visibility = ['key', 'review', 'wall'].includes(id) ? 'hidden' : 'visible';
+  $('#app').classList.toggle('dark', id === 'game');
+  if (id !== 'game') musicStop();
+  (ENTER[id] || (() => {}))();
+}
+const ENTER = {};
+$('#btnSkip').onclick = () => { S.skip = true; go(S.rsvp ? 'key' : 'rsvp'); };
+
+/* ================= 0. INTRO ================= */
+function renderGuest() {
+  $('#hello').textContent = T('{Ban} ơi, Cường tốt nghiệp rồi! 🎓');
+  $('#helloSub').innerHTML = esc(G.note || T('Đây là tấm vé lên chuyến bay tốt nghiệp của Cường. Check-in, qua hải quan, chơi một ván game rồi nhận phòng nha!'));
+  $('#passName').textContent = G.name.toUpperCase();
+  $('#passSeat').textContent = $('#kcSeat').textContent = seatOf(G.code);
+  $('#kcName').textContent = G.name;
+  $('#rvName').value = G.code === 'demo' ? '' : G.name;
+  $('#rsvpQ').textContent = T('{Ban} lên máy bay cùng Cường nhé?');
+  $('#btnYes').textContent = 'Có, đi chứ! 🙌';
+  updateClass();
+}
+function updateClass() {
+  const c = S.cls === 'biz' ? 'THƯƠNG GIA' : S.cls === 'eco' ? 'PHỔ THÔNG' : null;
+  $('#passClass').textContent = c ? 'HẠNG ' + c : 'CHƯA CHECK-IN';
+  $('#kcClass').textContent = c || 'PHỔ THÔNG';
+}
+$('#goCheckin').onclick = () => { audio(); SFX.swoosh(); go('rsvp'); };
+
+/* ================= 1. RSVP ================= */
+const DODGE_SAY = ['Ơ kìa 😏', 'Bấm hụt rồi!', 'Không bắt được đâu 🏃', 'Đi đi mà 🥺', 'Thôi mà…'];
+function makeDodger(btn, area, sayEl, fallbackText, onGiveUp) {
+  let n = 0, tired = 0;
+  const yes = area.querySelector('.btn');
+  const move = e => {
+    if (tired) return;
+    e.preventDefault(); e.stopPropagation();
+    n++;
+    if (n > DODGE_SAY.length) {
+      tired = Date.now(); btn.style.left = '0'; btn.style.right = 'auto'; btn.style.top = '84px'; btn.style.width = '100%';
+      btn.style.fontSize = '13px'; btn.textContent = fallbackText; sayEl.textContent = ''; return;
+    }
+    const a = area.getBoundingClientRect(), b = btn.getBoundingClientRect(), y0 = yes.getBoundingClientRect();
+    let x, y;
+    for (let i = 0; i < 12; i++) { // tránh đè lên nút "Có"
+      x = Math.random() * (a.width - b.width); y = Math.random() * (a.height - b.height - 24);
+      if (x > y0.right - a.left || x + b.width < y0.left - a.left || y > y0.bottom - a.top) break;
+    }
+    btn.style.right = 'auto'; btn.style.left = x + 'px'; btn.style.top = y + 'px';
+    sayEl.textContent = DODGE_SAY[n - 1]; SFX.blip(n);
+  };
+  btn.addEventListener('pointerdown', move);
+  btn.addEventListener('click', e => { if (tired && Date.now() - tired > 400) onGiveUp(); });
+  return { n: () => n };
+}
+const noDodger = makeDodger($('#btnNo'), $('#choices'), $('#dodgeSay'), 'Bận thật hả? Gửi lời chúc cho Cường nha 🥲', () => {
+  S.rsvp = { go: false, n: 0 }; store.set('rsvp', S.rsvp);
+  apiPost({ a: 'rsvp', go: false, n: 0, dodges: noDodger.n(), name: G.name });
+  go('review');
+});
+$('#btnYes').onclick = () => { SFX.win(); $('#rsvpAsk').hidden = true; $('#rsvpCount').hidden = false; };
+let cnt = 1;
+$('#cMinus').onclick = () => { cnt = Math.max(1, cnt - 1); $('#cNum').textContent = cnt; };
+$('#cPlus').onclick = () => { cnt = Math.min(6, cnt + 1); $('#cNum').textContent = cnt; };
+$('#cOk').onclick = () => {
+  S.rsvp = { go: true, n: cnt }; store.set('rsvp', S.rsvp);
+  apiPost({ a: 'rsvp', go: true, n: cnt, dodges: noDodger.n(), name: G.name });
+  confetti(); toast('Check-in thành công ✅');
+  setTimeout(() => go(S.skip ? 'key' : 'quiz'), 700);
+};
+ENTER.rsvp = () => {
+  if (S.rsvp) { $('#rsvpAsk').hidden = true; $('#rsvpCount').hidden = false; cnt = S.rsvp.n || 1; $('#cNum').textContent = cnt; }
+};
+
+/* ================= 2. QUIZ ================= */
+let qi = 0, correct = 0;
+ENTER.quiz = () => { qi = 0; correct = 0; $('#qcard').hidden = false; $('#visa').hidden = true; showQ(); };
+function showQ() {
+  const q = CFG.quiz[qi];
+  $$('#prog i').forEach((e, i) => e.classList.toggle('on', i <= qi));
+  $('#qNo').textContent = `Câu ${qi + 1}/${CFG.quiz.length}`;
+  $('#qText').textContent = T(q.q);
+  const body = $('#qBody'); body.innerHTML = '';
+  if (q.yn) {
+    body.innerHTML = '<div class="yn" id="yn"><button class="btn yes">Có 🧡</button><button class="no">Không</button><div class="dodge-say"></div></div>';
+    body.querySelector('.yes').onclick = () => answer(true);
+    makeDodger(body.querySelector('.no'), $('#yn'), body.querySelector('.dodge-say'), 'Thôi được rồi, chọn Không 😤', () => answer(false));
+  } else {
+    const box = document.createElement('div'); box.className = 'opts';
+    const order = q.opts.map((o, i) => i).sort(() => Math.random() - .5);
+    order.forEach(i => { const b = document.createElement('button'); b.className = 'opt'; b.textContent = q.opts[i]; b.onclick = () => answer(i === q.a); box.appendChild(b); });
+    body.appendChild(box);
+  }
+}
+function answer(ok) {
+  if (ok) correct++;
+  SFX.blip(qi + 2);
+  qi++;
+  if (qi < CFG.quiz.length) { showQ(); return; }
+  S.cls = correct >= 3 ? 'biz' : 'eco'; store.set('cls', S.cls);
+  apiPost({ a: 'quiz', score: correct, cls: S.cls, name: G.name });
+  $('#qcard').hidden = true; $('#visa').hidden = false;
+  $('#ppName').textContent = G.name.toUpperCase();
+  $('#ppScore').textContent = `Đúng ${correct}/${CFG.quiz.length} câu`;
+  const st = $('#stamp'); st.classList.remove('hit');
+  $('#passport').style.setProperty('--stampc', S.cls === 'biz' ? '#C2410C' : '#1554B8');
+  $('#stampText').textContent = S.cls === 'biz' ? '★ BUSINESS CLASS · CC007 · APPROVED ★' : '★ ECONOMY CLASS · CC007 · APPROVED ★';
+  $('#classRes').classList.remove('on'); $('#goFly').hidden = true;
+  setTimeout(() => {
+    st.classList.add('hit');
+    setTimeout(() => { SFX.stamp(); $('#passport').classList.add('shake'); setTimeout(() => $('#passport').classList.remove('shake'), 400); }, 280);
+    $('#classRes').innerHTML = S.cls === 'biz' ? '🥂 HẠNG THƯƠNG GIA!<div class="muted" style="font-family:Montserrat;font-size:14px;margin-top:6px">Hiểu Cường quá trời luôn!</div>'
+      : '🎒 HẠNG PHỔ THÔNG<div class="muted" style="font-family:Montserrat;font-size:14px;margin-top:6px">Vẫn được bay, nhưng cần tìm hiểu Cường thêm nha 😆</div>';
+    setTimeout(() => { $('#classRes').classList.add('on'); $('#goFly').hidden = false; if (S.cls === 'biz') confetti(); updateClass(); }, 500);
+  }, 400);
+}
+$('#goFly').onclick = () => go('fly');
+
+/* ================= 3. FLY ================= */
+ENTER.fly = () => { SFX.swoosh(); setTimeout(() => SFX.swoosh(), 1800); setTimeout(() => S.stage === 'fly' && go('game'), 3900); };
+
+/* ================= 4. GAME ================= */
+const ROUNDS = ['Lên ý tưởng', 'Chọn concept', 'Chụp ảnh', 'Quay video', 'Viết caption', 'Chọn hashtag', 'Chạy quảng cáo', 'ĐĂNG BÀI!'];
+const ARW = ['↑', '←', '↓', '→'];
+const TARGET = .75, ZONES = [.035, .08, .13];
+const RATE = [
+  { t: 'VIRAL 🔥', c: '#FFB366', v: 52000 }, { t: 'TRENDING 📈', c: '#7CC4FF', v: 30000 },
+  { t: 'ỔN ÁP 👍', c: '#B9F5C8', v: 14000 }, { t: 'FLOP 💀', c: '#FF8A8A', v: 2000 },
+];
+const GS = { on: false, r: 0, seq: [], pos: 0, views: 0, combo: 0, best: 0, rStart: 0, locked: false, raf: 0 };
+(function drawZones() {
+  const zs = $$('#gBeat .zone');
+  [ZONES[2], ZONES[1], ZONES[0]].forEach((w, i) => { zs[i].style.left = (TARGET - w) * 100 + '%'; zs[i].style.width = w * 200 + '%'; });
+  [0, .25, .5].forEach(p => { const t = document.createElement('div'); t.className = 'tick'; t.style.left = p * 100 + '%'; $('#gBeat').appendChild(t); });
+})();
+ENTER.game = () => { $('#gIntro').hidden = false; $('#gPlay').hidden = true; $('#gEnd').hidden = true; };
+$('#gSkip').onclick = () => go('key');
+$('#gStart').onclick = startGame;
+$('#gAgain').onclick = startGame;
+$('#gNext').onclick = () => go('key');
+async function startGame() {
+  const c = audio(); // chờ trình duyệt mở âm thanh để vạch nhịp chạy theo nhạc
+  if (c && c.state !== 'running') await Promise.race([c.resume(), new Promise(r => setTimeout(r, 400))]);
+  if (c && c.state !== 'running') AU.ctx = null; // không mở được âm thanh: chạy game không nhạc theo đồng hồ máy
+  $('#gIntro').hidden = true; $('#gEnd').hidden = true; $('#gPlay').hidden = false;
+  Object.assign(GS, { on: true, r: -1, views: 0, combo: 0 });
+  $('#gViews').textContent = '0'; $('#gRate').textContent = ''; $('#gCombo').textContent = '';
+  musicStart();
+  nextRound();
+  cancelAnimationFrame(GS.raf); GS.raf = requestAnimationFrame(loop);
+}
+const now = () => MUSIC.useCtx ? AU.ctx.currentTime : performance.now() / 1000;
+function nextBar() { const t = now(), b = MUSIC.bar; return MUSIC.t0 + Math.ceil((t - MUSIC.t0 + .05) / b) * b; }
+function nextRound() {
+  GS.r++;
+  if (GS.r >= ROUNDS.length) return endGame();
+  const len = 3 + Math.min(GS.r, 5);
+  GS.seq = Array.from({ length: len }, () => Math.floor(Math.random() * 4)); GS.pos = 0; GS.locked = false;
+  GS.rStart = nextBar();
+  $('#gRound').textContent = `${GS.r + 1}/${ROUNDS.length}`; $('#gStage').textContent = ROUNDS[GS.r];
+  $('#gSeq').innerHTML = GS.seq.map(k => `<b>${ARW[k]}</b>`).join('');
+}
+function loop() {
+  if (!GS.on) return;
+  const p = (((now() - MUSIC.t0) % MUSIC.bar) + MUSIC.bar) % MUSIC.bar / MUSIC.bar;
+  $('#gCur').style.left = p * 100 + '%';
+  if (!GS.locked && now() > GS.rStart + MUSIC.bar * 2 + MUSIC.bar * (TARGET + ZONES[2])) rate(-1);
+  GS.raf = requestAnimationFrame(loop);
+}
+function press(k) {
+  if (!GS.on || GS.locked) return;
+  if (k === 'post') {
+    if (GS.pos < GS.seq.length) return rate(-1);
+    const p = (((now() - MUSIC.t0) % MUSIC.bar) + MUSIC.bar) % MUSIC.bar / MUSIC.bar;
+    const d = Math.abs(p - TARGET);
+    return rate(d <= ZONES[0] ? 0 : d <= ZONES[1] ? 1 : d <= ZONES[2] ? 2 : 3);
+  }
+  const cells = $$('#gSeq b');
+  if (GS.pos >= GS.seq.length) return;
+  if (+k === GS.seq[GS.pos]) { cells[GS.pos].classList.add('done'); GS.pos++; SFX.blip(GS.pos); }
+  else { SFX.err(); cells.forEach(c => { c.classList.remove('done'); c.classList.add('err'); }); setTimeout(() => cells.forEach(c => c.classList.remove('err')), 220); GS.pos = 0; }
+}
+function rate(i) {
+  GS.locked = true;
+  const el = $('#gRate');
+  if (i < 0) { el.textContent = 'MISS 😵'; el.style.color = '#FF8A8A'; GS.combo = 0; SFX.err(); }
+  else {
+    const R = RATE[i]; el.textContent = R.t; el.style.color = R.c;
+    GS.combo = i === 0 ? GS.combo + 1 : i === 1 ? GS.combo : 0;
+    const gain = Math.round(R.v * GS.seq.length / 4 * (1 + GS.combo * .25) + Math.random() * 999);
+    GS.views += gain; $('#gViews').textContent = fmtViews(GS.views);
+    i === 0 ? SFX.win() : i < 3 ? SFX.blip(5) : SFX.err();
+  }
+  $('#gCombo').textContent = GS.combo > 1 ? `COMBO x${GS.combo}` : '';
+  el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  setTimeout(nextRound, 650);
+}
+function endGame() {
+  GS.on = false; cancelAnimationFrame(GS.raf);
+  setTimeout(musicStop, 300);
+  $('#gPlay').hidden = true; $('#gEnd').hidden = false;
+  $('#gFinal').textContent = fmtViews(GS.views);
+  const v = GS.views;
+  $('#gVerdict').textContent = v > 900000 ? 'Chiến dịch triệu view! Thuê làm Marketing Manager ngay 🔥' : v > 450000 ? 'Lên xu hướng rồi! Khá lắm đó 📈' : 'Chiến dịch hơi flop… chơi lại gỡ gạc không? 😆';
+  if (v > S.score) { S.score = v; store.set('score', v); }
+  apiPost({ a: 'score', views: v, name: G.name });
+  confetti(40);
+}
+$$('.pad button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); press(b.dataset.k); }));
+document.addEventListener('keydown', e => {
+  if (S.stage !== 'game') return;
+  const m = { ArrowUp: 0, ArrowLeft: 1, ArrowDown: 2, ArrowRight: 3, ' ': 'post', Enter: 'post' }[e.key];
+  if (m !== undefined) { e.preventDefault(); press(m); }
+});
+
+/* ================= 5. KEY CARD ================= */
+$('#lnkMap').href = CFG.map;
+$('#lnkCal').href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent('🎓 Lễ tốt nghiệp của Cao Cường') +
+  '&dates=20261208T080000Z/20261208T100000Z&location=' + encodeURIComponent('Nhà hát Hòa Bình, 240 Đường 3 Tháng 2, TP.HCM') +
+  '&details=' + encodeURIComponent('Chuyến bay CC007 – hẹn gặp lúc 15:00!');
+let opened = false;
+ENTER.key = () => {
+  opened = false; $('#door').classList.remove('open'); $('#lock').classList.remove('ok');
+  const kc = $('#keycard'); kc.style.transform = ''; kc.style.visibility = '';
+  updateClass();
+};
+(function keyDrag() {
+  const kc = $('#keycard'), lock = $('#lock');
+  let sx, sy, dragging = false;
+  const over = () => { const a = kc.getBoundingClientRect(), b = lock.getBoundingClientRect(); return a.top < b.bottom && a.bottom > b.top + 20 && a.right > b.left && a.left < b.right; };
+  kc.addEventListener('pointerdown', e => { if (opened) return; dragging = true; sx = e.clientX; sy = e.clientY; kc.classList.add('drag'); kc.classList.remove('back'); kc.setPointerCapture(e.pointerId); audio(); });
+  kc.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    kc.style.transform = `translate(${e.clientX - sx}px,${e.clientY - sy}px) rotate(${(e.clientX - sx) / 25}deg)`;
+    lock.classList.toggle('hover', over());
+  });
+  const end = () => {
+    if (!dragging) return; dragging = false; kc.classList.remove('drag'); lock.classList.remove('hover');
+    if (over()) unlock(); else { kc.classList.add('back'); kc.style.transform = ''; }
+  };
+  kc.addEventListener('pointerup', end); kc.addEventListener('pointercancel', end);
+  lock.addEventListener('click', unlock);
+})();
+function unlock() {
+  if (opened) return; opened = true;
+  $('#lock').classList.add('ok'); SFX.beep();
+  const kc = $('#keycard'); kc.classList.add('back'); kc.style.transform = '';
+  setTimeout(() => { $('#door').classList.add('open'); SFX.swoosh(); }, 500);
+  setTimeout(() => { const f = $('#flash'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); SFX.win(); }, 1500);
+  setTimeout(() => go(store.get('reviewed', false) ? 'wall' : 'review'), 1900);
+}
+
+/* ================= 6. REVIEW ================= */
+let stars = 5;
+(function () {
+  const box = $('#stars');
+  for (let i = 1; i <= 5; i++) { const b = document.createElement('button'); b.textContent = '⭐'; b.onclick = () => { stars = i; paint(); SFX.blip(i); }; box.appendChild(b); }
+  const paint = () => [...box.children].forEach((b, i) => b.classList.toggle('on', i < stars)); paint();
+})();
+ENTER.review = () => {
+  const no = S.rsvp && !S.rsvp.go;
+  $('#rvTitle').textContent = no ? 'Tiếc ghê! Gửi Cường lời chúc nha 🥲' : 'Để lại review 5 sao cho Cường nhé ⭐';
+  $('#rvSub').textContent = 'Lời chúc sẽ được chiếu lên màn hình trong ngày lễ!';
+};
+$('#rvSend').onclick = async () => {
+  const name = $('#rvName').value.trim(), text = $('#rvText').value.trim();
+  if (!name) return toast('Ghi tên giúp Cường nha 😊');
+  if (text.length < 2) return toast('Viết vài chữ chúc mừng nha ✍️');
+  $('#rvSend').disabled = true; $('#rvSend').textContent = 'Đang gửi…';
+  const mine = { name, stars, text, t: Date.now() };
+  store.set('myReview', mine); store.set('reviewed', true);
+  await apiPost({ a: 'review', name, stars, text });
+  $('#rvSend').disabled = false; $('#rvSend').textContent = 'Gửi review 💌';
+  confetti(); go('wall');
+};
+
+/* ================= 7. WALL ================= */
+ENTER.wall = async () => {
+  const no = S.rsvp && !S.rsvp.go;
+  $('#wallTitle').textContent = no ? 'Cảm ơn lời chúc của bạn! 🧡' : 'Hẹn gặp lúc 15:00 – 08/12 nhé! 🧡';
+  $('#wallSub').textContent = no ? 'Cường sẽ đọc lời chúc này trong ngày lễ.' : 'Nhớ mang theo nụ cười, Cường lo phần còn lại 😎';
+  let data = null; try { data = await apiGet({ a: 'wall' }); } catch {}
+  const mine = store.get('myReview', null);
+  let reviews = (data && data.reviews) || [];
+  if (mine && !reviews.some(r => r.name === mine.name && r.text === mine.text)) reviews = [mine, ...reviews];
+  if (!reviews.length) reviews = [{ name: 'Cường', stars: 5, text: 'Review đầu tiên sẽ là của bạn đó! 😆' }];
+  $('#wallRv').innerHTML = reviews.map(r => `<div class="rv"><div class="h"><span>${esc(r.name)}</span><span class="s">${'★'.repeat(Math.max(1, Math.min(5, +r.stars || 5)))}</span></div><p>${esc(r.text)}</p></div>`).join('');
+  let lb = (data && data.board) || [];
+  if (!data && S.score) lb = [{ name: G.name, views: S.score }];
+  $('#wallLb').innerHTML = lb.length ? lb.map((r, i) => `<div class="lb"><div class="r">${['🥇', '🥈', '🥉'][i] || i + 1}</div><div class="n">${esc(r.name)}</div><div class="v">${fmtViews(+r.views)}</div></div>`).join('')
+    : '<p class="muted center mt">Chưa có ai chơi. Vào chiếm top 1 đi! 🏆</p>';
+};
+$$('.tabs button').forEach(b => b.onclick = () => {
+  $$('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  $('#wallRv').hidden = b.dataset.t !== 'rv'; $('#wallLb').hidden = b.dataset.t !== 'lb';
+});
+$('#wKey').onclick = e => { e.preventDefault(); go('key'); };
+$('#wGame').onclick = e => { e.preventDefault(); go('game'); };
+
+/* ================= KHỞI ĐỘNG ================= */
+(async function init() {
+  const k = new URLSearchParams(location.search).get('k');
+  if (k) {
+    try { const r = await apiGet({ a: 'guest', k }); if (r && r.ok) G = { ...DEMO_GUEST, ...r.guest, code: k }; } catch {}
+    if (G === DEMO_GUEST) G = { ...DEMO_GUEST, code: k };
+  }
+  renderGuest();
+  go('intro');
+})();
+</script>
+</body>
+</html>
