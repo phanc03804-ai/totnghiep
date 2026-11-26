@@ -13,7 +13,9 @@ const CFG = {
   qTime: 10,
   flight: 'TXCC2026',
   phone: '',          // [xác nhận] số điện thoại in trên thiệp mời, để trống thì ẩn dòng Liên hệ
-  years: 3,           // [xác nhận] số năm đi học, dùng trong thư cảm ơn
+  passportPhoto: 'img/passport.jpg', // ảnh trên dấu hộ chiếu (ảnh cầm cây chày) – chưa có thì dùng face.jpg
+  // biệt danh của Cường ở từng vai trong hội thoại
+  nick: { checkin: 'C con cá', gate: 'Cường cọc cằn', captain: 'Cường cơ trưởng' },
   // Chặng 1: video media/video1.mp4 (~20 giây, dọc 9:16). Chưa có file thì hiện thẻ tiêu đề này
   intro: { kick: 'CHẶNG 1', title: 'Khởi hành', line: 'Những ngày đầu bỡ ngỡ.' },
   // Chặng 2: lần lượt từng vật phẩm bay tới; ăn được thì game dừng, hiện poster posterTime giây.
@@ -42,11 +44,18 @@ const CFG = {
   gradPhoto: 'img/grad.jpg',
   // Thư cảm ơn chạy trên nền media/montage.mp4 (30–45 giây). Chưa có thì trình chiếu các ảnh dưới đây
   montageFallback: ['media/cards/c1.jpg', 'media/cards/c2.jpg', 'media/cards/c3.jpg', 'media/cards/c4.jpg', 'media/cards/c5.jpg', 'media/cards/c6.jpg'],
-  letter: 'Hành trình {nam} năm cuối cùng cũng đã đến trạm dừng chân đẹp nhất.\n\nCảm ơn {ten} vì đã là một phần không thể thiếu trong chuyến bay thanh xuân của {cuong}.\n\nMọi kỷ niệm, dù vui hay buồn, {cuong} đều sẽ cất giữ thật kỹ cho những chặng đường mới phía trước.',
+  letter: 'Hành trình những năm tháng cao đẳng cuối cùng cũng đã đến trạm dừng chân đẹp nhất.\n\nCảm ơn {ten} vì đã là một phần không thể thiếu trong chuyến bay thanh xuân của {cuong}.\n\nMọi kỷ niệm, dù vui hay buồn, {cuong} đều sẽ cất giữ thật kỹ cho những chặng đường mới phía trước.',
   invite: 'Chuyến bay ký ức đã khép lại, nhưng lễ mừng hạ cánh thì không thể thiếu {khach}! Hẹn gặp {ten} tại buổi lễ tốt nghiệp của {cuong} nhé.',
   map: 'https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+h%C3%A1t+H%C3%B2a+B%C3%ACnh+240+%C4%90%C6%B0%E1%BB%9Dng+3+Th%C3%A1ng+2+TP.HCM',
 };
-const REL = { family: { khach: 'cả nhà', cuong: 'Cường' }, friend: { khach: 'bạn', cuong: 'tui' } };
+// mối quan hệ khách chọn trên vé: xưng hô trong toàn bộ thiệp đổi theo đây
+const REL = {
+  family: { label: 'Gia đình', khach: 'cả nhà', cuong: 'Cường' },
+  friend: { label: 'Bạn bè', khach: 'bạn', cuong: 'tui' },
+  crush: { label: 'Crush', khach: 'cậu', cuong: 'tớ' },
+  work: { label: 'Đồng nghiệp', khach: 'bạn', cuong: 'Cường' },
+  other: { label: 'Khác', khach: 'bạn', cuong: 'Cường' },
+};
 
 /* ================= TIỆN ÍCH ================= */
 const $ = s => document.querySelector(s);
@@ -61,9 +70,11 @@ const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
 const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace('.0', '') + 'K' : String(n);
 const icon = id => `<svg class="ic"><use href="#i-${id}"/></svg>`;
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
-const G = { code: store.get('id', null) || ('g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), name: store.get('name', ''), rel: store.get('rel', 'friend') };
+const G = { code: store.get('id', null) || ('g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), name: store.get('name', ''), rel: store.get('rel', 'friend'), relText: store.get('relText', '') };
+// tên ghi vào Sheet kèm mối quan hệ, ví dụ "Lan (crush)"
+const guestName = () => G.name + (G.rel === 'friend' || !REL[G.rel] ? '' : ` (${G.rel === 'other' ? (G.relText || 'khác') : REL[G.rel].label.toLowerCase()})`);
 store.set('id', G.code);
-const T = s => { const r = REL[G.rel] || REL.friend; return s.replace(/\{Khach\}/g, cap(r.khach)).replace(/\{khach\}/g, r.khach).replace(/\{Cuong\}/g, cap(r.cuong)).replace(/\{cuong\}/g, r.cuong).replace(/\{ten\}/g, G.name || 'bạn').replace(/\{nam\}/g, CFG.years); };
+const T = s => { const r = REL[G.rel] || REL.friend; return s.replace(/\{Khach\}/g, cap(r.khach)).replace(/\{khach\}/g, r.khach).replace(/\{Cuong\}/g, cap(r.cuong)).replace(/\{cuong\}/g, r.cuong).replace(/\{ten\}/g, G.name || 'bạn'); };
 function seatOf(code) { let h = 0; for (const c of code) h = (h * 31 + c.charCodeAt(0)) >>> 0; return (1 + h % 30) + 'ABCDEF'[h % 6]; }
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2200); }
 function confetti(n = 60) {
@@ -79,7 +90,7 @@ function confetti(n = 60) {
 /* ================= API (Google Sheet) ================= */
 async function apiGet(params) { const r = await fetch(CFG.API + '?' + new URLSearchParams(params)); return r.json(); }
 function apiPost(data) {
-  return fetch(CFG.API, { method: 'POST', body: JSON.stringify({ ...data, k: G.code, name: data.name ?? (G.name + (G.rel === 'family' ? ' (gia đình)' : '')) }) }).then(r => r.json()).catch(() => ({ ok: false }));
+  return fetch(CFG.API, { method: 'POST', body: JSON.stringify({ ...data, k: G.code, name: data.name ?? guestName() }) }).then(r => r.json()).catch(() => ({ ok: false }));
 }
 
 /* ================= ÂM THANH ================= */
@@ -123,7 +134,7 @@ const SFX = {
   pop() { const c = audio(); if (!c) return; const t = c.currentTime; noise(t, .5, .35, 'lowpass', 700); tone(200, t, .15, 'sine', .2); },
   step() { const c = audio(); if (!c) return; noise(c.currentTime, .06, .08, 'lowpass', 500); },
 };
-const ENGINE = { nodes: null };
+const ENGINE = { nodes: null, level: 0 };
 function engineStart(level = .5) {
   const c = audio(); if (!c) return;
   if (!ENGINE.nodes) {
@@ -137,6 +148,8 @@ function engineStart(level = .5) {
     src.start(); hum.start();
     ENGINE.nodes = { src, g, hum };
   }
+  ENGINE.level = level;
+  if (PAUSE.on) return;
   ENGINE.nodes.g.gain.cancelScheduledValues(c.currentTime);
   ENGINE.nodes.g.gain.setTargetAtTime(level, c.currentTime, .6);
 }
@@ -242,10 +255,10 @@ function speaker(on) { const a = W.current() && W.current().agent; if (a) a.user
 function say(role, text, { auto = 5200 } = {}) {
   return new Promise(res => {
     const full = T(text); let i = 0, typing = true, timer = 0, autoT = 0;
-    $('#dlgWho').innerHTML = `Cường <i>· ${role}</i>`; $('#dlgTx').textContent = ''; $('#dlgCh').innerHTML = ''; $('#dlgCh').className = 'ch';
+    $('#dlgWho').innerHTML = `${esc(role[0])} <i>· ${role[1]}</i>`; $('#dlgTx').textContent = ''; $('#dlgCh').innerHTML = ''; $('#dlgCh').className = 'ch';
     dlg.classList.add('on'); dlg.classList.remove('wait'); speaker(true);
     const finish = () => { typing = false; clearInterval(timer); $('#dlgTx').textContent = full; speaker(false); dlg.classList.add('wait'); autoT = setTimeout(done, auto); };
-    const done = () => { clearTimeout(autoT); dlgSkip = null; dlg.classList.remove('wait'); res(); };
+    const done = () => { if (PAUSE.on && autoT) { autoT = setTimeout(done, 400); return; } clearTimeout(autoT); dlgSkip = null; dlg.classList.remove('wait'); res(); };
     dlgSkip = () => typing ? finish() : done();
     timer = setInterval(() => { $('#dlgTx').textContent = full.slice(0, ++i); if (i % 3 === 0) SFX.type(); if (i >= full.length) finish(); }, 24);
   });
@@ -255,7 +268,7 @@ function dlgHide() { dlg.classList.remove('on', 'wait'); speaker(false); dlgSkip
 function ask(role, text, choices) {
   return new Promise(res => {
     const full = T(text); let i = 0;
-    $('#dlgWho').innerHTML = `Cường <i>· ${role}</i>`; $('#dlgTx').textContent = ''; dlg.classList.add('on'); dlg.classList.remove('wait'); speaker(true);
+    $('#dlgWho').innerHTML = `${esc(role[0])} <i>· ${role[1]}</i>`; $('#dlgTx').textContent = ''; dlg.classList.add('on'); dlg.classList.remove('wait'); speaker(true);
     const ch = $('#dlgCh'); ch.innerHTML = ''; ch.className = 'ch';
     const t = setInterval(() => { $('#dlgTx').textContent = full.slice(0, ++i); if (i % 3 === 0) SFX.type(); if (i >= full.length) { clearInterval(t); speaker(false); choices(ch, v => { ch.innerHTML = ''; res(v); }); } }, 24);
     dlgSkip = null;
@@ -266,6 +279,7 @@ function ask(role, text, choices) {
 const S = { stage: '', rsvp: store.get('rsvp', null), cls: null, game: 0, best: store.get('best', 0) };
 const ENTER = {}, LEAVE = {};
 async function go(id, arg) {
+  if (PAUSE.on) pause(false, true);
   dlgHide();
   (LEAVE[S.stage] || (() => {}))();
   S.stage = id;
@@ -273,13 +287,36 @@ async function go(id, arg) {
   if (id === 'end' || id === 'review') app.classList.add('paper');
   if (id === 'video' || id === 'letter') app.classList.add('film');
   if (id === 'ticket') app.classList.add('blur');
-  $('#btnSkip').style.visibility = ['checkin', 'quiz', 'board', 'takeoff', 'video', 'fly', 'storm', 'landing', 'letter'].includes(id) ? 'visible' : 'hidden';
+  $('#btnPause').style.visibility = ['checkin', 'quiz', 'board', 'takeoff', 'video', 'fly', 'storm', 'landing', 'letter'].includes(id) ? 'visible' : 'hidden';
   const stageEl = { ticket: 's-ticket', checkin: 's-ground', quiz: 's-quiz', board: 's-ground', takeoff: 's-takeoff', video: 's-video', fly: 's-flight', storm: 's-storm', landing: 's-landing', letter: 's-letter', review: 's-review', end: 's-end' }[id];
   $$('.stage').forEach(s => s.classList.toggle('on', s.id === stageEl));
   const sc = $('#' + stageEl + ' .scroll'); if (sc) sc.scrollTop = 0;
   await (ENTER[id] || (() => {}))(arg);
 }
-$('#btnSkip').onclick = () => go(!G.name ? 'ticket' : store.get('reviewed', false) ? 'end' : 'review');
+
+/* Tạm dừng: dừng cảnh 3D, video, nhạc, đồng hồ; menu chơi tiếp / bỏ qua chặng 2 / bỏ qua tới thiệp */
+const PAUSE = { on: false, since: 0, vol: 0, vid: null };
+function pause(on, quiet = false) {
+  if (on === PAUSE.on) return;
+  PAUSE.on = on; W.setPaused(on); $('#app').classList.toggle('paused', on);
+  $('#pauseOv').classList.toggle('on', on && !quiet);
+  const vids = [$('#vid'), $('#montage')];
+  if (on) {
+    PAUSE.since = performance.now(); PAUSE.vol = MUS.vol; musicLevel(.06, 300);
+    PAUSE.vid = vids.filter(v => !v.paused); PAUSE.vid.forEach(v => v.pause());
+    if (ENGINE.nodes && AU.ctx) ENGINE.nodes.g.gain.setTargetAtTime(0, AU.ctx.currentTime, .15);
+    $('#pSkip2').hidden = !['video', 'fly'].includes(S.stage);
+  } else {
+    qT0 += performance.now() - PAUSE.since;
+    if (quiet) return;
+    musicLevel(PAUSE.vol, 400); (PAUSE.vid || []).forEach(v => v.play().catch(() => {}));
+    if (ENGINE.nodes) engineStart(ENGINE.level);
+  }
+}
+$('#btnPause').onclick = () => { SFX.blip(1); pause(true); };
+$('#pResume').onclick = () => pause(false);
+$('#pSkip2').onclick = () => go('storm');
+$('#pSkipEnd').onclick = () => go('end');
 
 /* ================= CẢNH 0: VÉ TRÊN ĐIỆN THOẠI ================= */
 ENTER.ticket = async () => {
@@ -289,10 +326,15 @@ ENTER.ticket = async () => {
   $('#inName').value = G.name; paintRel(); checkTicket();
   $('#tkName').textContent = G.name || '_ _ _ _ _'; $('#tkSeat').textContent = G.name ? seatOf(G.code) : '—';
 };
-function paintRel() { $$('#relBtns button').forEach(b => b.classList.toggle('on', b.dataset.rel === G.rel && store.get('relPicked', false))); }
-function checkTicket() { $('#tkDone').disabled = !($('#inName').value.trim().length >= 1 && store.get('relPicked', false)); }
+function paintRel() {
+  const picked = store.get('relPicked', false);
+  $$('#relBtns button').forEach(b => b.classList.toggle('on', b.dataset.rel === G.rel && picked));
+  $('#inRel').hidden = !(picked && G.rel === 'other'); $('#inRel').value = G.relText;
+}
+function checkTicket() { $('#tkDone').disabled = !($('#inName').value.trim().length >= 1 && store.get('relPicked', false) && (G.rel !== 'other' || $('#inRel').value.trim())); }
 $('#inName').addEventListener('input', () => { const v = $('#inName').value.trim(); $('#tkName').textContent = v || '_ _ _ _ _'; checkTicket(); });
-$$('#relBtns button').forEach(b => b.onclick = () => { G.rel = b.dataset.rel; store.set('rel', G.rel); store.set('relPicked', true); paintRel(); checkTicket(); SFX.blip(2); });
+$$('#relBtns button').forEach(b => b.onclick = () => { G.rel = b.dataset.rel; store.set('rel', G.rel); store.set('relPicked', true); paintRel(); checkTicket(); SFX.blip(2); if (G.rel === 'other') $('#inRel').focus(); });
+$('#inRel').addEventListener('input', () => { G.relText = $('#inRel').value.trim().slice(0, 24); store.set('relText', G.relText); checkTicket(); });
 $('#tkDone').onclick = async () => {
   G.name = $('#inName').value.trim().slice(0, 30); store.set('name', G.name);
   $('#tkName').textContent = G.name; $('#tkSeat').textContent = seatOf(G.code); SFX.win(); $('#inName').blur();
@@ -320,7 +362,7 @@ function makeDodger(btn, area, sayEl, fallbackText, onGiveUp) {
   btn.addEventListener('pointerdown', move);
   btn.addEventListener('click', () => { if (tired && Date.now() - tired > 400) onGiveUp(n); });
 }
-const ROLE = { checkin: 'NHÂN VIÊN CHECK-IN', gate: 'NHÂN VIÊN THỦ TỤC', captain: 'CƠ TRƯỞNG' };
+const ROLE = { checkin: [CFG.nick.checkin, 'NHÂN VIÊN CHECK-IN'], gate: [CFG.nick.gate, 'NHÂN VIÊN THỦ TỤC'], captain: [CFG.nick.captain, 'CHUYẾN BAY TXCC2026'] };
 ENTER.checkin = async () => {
   musicPlay('bgm', .3);
   let arrive; const arrived = new Promise(r => arrive = r);
@@ -329,7 +371,7 @@ ENTER.checkin = async () => {
   await arrived; clearInterval(stepT);
   if (S.stage !== 'checkin') return;
   SFX.beep(); $('#scanok').classList.add('on'); setTimeout(() => $('#scanok').classList.remove('on'), 1600);
-  await say(ROLE.checkin, 'Xin chào {ten}! Vé chuyến TXCC2026 đây rồi. Chuyến này đặc biệt lắm đó – nó bay qua cả quãng đường đại học của {cuong}.');
+  await say(ROLE.checkin, 'Xin chào {ten}! Vé chuyến TXCC2026 đây rồi. Chuyến này đặc biệt lắm đó – nó bay qua cả quãng đường cao đẳng của {cuong}.');
   if (S.stage !== 'checkin') return;
   const go2 = await ask(ROLE.checkin, 'Điểm đến là lễ tốt nghiệp, 15:00 thứ Ba 08/12 ở Nhà hát Hòa Bình. {Khach} lên chuyến bay này cùng {cuong} nhé?', (box, pick) => {
     box.className = 'ch dodge';
@@ -345,7 +387,7 @@ ENTER.checkin = async () => {
 };
 
 /* ================= CẢNH 2: KIỂM TRA THỦ TỤC ================= */
-let qi = 0, correct = 0, qTimer = 0, qLock = false;
+let qi = 0, correct = 0, qTimer = 0, qLock = false, qT0 = 0;
 ENTER.quiz = async () => {
   $('#ppOv').classList.remove('on'); $('#qSheet').style.display = 'none';
   let arrive; const arrived = new Promise(r => arrive = r);
@@ -374,9 +416,10 @@ function showQ() {
     body.appendChild(box);
   }
   clearInterval(qTimer);
-  const fg = $('#timerFg'), n = $('#timerN'), tm = $('#timer'), t0 = performance.now(); let lastSec = CFG.qTime;
+  const fg = $('#timerFg'), n = $('#timerN'), tm = $('#timer'); qT0 = performance.now(); let lastSec = CFG.qTime;
   qTimer = setInterval(() => {
-    const left = Math.max(0, CFG.qTime - (performance.now() - t0) / 1000);
+    if (PAUSE.on) return;
+    const left = Math.max(0, CFG.qTime - (performance.now() - qT0) / 1000);
     fg.style.strokeDashoffset = 138.2 * (1 - left / CFG.qTime);
     const sec = Math.ceil(left); n.textContent = sec; tm.classList.toggle('warn', left <= 3);
     if (sec !== lastSec) { lastSec = sec; if (sec <= 3 && sec > 0) SFX.tick(); }
@@ -395,7 +438,8 @@ async function finishQuiz() {
   $('#qSheet').style.display = 'none';
   await say(ROLE.gate, S.cls === 'biz' ? 'Chuẩn luôn! {Khach} hiểu {cuong} ghê.' : 'Hmm… chuyến bay này sẽ giúp {khach} hiểu {cuong} hơn đó.', { auto: 2500 });
   dlgHide();
-  $('#ppName').textContent = G.name; $('#ppScore').textContent = `ĐÚNG ${correct}/${CFG.quiz.length} CÂU`;
+  $('#ppName').textContent = G.name;
+  const ph = $('#stampImg'); ph.onerror = () => { ph.onerror = null; ph.src = 'face.jpg'; }; if (!ph.dataset.set) { ph.dataset.set = 1; ph.src = CFG.passportPhoto; } $('#ppScore').textContent = `ĐÚNG ${correct}/${CFG.quiz.length} CÂU`;
   const st = $('#stamp'); st.classList.remove('hit');
   $('#ppBook').style.setProperty('--stampc', S.cls === 'biz' ? '#A0670C' : '#1E5BC4');
   $('#stampText').textContent = S.cls === 'biz' ? '★ BUSINESS CLASS · TXCC2026 ★' : '★ ECONOMY CLASS · TXCC2026 ★';
@@ -412,7 +456,7 @@ $('#ppNext').onclick = () => go('board');
 /* ================= CẢNH 3: LÊN MÁY BAY ================= */
 ENTER.board = async () => {
   let arrive; const arrived = new Promise(r => arrive = r);
-  const stepT = setInterval(SFX.step, 270);
+  const stepT = setInterval(SFX.step, 530);
   await W.show('boarding', { onArrive: () => arrive() });
   await arrived; clearInterval(stepT);
   if (S.stage !== 'board') return;
@@ -456,10 +500,9 @@ ENTER.video = async () => {
 };
 LEAVE.video = () => { $('#vid').pause(); };
 $('#tapPlay').onclick = () => $('#vid').play().then(() => $('#tapPlay').classList.remove('on')).catch(() => {});
-$('#vSkip').onclick = () => vidDone && vidDone();
 
 /* ================= CHẶNG 2: MỞ KHOÁ KỶ NIỆM ================= */
-let flightApi = null, posterT = 0, hintT = 0;
+let flightApi = null, posterLast = false, hintT = 0;
 const itemName = k => CFG.items[k] ? CFG.items[k].emoji + ' ' + CFG.items[k].name : '';
 ENTER.fly = async () => {
   S.game = 0;
@@ -490,16 +533,19 @@ function showPoster(k, last) {
   $('#pImg').style.backgroundImage = it.img ? `url(${it.img})` : '';
   $('#pImg').innerHTML = it.img ? '' : `<div class="empty"><span>${it.emoji}</span>Ảnh sẽ được thêm sau</div>`;
   $('#pKind').textContent = it.kind; $('#pTitle').textContent = it.title; $('#pText').textContent = T(it.text);
-  const bar = $('#pBar'); bar.style.transition = 'none'; bar.style.transform = 'scaleX(1)'; void bar.offsetWidth;
-  bar.style.transition = `transform ${CFG.posterTime}s linear`; bar.style.transform = 'scaleX(0)';
-  $('#poster').classList.add('on'); musicLevel(.2); engineStart(.12);
-  clearTimeout(posterT);
-  posterT = setTimeout(() => {
-    $('#poster').classList.remove('on');
-    if (last) return stage2Done();
-    musicLevel(.45); engineStart(.38); flightApi && flightApi.resume();
-  }, CFG.posterTime * 1000);
+  const bar = $('#pBar'), ov = $('#poster');
+  bar.style.animationDuration = CFG.posterTime + 's';
+  ov.classList.remove('on'); void ov.offsetWidth; ov.classList.add('on');
+  posterLast = last; musicLevel(.2); engineStart(.12);
 }
+function closePoster() {
+  const ov = $('#poster'); if (!ov.classList.contains('on')) return;
+  ov.classList.remove('on');
+  if (posterLast) return stage2Done();
+  musicLevel(.45); engineStart(.38); flightApi && flightApi.resume();
+}
+$('#pBar').addEventListener('animationend', closePoster);
+$('#pSkip').onclick = () => { SFX.blip(3); closePoster(); };
 // đủ vật phẩm: bầu trời tối sầm, sang chặng 3
 async function stage2Done() {
   $('#s-flight').classList.remove('playing');
@@ -508,7 +554,7 @@ async function stage2Done() {
   await wait(1800);
   if (S.stage === 'fly') go('storm');
 }
-LEAVE.fly = () => { clearTimeout(posterT); clearTimeout(hintT); };
+LEAVE.fly = () => { $('#poster').classList.remove('on'); clearTimeout(hintT); };
 
 /* ================= CHẶNG 3: GIÔNG BÃO (chạm giữ) ================= */
 let stormApi = null;
@@ -615,6 +661,7 @@ ENTER.letter = () => {
   $('#letterBtn').classList.remove('on'); el.innerHTML = '<span class="cur"></span>'; clearTimeout(letterT);
   const tick = () => {
     if (S.stage !== 'letter') return;
+    if (PAUSE.on) { letterT = setTimeout(tick, 300); return; }
     i++; const ch = full[i - 1];
     el.innerHTML = esc(full.slice(0, i)) + '<span class="cur"></span>';
     if (i >= full.length) { setTimeout(() => $('#letterBtn').classList.add('on'), 600); return; }
@@ -637,7 +684,7 @@ $('#rvSend').onclick = async () => {
   const text = $('#rvText').value.trim();
   if (text.length < 2) return toast('Viết vài chữ gửi cơ trưởng nhé');
   $('#rvSend').disabled = true; $('#rvSend').textContent = 'Đang gửi…';
-  const name = G.name + (G.rel === 'family' ? ' (gia đình)' : '');
+  const name = guestName();
   store.set('myReview', { name, stars, text }); store.set('reviewed', true);
   await apiPost({ a: 'review', name, stars, text });
   $('#rvSend').disabled = false; $('#rvSend').textContent = 'Gửi lời chúc'; $('#rvText').value = '';
@@ -656,6 +703,7 @@ ENTER.end = async () => {
     if (total > S.best) { S.best = total; store.set('best', total); }
     apiPost({ a: 'score', views: total });
   }
+  $('#btnWish').style.display = store.get('reviewed', false) ? 'none' : '';
   $('#ivMsg').textContent = T(CFG.invite);
   $('#ivName').textContent = G.name || '—';
   $('#ivPhoneRow').style.display = CFG.phone ? '' : 'none';
@@ -675,6 +723,7 @@ async function loadWall() {
   $('#wallLb').innerHTML = lb.length ? lb.map((r, i) => `<div class="lbr"><div class="r">${i + 1}</div><div class="n">${esc(r.name)}</div><div class="v">${fmt(+r.views)}</div></div>`).join('') : '<p style="text-align:center;color:var(--muted)">Chưa có ai chơi. Vào chiếm hạng nhất đi!</p>';
 }
 $$('.tabs button').forEach(b => b.onclick = () => { $$('.tabs button').forEach(x => x.classList.toggle('on', x === b)); $('#wallRv').hidden = b.dataset.t !== 'rv'; $('#wallLb').hidden = b.dataset.t !== 'lb'; });
+$('#btnWish').onclick = () => go('review');
 $('#wAgain').onclick = () => go('ticket');
 $('#wFly').onclick = () => go('fly');
 

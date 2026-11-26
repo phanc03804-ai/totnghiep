@@ -1,7 +1,7 @@
 // Các cảnh 3D (Three.js): sân bay (check-in, thủ tục), ống lồng, cất cánh, chặng bay, phim hạ cánh.
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-let renderer = null, canvas = null, cur = null, last = 0;
+let renderer = null, canvas = null, cur = null, last = 0, paused = false;
 export let glOK = false;
 
 export function initGL(c) {
@@ -29,7 +29,7 @@ function loop(t) {
   requestAnimationFrame(loop);
   const dt = Math.min(0.05, (t - last) / 1000 || 0); last = t;
   if (!cur) return;
-  cur.update(dt, t / 1000);
+  if (!paused) cur.update(dt, t / 1000);
   renderer.render(cur.scene, cur.camera);
 }
 export async function show(name, opts = {}) {
@@ -42,6 +42,8 @@ export async function show(name, opts = {}) {
   return cur;
 }
 export function current() { return cur; }
+// tạm dừng: vẫn vẽ khung hình hiện tại nhưng không cập nhật cảnh
+export function setPaused(p) { paused = p; }
 // tạm dừng vẽ 3D khi màn hình đang dùng ảnh thật / video (đỡ tốn pin)
 export function clear() { if (cur && cur.dispose) cur.dispose(); cur = null; }
 
@@ -251,15 +253,16 @@ BUILD.boarding = async ({ onArrive = () => {} }) => {
   const stripe = planeMesh(8, .12, new THREE.MeshBasicMaterial({ color: '#C9A35B' })); stripe.position.set(0, .2, .02); door.add(stripe);
   const glow = new THREE.PointLight('#FFE0B0', 30, 8); glow.position.set(0, 1.3, -1); door.add(glow);
   door.position.z = -L + 5; scene.add(door);
-  const start = new THREE.Vector3(0, 1.62, 4), end = new THREE.Vector3(0, 1.62, -L + 7.2);
+  // chỉ 3 bước là tới cửa máy bay
+  const end = new THREE.Vector3(0, 1.62, -L + 7.2), start = end.clone().setZ(end.z + 2.6), WALK = 1.6;
   camera.position.copy(start);
   let t0 = 0, arrived = false;
   return {
     scene, camera,
     update(dt) {
-      t0 += dt; const k = Math.min(1, t0 / 5.5), e = k < .9 ? k / .9 * .95 : .95 + (k - .9) / .1 * .05;
+      t0 += dt; const k = Math.min(1, t0 / WALK), e = 1 - Math.pow(1 - k, 2);
       camera.position.lerpVectors(start, end, e);
-      camera.position.y += k < 1 ? Math.abs(Math.sin(t0 * 7.5)) * .045 : 0;
+      camera.position.y += k < 1 ? Math.abs(Math.sin(t0 * Math.PI * 3 / WALK)) * .045 : 0;
       camera.lookAt(0, 1.4, camera.position.z - 6);
       if (!arrived && k >= 1) { arrived = true; onArrive(); }
     },

@@ -6,7 +6,7 @@
 <title>TXCC2026 · Chuyến bay tốt nghiệp</title>
 <meta name="description" content="Thư mời lễ tốt nghiệp của Phan Ngọc Cao Cường – 15:00, 08/12/2026, Nhà hát Hòa Bình">
 <meta property="og:title" content="TXCC2026 – Lễ tốt nghiệp của Cao Cường">
-<meta property="og:description" content="15:00 · 08/12/2026 · Nhà hát Hòa Bình. Lên chuyến bay cùng Cường qua những năm tháng đại học.">
+<meta property="og:description" content="15:00 · 08/12/2026 · Nhà hát Hòa Bình. Lên chuyến bay cùng Cường qua những năm tháng cao đẳng.">
 <meta name="theme-color" content="#0A1A3F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -96,8 +96,11 @@ p{margin:.45em 0;line-height:1.55}
 .form label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--navy);margin:9px 0 5px}
 .form input{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:15px}
 .form input:focus{outline:2px solid var(--gold);border-color:transparent}
-.rel{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.rel button{padding:11px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--navy);font-weight:700;font-size:14px}
+.rel{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.rel button{grid-column:span 2;padding:11px 4px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--navy);font-weight:700;font-size:14px}
+.rel button:nth-child(n+4){grid-column:span 3}
+#inRel{margin-top:8px}
+#inRel[hidden]{display:none}
 .rel button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 .screen .btn{margin-top:14px}
 .qr{height:30px;margin:2px 14px 12px;background:repeating-linear-gradient(90deg,var(--navy) 0 2px,transparent 2px 4px,var(--navy) 4px 7px,transparent 7px 8px,var(--navy) 8px 9px,transparent 9px 12px)}
@@ -220,6 +223,16 @@ p{margin:.45em 0;line-height:1.55}
 .poster p{margin:6px 0 0;font-size:14px;line-height:1.5;color:#4A5064}
 .pbar{height:3px;border-radius:9px;background:#EFE6D4;margin:12px 4px 0;overflow:hidden}
 .pbar i{display:block;height:100%;width:100%;background:var(--gold);transform-origin:left}
+.poster-ov.on .pbar i{animation:pbar 10s linear forwards}
+@keyframes pbar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.pskip{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;align-items:center;gap:7px;white-space:nowrap;padding:11px 18px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;font-weight:700;font-size:14px;opacity:0;visibility:hidden}
+.poster-ov.on .pskip{animation:reveal .4s 3.5s forwards}
+@keyframes reveal{to{opacity:1;visibility:visible}}
+.app.paused .poster-ov .pbar i,.app.paused .poster-ov .pskip{animation-play-state:paused}
+.pause-ov{position:absolute;inset:0;z-index:50;display:flex;align-items:flex-end;padding:0 12px 24px;background:rgba(3,7,15,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .3s}
+.pause-ov.on{opacity:1;pointer-events:auto}
+.pause-ov .sheet{position:relative;left:auto;right:auto;bottom:auto;width:100%}
+.pause-ov [hidden]{display:none}
 .dusk{position:absolute;inset:0;z-index:20;background:#05070D;opacity:0;pointer-events:none;transition:opacity 1.6s}
 .dusk.on{opacity:1}
 .flash{position:absolute;inset:0;background:#E8F0FF;z-index:14;opacity:0;pointer-events:none}
@@ -389,6 +402,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10zM14 7l3 3"/></symbol>
   <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
   <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 9M20 4v5h-5M20 12a8 8 0 0 1-13.7 5.6L4 15M4 20v-5h5"/></symbol>
 </svg>
 <div class="app" id="app">
@@ -397,12 +411,12 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
 
   <div class="topbar">
     <div class="brand"><span class="logo"><svg class="ic"><use href="#i-plane"/></svg></span><div><b>TXCC2026</b><small>GRADUATION AIRLINES</small></div></div>
-    <div class="chips"><button class="chip" id="btnMute" aria-label="Âm thanh"><svg class="ic"><use href="#i-sound"/></svg></button><button class="chip" id="btnSkip"><svg class="ic"><use href="#i-skip"/></svg>Bỏ qua</button></div>
+    <div class="chips"><button class="chip" id="btnMute" aria-label="Âm thanh"><svg class="ic"><use href="#i-sound"/></svg></button><button class="chip" id="btnPause" aria-label="Tạm dừng"><svg class="ic"><use href="#i-pause"/></svg>Tạm dừng</button></div>
   </div>
 
   <!-- CẢNH 0: cầm điện thoại xem vé -->
   <section class="stage" id="s-ticket">
-    <div class="ticket-intro"><div class="kick">Thư mời lễ tốt nghiệp</div><h1>Bạn có một vé máy bay</h1><p>Điền tên để hoàn tất vé, rồi lên chuyến bay qua những năm tháng đại học của Cường.</p></div>
+    <div class="ticket-intro"><div class="kick">Thư mời lễ tốt nghiệp</div><h1>Bạn có một vé máy bay</h1><p>Điền tên để hoàn tất vé, rồi lên chuyến bay qua những năm tháng cao đẳng của Cường.</p></div>
     <div class="hold" id="hold">
       <div class="phone"><div class="notch"></div>
         <div class="screen">
@@ -420,7 +434,8 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
             <label for="inName">TÊN CỦA BẠN</label>
             <input id="inName" maxlength="30" autocomplete="name" placeholder="Ví dụ: Minh Anh">
             <label>CƯỜNG LÀ GÌ CỦA BẠN?</label>
-            <div class="rel" id="relBtns"><button data-rel="family">Gia đình</button><button data-rel="friend">Bạn bè</button></div>
+            <div class="rel" id="relBtns"><button data-rel="family">Gia đình</button><button data-rel="friend">Bạn bè</button><button data-rel="crush">Crush</button><button data-rel="work">Đồng nghiệp</button><button data-rel="other">Khác…</button></div>
+            <input id="inRel" maxlength="24" placeholder="Ghi mối quan hệ, ví dụ: hàng xóm" hidden>
             <button class="btn" id="tkDone" disabled>Hoàn tất vé <svg class="ic"><use href="#i-check"/></svg></button>
           </div>
         </div>
@@ -454,7 +469,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
             <svg viewBox="0 0 200 200" aria-hidden="true"><defs><path id="cp" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs>
               <circle cx="100" cy="100" r="96" fill="none" stroke="var(--stampc,#B45309)" stroke-width="4"/><circle cx="100" cy="100" r="62" fill="none" stroke="var(--stampc,#B45309)" stroke-width="2.5"/>
               <text font-family="Be Vietnam Pro, sans-serif" font-weight="800" font-size="13" fill="var(--stampc,#B45309)" letter-spacing="2.5"><textPath href="#cp" id="stampText">★ APPROVED · TXCC2026 ★</textPath></text></svg>
-            <div class="face"><img src="face.jpg" alt=""></div>
+            <div class="face"><img id="stampImg" alt=""></div>
           </div>
         </div>
         <div class="pp-res" id="ppRes"></div>
@@ -471,7 +486,6 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
     <video id="vid" playsinline preload="none"></video>
     <div class="vcard" id="vcard"><div><small id="vcKick">CHẶNG 1</small><h2 id="vcTitle">Cất cánh</h2><p id="vcLine"></p><div class="note">Video của Cường sẽ chiếu ở đây</div></div></div>
     <div class="tap-play" id="tapPlay"><div class="center"><svg class="ic" style="width:40px;height:40px"><use href="#i-play"/></svg><p>Chạm để xem</p></div></div>
-    <button class="chip v-skip" id="vSkip">Bỏ qua <svg class="ic"><use href="#i-skip"/></svg></button>
   </section>
 
   <!-- CHẶNG 2: MỞ KHOÁ KỶ NIỆM -->
@@ -494,7 +508,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
       <div class="ph" id="pImg"></div>
       <div class="pb"><small id="pKind"></small><h2 id="pTitle"></h2><p id="pText"></p></div>
       <div class="pbar"><i id="pBar"></i></div>
-    </div></div>
+    </div><button class="pskip" id="pSkip">Bỏ qua khoảnh khắc <svg class="ic"><use href="#i-skip"/></svg></button></div>
     <div class="dusk" id="dusk"></div>
   </section>
 
@@ -562,6 +576,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
     </div>
     <div class="info-btns"><button id="btnSave"><svg class="ic"><use href="#i-down"/></svg>Lưu ảnh thiệp mời</button><a id="lnkMap" target="_blank" rel="noopener"><svg class="ic"><use href="#i-pin"/></svg>Xem bản đồ</a></div>
     <div class="info-btns" style="grid-template-columns:1fr;margin-top:10px"><a id="lnkCal" target="_blank" rel="noopener"><svg class="ic"><use href="#i-cal"/></svg>Lưu vào lịch</a></div>
+    <button class="btn mt" id="btnWish">Gửi lời chúc cho Cường</button>
     <div class="scoreline" id="scoreline"></div>
     <div class="tabs"><button class="on" data-t="rv">Lời chúc</button><button data-t="lb">Bảng xếp hạng</button></div>
     <div id="wallRv"></div>
@@ -569,6 +584,12 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
     <div class="info-btns mt2"><button id="wAgain"><svg class="ic"><use href="#i-repeat"/></svg>Bay lại từ đầu</button><button id="wFly"><svg class="ic"><use href="#i-plane"/></svg>Chơi lại chặng 2</button></div>
   </div></section>
 
+  <div class="pause-ov" id="pauseOv"><div class="sheet">
+    <div class="kick">Tạm dừng</div><h2>Chuyến bay đang tạm dừng</h2>
+    <button class="btn mt2" id="pResume">Chơi tiếp <svg class="ic"><use href="#i-play"/></svg></button>
+    <button class="btn ghost mt" id="pSkip2">Bỏ qua chặng 2 <svg class="ic"><use href="#i-skip"/></svg></button>
+    <button class="btn ghost mt" id="pSkipEnd">Bỏ qua tới thiệp mời <svg class="ic"><use href="#i-skip"/></svg></button>
+  </div></div>
   <div class="save-ov" id="saveOv"><div class="center"><img id="saveImg" alt="Thiệp mời"><p>Nhấn giữ ảnh để lưu vào máy</p><div class="info-btns"><a id="saveDl" download="thiep-moi-tot-nghiep-cuong.png"><svg class="ic"><use href="#i-down"/></svg>Tải xuống</a><button id="saveClose">Đóng</button></div></div></div>
   <div class="dlg" id="dlg"><div class="pf" id="dlgPf"></div><div style="flex:1;min-width:0"><div class="who" id="dlgWho"></div><div class="tx" id="dlgTx"></div><div class="ch" id="dlgCh"></div></div><span class="nx">Chạm để tiếp ▸</span></div>
   <div class="scanok" id="scanok"><svg class="ic"><use href="#i-check"/></svg>Đã quét vé</div>
