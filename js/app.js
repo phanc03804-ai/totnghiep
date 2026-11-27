@@ -13,7 +13,8 @@ const CFG = {
   qTime: 10,
   flight: 'TXCC2026',
   phone: '',          // [xác nhận] số điện thoại in trên thiệp mời, để trống thì ẩn dòng Liên hệ
-  passportPhoto: 'img/passport.jpg', // ảnh trên dấu hộ chiếu (ảnh cầm cây chày) – chưa có thì dùng face.jpg
+  passportPhoto: 'img/passport.jpg', // ảnh trong con dấu hộ chiếu (ảnh cầm cây chày) – chưa có thì dùng face.jpg
+  faces: { checkin: 'img/cuong-face.jpg', gate: 'img/gate-face.jpg', captain: 'img/captain-face.jpg' }, // ảnh đại diện mỗi nhân vật trong khung thoại
   // biệt danh của Cường ở từng vai trong hội thoại
   nick: { checkin: 'C con cá', gate: 'Cường cọc cằn', captain: 'Cường cơ trưởng' },
   // Chặng 1: video media/video1.mp4 (~20 giây, dọc 9:16). Chưa có file thì hiện thẻ tiêu đề này
@@ -247,7 +248,6 @@ $('#btnMute').onclick = () => {
 
 /* ================= HỘI THOẠI KIỂU GTA ================= */
 const dlg = $('#dlg');
-$('#dlgPf').style.backgroundImage = 'url(img/cuong-face.jpg)';
 let dlgSkip = null;
 dlg.addEventListener('click', e => { if (e.target.closest('#dlgCh')) return; dlgSkip && dlgSkip(); });
 function speaker(on) { const a = W.current() && W.current().agent; if (a) a.userData.talk(on); }
@@ -255,7 +255,7 @@ function speaker(on) { const a = W.current() && W.current().agent; if (a) a.user
 function say(role, text, { auto = 5200 } = {}) {
   return new Promise(res => {
     const full = T(text); let i = 0, typing = true, timer = 0, autoT = 0;
-    $('#dlgWho').innerHTML = `${esc(role[0])} <i>· ${role[1]}</i>`; $('#dlgTx').textContent = ''; $('#dlgCh').innerHTML = ''; $('#dlgCh').className = 'ch';
+    dlgRole(role); $('#dlgTx').textContent = ''; $('#dlgCh').innerHTML = ''; $('#dlgCh').className = 'ch';
     dlg.classList.add('on'); dlg.classList.remove('wait'); speaker(true);
     const finish = () => { typing = false; clearInterval(timer); $('#dlgTx').textContent = full; speaker(false); dlg.classList.add('wait'); autoT = setTimeout(done, auto); };
     const done = () => { if (PAUSE.on && autoT) { autoT = setTimeout(done, 400); return; } clearTimeout(autoT); dlgSkip = null; dlg.classList.remove('wait'); res(); };
@@ -263,12 +263,14 @@ function say(role, text, { auto = 5200 } = {}) {
     timer = setInterval(() => { $('#dlgTx').textContent = full.slice(0, ++i); if (i % 3 === 0) SFX.type(); if (i >= full.length) finish(); }, 24);
   });
 }
+// tên + ảnh đại diện của người đang nói
+function dlgRole(role) { $('#dlgWho').innerHTML = `${esc(role[0])} <i>· ${role[1]}</i>`; $('#dlgPf').style.backgroundImage = `url(${role[2]})`; }
 function dlgHide() { dlg.classList.remove('on', 'wait'); speaker(false); dlgSkip = null; }
 // câu hỏi có lựa chọn trong khung thoại
 function ask(role, text, choices) {
   return new Promise(res => {
     const full = T(text); let i = 0;
-    $('#dlgWho').innerHTML = `${esc(role[0])} <i>· ${role[1]}</i>`; $('#dlgTx').textContent = ''; dlg.classList.add('on'); dlg.classList.remove('wait'); speaker(true);
+    dlgRole(role); $('#dlgTx').textContent = ''; dlg.classList.add('on'); dlg.classList.remove('wait'); speaker(true);
     const ch = $('#dlgCh'); ch.innerHTML = ''; ch.className = 'ch';
     const t = setInterval(() => { $('#dlgTx').textContent = full.slice(0, ++i); if (i % 3 === 0) SFX.type(); if (i >= full.length) { clearInterval(t); speaker(false); choices(ch, v => { ch.innerHTML = ''; res(v); }); } }, 24);
     dlgSkip = null;
@@ -362,7 +364,7 @@ function makeDodger(btn, area, sayEl, fallbackText, onGiveUp) {
   btn.addEventListener('pointerdown', move);
   btn.addEventListener('click', () => { if (tired && Date.now() - tired > 400) onGiveUp(n); });
 }
-const ROLE = { checkin: [CFG.nick.checkin, 'NHÂN VIÊN CHECK-IN'], gate: [CFG.nick.gate, 'NHÂN VIÊN THỦ TỤC'], captain: [CFG.nick.captain, 'CHUYẾN BAY TXCC2026'] };
+const ROLE = { checkin: [CFG.nick.checkin, 'NHÂN VIÊN CHECK-IN', CFG.faces.checkin], gate: [CFG.nick.gate, 'NHÂN VIÊN THỦ TỤC', CFG.faces.gate], captain: [CFG.nick.captain, 'CHUYẾN BAY TXCC2026', CFG.faces.captain] };
 ENTER.checkin = async () => {
   musicPlay('bgm', .3);
   let arrive; const arrived = new Promise(r => arrive = r);
@@ -439,7 +441,7 @@ async function finishQuiz() {
   await say(ROLE.gate, S.cls === 'biz' ? 'Chuẩn luôn! {Khach} hiểu {cuong} ghê.' : 'Hmm… chuyến bay này sẽ giúp {khach} hiểu {cuong} hơn đó.', { auto: 2500 });
   dlgHide();
   $('#ppName').textContent = G.name;
-  [$('#stampImg'), $('#ppPhoto')].forEach(ph => { if (ph.dataset.set) return; ph.dataset.set = 1; ph.onerror = () => { ph.onerror = null; ph.src = 'face.jpg'; }; ph.src = CFG.passportPhoto; }); $('#ppScore').textContent = `ĐÚNG ${correct}/${CFG.quiz.length} CÂU`;
+  const ph = $('#stampImg'); if (!ph.dataset.set) { ph.dataset.set = 1; ph.onerror = () => { ph.onerror = null; ph.src = 'face.jpg'; }; ph.src = CFG.passportPhoto; } $('#ppScore').textContent = `ĐÚNG ${correct}/${CFG.quiz.length} CÂU`;
   const st = $('#stamp'); st.classList.remove('hit');
   $('#ppBook').style.setProperty('--stampc', S.cls === 'biz' ? '#A0670C' : '#1E5BC4');
   $('#stampText').textContent = S.cls === 'biz' ? '★ BUSINESS CLASS · TXCC2026 ★' : '★ ECONOMY CLASS · TXCC2026 ★';
