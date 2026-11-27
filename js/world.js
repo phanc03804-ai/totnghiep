@@ -96,11 +96,13 @@ function textTex(lines, { w = 1024, h = 256, bg = null, color = '#fff', size = 1
 function planeMesh(w, h, mat) { return new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); }
 
 // Cường bằng ảnh thật đã tách nền, dựng như một tấm đứng trong cảnh; khi nói thì nhún nhẹ
-let _cuongTex = null;
-async function photoActor(height = 2.4, mirror = false) {
-  if (!_cuongTex) { _cuongTex = await new THREE.TextureLoader().loadAsync('img/cuong.webp'); _cuongTex.colorSpace = THREE.SRGBColorSpace; }
-  const mat = new THREE.MeshBasicMaterial({ map: _cuongTex, transparent: true, alphaTest: .35, color: '#F4F1EC' });
-  const m = planeMesh(height * 499 / 826, height, mat);
+// mỗi khu một ảnh: check-in, hải quan (cầm chày), cơ trưởng ở cửa máy bay
+const _actorTex = {};
+async function photoActor(src, height = 2.4, mirror = false, alphaTest = .35) {
+  if (!_actorTex[src]) { _actorTex[src] = await new THREE.TextureLoader().loadAsync(src); _actorTex[src].colorSpace = THREE.SRGBColorSpace; }
+  const tex = _actorTex[src];
+  const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest, color: '#F4F1EC' });
+  const m = planeMesh(height * tex.image.width / tex.image.height, height, mat);
   if (mirror) m.scale.x = -1;
   let talking = false;
   m.userData.talk = on => { talking = on; };
@@ -192,8 +194,8 @@ BUILD.airport = async ({ variant = 'checkin', cam = 'counter', onArrive = () => 
   });
   [-3.3, 3.3].forEach(x => { const belt = box(.03, .08, 2, std('#FF8000')); belt.position.set(x, .9, 2.4); scene.add(belt); });
 
-  const agent = await photoActor(2.5, variant === 'customs');
-  agent.userData.baseY = 1.95; agent.position.set(variant === 'customs' ? .25 : -.15, 1.95, -1.55); scene.add(agent);
+  const agent = variant === 'customs' ? await photoActor('img/gate.webp', 2.5) : await photoActor('img/cuong.webp', 2.5);
+  agent.userData.baseY = 1.95; agent.position.set(variant === 'customs' ? .1 : -.15, 1.95, -1.55); scene.add(agent);
 
   if (variant === 'customs') { // cổng soi chiếu an ninh camera sẽ đi xuyên qua
     const arch = new THREE.Group(), am = std('#B9C2CF', { metalness: .6, roughness: .3 });
@@ -253,13 +255,17 @@ BUILD.boarding = async ({ onArrive = () => {} }) => {
   const stripe = planeMesh(8, .12, new THREE.MeshBasicMaterial({ color: '#C9A35B' })); stripe.position.set(0, .2, .02); door.add(stripe);
   const glow = new THREE.PointLight('#FFE0B0', 30, 8); glow.position.set(0, 1.3, -1); door.add(glow);
   door.position.z = -L + 5; scene.add(door);
+  // cơ trưởng đứng đón ở cửa (ảnh nửa người)
+  const agent = await photoActor('img/captain.webp', .78, false, .02); // chân ảnh mờ dần, không thấy vết cắt
+  agent.userData.baseY = 1.6; agent.position.set(.05, 1.6, -L + 5.15); scene.add(agent);
   // chỉ 3 bước là tới cửa máy bay
   const end = new THREE.Vector3(0, 1.62, -L + 7.2), start = end.clone().setZ(end.z + 2.6), WALK = 1.6;
   camera.position.copy(start);
   let t0 = 0, arrived = false;
   return {
-    scene, camera,
-    update(dt) {
+    scene, camera, agent,
+    update(dt, t) {
+      agent.userData.update(dt, t);
       t0 += dt; const k = Math.min(1, t0 / WALK), e = 1 - Math.pow(1 - k, 2);
       camera.position.lerpVectors(start, end, e);
       camera.position.y += k < 1 ? Math.abs(Math.sin(t0 * Math.PI * 3 / WALK)) * .045 : 0;
