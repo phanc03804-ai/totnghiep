@@ -439,7 +439,7 @@ async function finishQuiz() {
   await say(ROLE.gate, S.cls === 'biz' ? 'Chuẩn luôn! {Khach} hiểu {cuong} ghê.' : 'Hmm… chuyến bay này sẽ giúp {khach} hiểu {cuong} hơn đó.', { auto: 2500 });
   dlgHide();
   $('#ppName').textContent = G.name;
-  const ph = $('#stampImg'); ph.onerror = () => { ph.onerror = null; ph.src = 'face.jpg'; }; if (!ph.dataset.set) { ph.dataset.set = 1; ph.src = CFG.passportPhoto; } $('#ppScore').textContent = `ĐÚNG ${correct}/${CFG.quiz.length} CÂU`;
+  [$('#stampImg'), $('#ppPhoto')].forEach(ph => { if (ph.dataset.set) return; ph.dataset.set = 1; ph.onerror = () => { ph.onerror = null; ph.src = 'face.jpg'; }; ph.src = CFG.passportPhoto; }); $('#ppScore').textContent = `ĐÚNG ${correct}/${CFG.quiz.length} CÂU`;
   const st = $('#stamp'); st.classList.remove('hit');
   $('#ppBook').style.setProperty('--stampc', S.cls === 'biz' ? '#A0670C' : '#1E5BC4');
   $('#stampText').textContent = S.cls === 'biz' ? '★ BUSINESS CLASS · TXCC2026 ★' : '★ ECONOMY CLASS · TXCC2026 ★';

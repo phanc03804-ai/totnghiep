@@ -153,11 +153,13 @@ p{margin:.45em 0;line-height:1.55}
 .passport-ov{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:70px 20px 40px;background:rgba(3,7,15,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .4s}
 .passport-ov.on{opacity:1;pointer-events:auto}
 .pp{width:100%;max-width:350px}
-.pp-book{position:relative;border-radius:16px;background:linear-gradient(160deg,#FFFDF6,#F3E8D2);padding:20px;min-height:300px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5);border:1px solid #E3D3B3}
+.pp-book{position:relative;border-radius:16px;background:linear-gradient(160deg,#FFFDF6,#F3E8D2);padding:20px;min-height:350px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5);border:1px solid #E3D3B3}
 .pp-book .wm{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--serif);font-size:72px;color:rgba(10,26,63,.05);transform:rotate(-18deg)}
 .pp-book .lbl{font-size:9.5px;font-weight:700;letter-spacing:.2em;color:#9A8466}
+.pp-photo{position:absolute;right:16px;top:16px;width:108px;height:136px;object-fit:cover;object-position:28% 30%;border-radius:6px;border:3px solid #fff;box-shadow:0 6px 16px rgba(10,26,63,.25);transform:rotate(2deg)}
+.pp-book .lbl,.pp-book .nm{padding-right:118px}
 .pp-book .nm{font-family:var(--serif);font-weight:700;font-size:21px;color:var(--navy);margin-top:6px}
-.stamp{position:absolute;left:50%;top:60%;width:180px;height:180px;margin:-90px 0 0 -90px;opacity:0;transform:scale(3) rotate(-30deg)}
+.stamp{position:absolute;left:50%;top:67%;width:180px;height:180px;margin:-90px 0 0 -90px;opacity:0;transform:scale(3) rotate(-30deg)}
 .stamp.hit{animation:stamp .45s cubic-bezier(.2,1.6,.4,1) forwards}
 @keyframes stamp{to{opacity:.92;transform:scale(1) rotate(-12deg)}}
 .stamp svg{width:100%;height:100%}
@@ -462,6 +464,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
       <div class="pp">
         <div class="pp-book" id="ppBook">
           <div class="wm">VISA</div>
+          <img class="pp-photo" id="ppPhoto" alt="">
           <div class="lbl">HỘ CHIẾU · PASSPORT · TXCC2026</div>
           <div class="nm" id="ppName"></div>
           <div class="lbl" style="margin-top:6px" id="ppScore"></div>
