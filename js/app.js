@@ -53,24 +53,22 @@ const CFG = {
   letters: {
     family: 'Gửi gia đình thương yêu,\n\nHành trình những năm tháng cao đẳng của con cuối cùng cũng đã hạ cánh an toàn. Sau mỗi chặng bay là những bữa cơm chờ cửa, những lời hỏi han, và cả những lo lắng gia đình chẳng bao giờ nói ra.\n\nCảm ơn gia đình đã luôn là đường băng vững chắc nhất để con dám cất cánh. Tấm bằng này là của con, nhưng niềm vui này là của cả nhà.',
     teacher: 'Kính gửi thầy cô,\n\nEm cảm ơn thầy cô đã kiên nhẫn chỉ đường cho em qua từng chặng bay – từ những ngày năm nhất bỡ ngỡ đến những trang cuối của khoá luận.\n\nNhững bài giảng, những lời góp ý và cả những lần thầy cô tin em hơn em tự tin vào mình, em sẽ mang theo trên mọi hành trình phía trước.',
-    work: 'Gửi {khach} {ten},\n\nCảm ơn {khach} vì những ngày cùng làm việc, cùng chạy deadline và chia nhau từng ly cà phê. Bên cạnh {khach}, {cuong} học được cách làm việc thật sự chứ không chỉ trên giáo trình.\n\nChuyến bay cao đẳng đã hạ cánh, mong mình vẫn là đồng đội trên những chặng đường mới.',
+    work: 'Gửi {ten},\n\nCảm ơn {khach} vì những ngày cùng làm việc, cùng chạy deadline và chia nhau từng ly cà phê. Bên cạnh {khach}, {cuong} học được cách làm việc thật sự chứ không chỉ trên giáo trình.\n\nChuyến bay cao đẳng đã hạ cánh, mong mình vẫn là đồng đội trên những chặng đường mới.',
     friend: 'Gửi {ten},\n\nHành trình những năm tháng cao đẳng cuối cùng cũng đã đến trạm dừng chân đẹp nhất.\n\nCảm ơn {khach} vì đã là một phần không thể thiếu trong chuyến bay thanh xuân của {cuong} – những buổi tám chuyện xuyên trưa, những chuyến đi, và cả những lúc chỉ cần ngồi cạnh nhau là đủ.\n\nMọi kỷ niệm, dù vui hay buồn, {cuong} đều sẽ cất giữ thật kỹ cho những chặng đường mới phía trước.',
   },
   invite: 'Chuyến bay ký ức đã khép lại, nhưng lễ mừng hạ cánh thì không thể thiếu {khach}! Hẹn gặp {khach} tại buổi lễ tốt nghiệp của {cuong} nhé.',
   map: 'https://www.google.com/maps/search/?api=1&query=Nh%C3%A0+h%C3%A1t+H%C3%B2a+B%C3%ACnh+240+%C4%90%C6%B0%E1%BB%9Dng+3+Th%C3%A1ng+2+TP.HCM',
 };
 // mối quan hệ khách chọn trên vé: xưng hô trong toàn bộ thiệp đổi theo đây.
-// addr: nhóm này chọn thêm Anh / Chị / Bạn (anh, chị thì Cường xưng "em"; bạn thì xưng "Cường")
 const REL = {
   family: { label: 'Gia đình', khach: 'gia đình', cuong: 'con', letter: 'family' },
   teacher: { label: 'Thầy cô', khach: 'thầy cô', cuong: 'em', letter: 'teacher' },
-  friend: { label: 'Bạn bè', addr: true, letter: 'friend' },
-  crush: { label: 'Crush', khach: 'cậu', cuong: 'tớ', letter: 'friend' },
-  work: { label: 'Đồng nghiệp', addr: true, letter: 'work' },
-  other: { label: 'Khác', addr: true, letter: 'friend' },
+  friend: { label: 'Bạn bè', khach: 'anh/chị/em/bạn', cuong: 'em/Cường', letter: 'friend' },
+  crush: { label: 'Crush', khach: 'anh/chị/em/bạn', cuong: 'em/Cường', letter: 'friend' },
+  work: { label: 'Đồng nghiệp', khach: 'anh/chị/em/bạn', cuong: 'em/Cường', letter: 'work' },
+  other: { label: 'Khác', khach: 'anh/chị/em/bạn', cuong: 'em/Cường', letter: 'friend' },
 };
-const ADDR = { anh: { khach: 'anh', cuong: 'em' }, chi: { khach: 'chị', cuong: 'em' }, ban: { khach: 'bạn', cuong: 'Cường' } };
-const relNow = () => { const r = REL[G.rel] || REL.friend; return r.addr ? { ...r, ...(ADDR[G.addr] || ADDR.ban) } : r; };
+const relNow = () => REL[G.rel] || REL.friend;
 
 /* ================= TIỆN ÍCH ================= */
 const $ = s => document.querySelector(s);
@@ -85,7 +83,7 @@ const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
 const fmt = n => n >= 1e6 ? (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace('.0', '') + 'K' : String(n);
 const icon = id => `<svg class="ic"><use href="#i-${id}"/></svg>`;
 const shuffle = a => a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(x => x[1]);
-const G = { code: store.get('id', null) || ('g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), name: store.get('name', ''), rel: store.get('rel', 'friend'), relText: store.get('relText', ''), addr: store.get('addr', '') };
+const G = { code: store.get('id', null) || ('g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), name: store.get('name', ''), rel: store.get('rel', 'friend'), relText: store.get('relText', '') };
 // tên ghi vào Sheet kèm mối quan hệ, ví dụ "Lan (crush)"
 const guestName = () => G.name + (G.rel === 'friend' || !REL[G.rel] ? '' : ` (${G.rel === 'other' ? (G.relText || 'khác') : REL[G.rel].label.toLowerCase()})`);
 store.set('id', G.code);
@@ -346,14 +344,11 @@ function paintRel() {
   const picked = store.get('relPicked', false);
   $$('#relBtns button').forEach(b => b.classList.toggle('on', b.dataset.rel === G.rel && picked));
   $('#inRel').hidden = !(picked && G.rel === 'other'); $('#inRel').value = G.relText;
-  $('#addrRow').hidden = !(picked && REL[G.rel] && REL[G.rel].addr);
-  $$('#addrBtns button').forEach(b => b.classList.toggle('on', b.dataset.addr === G.addr));
 }
 function checkTicket() {
   const r = REL[G.rel];
-  $('#tkDone').disabled = !($('#inName').value.trim().length >= 1 && store.get('relPicked', false) && r && (!r.addr || ADDR[G.addr]) && (G.rel !== 'other' || $('#inRel').value.trim()));
+  $('#tkDone').disabled = !($('#inName').value.trim().length >= 1 && store.get('relPicked', false) && r && (G.rel !== 'other' || $('#inRel').value.trim()));
 }
-$$('#addrBtns button').forEach(b => b.onclick = () => { G.addr = b.dataset.addr; store.set('addr', G.addr); paintRel(); checkTicket(); SFX.blip(3); });
 $('#inName').addEventListener('input', () => { const v = $('#inName').value.trim(); $('#tkName').textContent = v || '_ _ _ _ _'; checkTicket(); });
 $$('#relBtns button').forEach(b => b.onclick = () => { G.rel = b.dataset.rel; store.set('rel', G.rel); store.set('relPicked', true); paintRel(); checkTicket(); SFX.blip(2); if (G.rel === 'other') $('#inRel').focus(); });
 $('#inRel').addEventListener('input', () => { G.relText = $('#inRel').value.trim().slice(0, 24); store.set('relText', G.relText); checkTicket(); });
