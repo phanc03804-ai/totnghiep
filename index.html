@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>TXCC2026 · Chuyến bay tốt nghiệp</title>
-<meta name="description" content="Thư mời lễ tốt nghiệp của Phan Ngọc Cao Cường – 15:00, 08/12/2026, Nhà hát Hòa Bình">
-<meta property="og:title" content="TXCC2026 – Lễ tốt nghiệp của Cao Cường">
-<meta property="og:description" content="15:00 · 08/12/2026 · Nhà hát Hòa Bình. Lên chuyến bay cùng Cường qua những năm tháng cao đẳng.">
+<title>Thanh Xuân 2026 · Chuyến bay tốt nghiệp</title>
+<meta name="description" content="Thư mời lễ tốt nghiệp của Phan Ngọc Cao Cường – 15:00–17:30, 08/12/2026, Nhà hát Hòa Bình">
+<meta property="og:title" content="Thanh Xuân 2026 – Lễ tốt nghiệp của Cao Cường">
+<meta property="og:description" content="15:00–17:30 · 08/12/2026 · Nhà hát Hòa Bình. Lên chuyến bay cùng Cường qua những năm tháng cao đẳng.">
 <meta name="theme-color" content="#0A1A3F">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +43,7 @@ p{margin:.45em 0;line-height:1.55}
 .brand{display:flex;align-items:center;gap:9px;color:#fff}
 .brand .logo{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(180deg,#F1D79E,var(--gold));color:#2A1A00;box-shadow:0 2px 10px rgba(201,163,91,.45)}
 .brand .logo .ic{width:17px;height:17px;transform:rotate(45deg)}
-.brand b{font-size:14px;letter-spacing:.16em;display:block;font-weight:800;color:var(--gold-l)}
+.brand b{font-size:13px;letter-spacing:.12em;white-space:nowrap;display:block;font-weight:800;color:var(--gold-l)}
 .brand small{font-size:8.5px;letter-spacing:.28em;color:rgba(255,255,255,.65);font-weight:600}
 .app.paper .brand b{color:var(--gold)}.app.paper .brand small{color:var(--muted)}
 .chips{display:flex;gap:6px}
@@ -77,11 +77,11 @@ p{margin:.45em 0;line-height:1.55}
 .phone{position:relative;border-radius:38px;background:#0D0F14;padding:12px;box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 0 0 2px #2A2E38;z-index:2}
 .phone .notch{position:absolute;left:50%;top:18px;width:84px;height:22px;margin-left:-42px;border-radius:12px;background:#000;z-index:3}
 .screen{border-radius:28px;overflow:hidden;background:#F6F3EC;padding:42px 14px 16px;position:relative}
-.screen .appbar{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.14em}
+.screen .appbar{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:700;color:var(--navy);letter-spacing:.1em;white-space:nowrap}
 .screen .appbar span:last-child{color:var(--gold)}
 .eticket{margin-top:12px;border-radius:16px;background:#fff;box-shadow:0 8px 24px rgba(10,26,63,.12);overflow:hidden}
 .eticket .hd{background:var(--navy);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
-.eticket .hd b{font-size:13px;letter-spacing:.14em}
+.eticket .hd b{font-size:12px;letter-spacing:.1em;white-space:nowrap}
 .eticket .hd small{font-size:9px;letter-spacing:.2em;opacity:.7}
 .eticket .rt{display:flex;justify-content:space-between;align-items:center;padding:12px 14px 2px}
 .eticket .rt b{font-size:24px;font-weight:800;color:var(--navy)}
@@ -97,8 +97,7 @@ p{margin:.45em 0;line-height:1.55}
 .form input{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:15px}
 .form input:focus{outline:2px solid var(--gold);border-color:transparent}
 .rel{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-.rel button{grid-column:span 2;padding:11px 4px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--navy);font-weight:700;font-size:14px}
-.rel button:nth-child(n+4){grid-column:span 3}
+.rel button{grid-column:span 2;padding:11px 2px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--navy);font-weight:700;font-size:13px;white-space:nowrap}
 #inRel{margin-top:8px}
 #inRel[hidden]{display:none}
 .rel button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
@@ -171,10 +170,13 @@ p{margin:.45em 0;line-height:1.55}
 @keyframes shake{25%{transform:translate(5px,2px)}50%{transform:translate(-4px,-2px)}75%{transform:translate(2px,-1px)}}
 
 /* ---------- cửa sổ máy bay khi cất cánh ---------- */
-.window{position:absolute;inset:0;z-index:12;pointer-events:none;background:radial-gradient(ellipse 34% 30% at 50% 46%,transparent 96%,#D9DCE2 97%,#C7CBD3 99%,#EDEFF2 100%)}
+.window{position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0;transition:opacity .15s;background:radial-gradient(ellipse 34% 30% at 50% 46%,transparent 96%,#D9DCE2 97%,#C7CBD3 99%,#EDEFF2 100%)}
 .window:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 34% 30% at 50% 46%,transparent 92%,rgba(0,0,0,.25) 100%)}
-.cabin-cap{position:absolute;left:0;right:0;bottom:12%;text-align:center;color:var(--navy);z-index:13}
-.cabin-cap small{font-size:10px;letter-spacing:.3em;font-weight:700;color:var(--muted)}
+.cabin-cap{position:absolute;left:0;right:0;bottom:13%;text-align:center;color:#fff;z-index:13;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+#s-takeoff.win .window{opacity:1}
+#s-takeoff.win .cabin-cap{color:var(--navy);text-shadow:none}
+#s-takeoff.win .cabin-cap small{color:var(--muted)}
+.cabin-cap small{font-size:10px;letter-spacing:.3em;font-weight:700;color:var(--gold-l)}
 .cabin-cap h2{font-size:22px;margin-top:4px}
 
 /* ---------- video từng chặng ---------- */
@@ -255,30 +257,43 @@ p{margin:.45em 0;line-height:1.55}
 .st-light{opacity:0;background:radial-gradient(70% 55% at 50% 50%,rgba(255,226,170,.55),rgba(255,200,130,.12) 60%,transparent 80%)}
 .st-lead{display:flex;align-items:flex-start;justify-content:center;padding:120px 28px 0;text-align:center;font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.6;color:#fff;text-shadow:0 2px 14px rgba(0,0,0,.9);opacity:0;transition:opacity 1.2s}
 .st-lead.on{opacity:1}
-.st-hold{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:max(70px,env(safe-area-inset-bottom));opacity:0;transition:opacity .8s}
-.st-hold.on{opacity:1}
-#s-storm.on .st-hold.on .hold-btn{pointer-events:auto!important}
-.st-hold p{color:#fff;font-weight:600;font-size:14.5px;margin-top:14px;text-shadow:0 1px 8px rgba(0,0,0,.8)}
-.hold-btn{position:relative;width:132px;height:132px;border-radius:50%;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.hold-btn svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
-.hold-btn circle{fill:none;stroke-width:5}
-.hold-btn .bg{stroke:rgba(255,255,255,.18)}
-.hold-btn .fg{stroke:#FFE2A6;stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:339.3;filter:drop-shadow(0 0 6px #FFD27A)}
-.hold-btn .core{position:absolute;inset:26px;border-radius:50%;background:radial-gradient(circle,#FFF4D6,#FFC66B 55%,rgba(255,180,80,.2));box-shadow:0 0 30px 8px rgba(255,200,110,.55);animation:glow 1.8s ease-in-out infinite}
-.hold-btn.down .core{animation:none;transform:scale(1.12);box-shadow:0 0 60px 22px rgba(255,210,130,.75)}
-@keyframes glow{50%{transform:scale(.9);box-shadow:0 0 18px 4px rgba(255,200,110,.4)}}
-.st-frames{display:flex;gap:10px;justify-content:center;align-items:flex-start;padding:112px 14px 0}
-.st-frames .pf{width:31%;background:#FFFDF8;padding:6px 6px 10px;border-radius:4px;box-shadow:0 16px 40px rgba(0,0,0,.4);opacity:0;transform:translateY(24px) rotate(var(--r));transition:all 1s cubic-bezier(.2,1,.3,1)}
-.st-frames .pf.on{opacity:1;transform:rotate(var(--r))}
-.st-frames .ph{aspect-ratio:3/4;border-radius:2px;background:center/cover;display:grid;place-items:center;filter:sepia(.25) saturate(1.1)}
-.st-frames .ph.empty{background:linear-gradient(160deg,#F6D9A8,#E8A877)}
-.st-frames .ph.empty .ic{width:30px;height:30px;color:#fff}
-.st-frames b{display:block;text-align:center;font-family:var(--serif);color:var(--navy);font-size:14px;margin-top:6px}
-.st-frames small{display:block;text-align:center;font-size:10.5px;line-height:1.35;color:#6D7486;margin-top:2px}
-.st-end{display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px max(28px,env(safe-area-inset-bottom));opacity:0;transition:opacity 1s}
-.st-end.on{opacity:1}
-#s-storm.on .st-end.on .btn{pointer-events:auto!important}
-.st-end p{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.6;color:#fff;text-align:center;text-shadow:0 2px 14px rgba(0,0,0,.85);margin-bottom:18px}
+.st-tap{display:flex;align-items:flex-end;justify-content:center;padding:0 28px max(64px,env(safe-area-inset-bottom));text-align:center;opacity:0;transition:opacity .8s}
+.st-tap.on{opacity:1}
+.st-tap p{color:#fff;font-size:15px;line-height:1.6;text-shadow:0 1px 10px rgba(0,0,0,.85)}
+.st-tap b{color:#FFE2A6}
+#s-storm .st-beacon{position:absolute;width:96px;height:96px;margin:-48px 0 0 -48px;border-radius:50%;z-index:5;opacity:0;pointer-events:none;transition:opacity .6s}
+#s-storm.on .st-beacon.on{opacity:1;pointer-events:auto}
+.st-beacon i{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(255,226,166,.9);animation:ping 1.6s ease-out infinite}
+.st-beacon:before{content:"";position:absolute;inset:34px;border-radius:50%;background:#FFF6E0;box-shadow:0 0 24px 10px rgba(255,214,140,.8)}
+@keyframes ping{from{transform:scale(.45);opacity:1}to{transform:scale(1.25);opacity:0}}
+
+/* ---------- trong ánh sáng: montage + poster ---------- */
+#s-light{z-index:29;background:#05070D}
+.lt-card{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:78px 18px 86px;opacity:0;transition:opacity .6s}
+.lt-card.on{opacity:1}
+.lt-poster{width:min(100%,calc((100vh - 330px) * .8),430px);background:#FFFDF8;padding:8px;border-radius:5px;box-shadow:0 30px 70px rgba(0,0,0,.6);transform:rotate(-1.5deg) scale(.92);transition:transform .7s cubic-bezier(.2,1.3,.4,1)}
+.lt-card.on .lt-poster{transform:rotate(-1.5deg)}
+.lt-poster .ph{aspect-ratio:4/5;border-radius:3px;background:center/cover #E9E1D2;display:grid;place-items:center}
+.lt-poster .empty{text-align:center;color:#9A8466;font-size:13px;font-weight:600;line-height:1.5}
+.lt-poster .empty .ic{display:block;width:40px;height:40px;margin:0 auto 8px;color:#D9A86C}
+.lt-side{width:100%;max-width:430px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8)}
+.lt-side small{font-size:10px;font-weight:800;letter-spacing:.24em;color:var(--gold-l)}
+.lt-side h2{font-size:24px;margin:2px 0 6px}
+.lt-side p{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1.6;margin:0;min-height:4.8em}
+.lt-side .pbar{margin-top:12px}
+.lt-card.on .pbar i{animation:pbar 10s linear forwards}
+.lt-card .pskip{opacity:0;visibility:hidden}
+.lt-card.on .pskip{animation:reveal .4s 3.5s forwards}
+.app.paused .lt-card .pbar i,.app.paused .lt-card .pskip{animation-play-state:paused}
+@media (min-aspect-ratio:1/1){.lt-card{flex-direction:row;gap:28px}.lt-poster{width:min(46vw,calc((100vh - 170px) * .8))}.lt-side{max-width:360px}}
+.lt-end{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:0 20px max(28px,env(safe-area-inset-bottom));opacity:0;pointer-events:none;transition:opacity 1s}
+.lt-end.on{opacity:1;pointer-events:auto}
+.lt-end p{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.6;color:#fff;text-align:center;text-shadow:0 2px 14px rgba(0,0,0,.85);margin-bottom:18px}
+
+/* đoạn phim bay vào vùng mưa cuối chặng 2: ẩn HUD, thêm viền phim */
+#s-flight.cine .hud,#s-flight.cine .prog,#s-flight.cine .find{opacity:0}
+#s-flight .bars:before,#s-flight .bars:after{transform:translateY(-100%)}#s-flight .bars:after{transform:translateY(100%)}
+#s-flight.cine .bars:before,#s-flight.cine .bars:after{transform:none}
 
 /* ---------- chặng 4: đáp cánh ---------- */
 .bars:before,.bars:after{content:"";position:absolute;left:0;right:0;height:9%;background:#000;z-index:2;transition:transform .8s}
@@ -410,7 +425,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   <div class="fx"></div>
 
   <div class="topbar">
-    <div class="brand"><span class="logo"><svg class="ic"><use href="#i-plane"/></svg></span><div><b>TXCC2026</b><small>GRADUATION AIRLINES</small></div></div>
+    <div class="brand"><span class="logo"><svg class="ic"><use href="#i-plane"/></svg></span><div><b>THANH XUÂN 2026</b><small>GRADUATION AIRLINES</small></div></div>
     <div class="chips"><button class="chip" id="btnMute" aria-label="Âm thanh"><svg class="ic"><use href="#i-sound"/></svg></button><button class="chip" id="btnPause" aria-label="Tạm dừng"><svg class="ic"><use href="#i-pause"/></svg>Tạm dừng</button></div>
   </div>
 
@@ -420,9 +435,9 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
     <div class="hold" id="hold">
       <div class="phone"><div class="notch"></div>
         <div class="screen">
-          <div class="appbar"><span>TXCC2026 · VÉ ĐIỆN TỬ</span><span>08.12</span></div>
+          <div class="appbar"><span>THANH XUÂN 2026 · VÉ ĐIỆN TỬ</span><span>08.12</span></div>
           <div class="eticket">
-            <div class="hd"><b>TXCC2026</b><small>BOARDING PASS</small></div>
+            <div class="hd"><b>THANH XUÂN 2026</b><small>BOARDING PASS</small></div>
             <div class="rt"><div><b>KTĐN</b><small>Kinh tế Đối ngoại</small></div><svg class="ic"><use href="#i-plane"/></svg><div style="text-align:right"><b>GRAD</b><small>Lễ tốt nghiệp</small></div></div>
             <div class="gd">
               <div class="pax"><small>HÀNH KHÁCH</small><b id="tkName">_ _ _ _ _</b></div>
@@ -434,8 +449,9 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
             <label for="inName">TÊN CỦA BẠN</label>
             <input id="inName" maxlength="30" autocomplete="name" placeholder="Ví dụ: Minh Anh">
             <label>CƯỜNG LÀ GÌ CỦA BẠN?</label>
-            <div class="rel" id="relBtns"><button data-rel="family">Gia đình</button><button data-rel="friend">Bạn bè</button><button data-rel="crush">Crush</button><button data-rel="work">Đồng nghiệp</button><button data-rel="other">Khác…</button></div>
+            <div class="rel" id="relBtns"><button data-rel="family">Gia đình</button><button data-rel="teacher">Thầy cô</button><button data-rel="friend">Bạn bè</button><button data-rel="crush">Crush</button><button data-rel="work">Đồng nghiệp</button><button data-rel="other">Khác…</button></div>
             <input id="inRel" maxlength="24" placeholder="Ghi mối quan hệ, ví dụ: hàng xóm" hidden>
+            <div id="addrRow" hidden><label>CƯỜNG GỌI BẠN LÀ</label><div class="rel" id="addrBtns"><button data-addr="anh">Anh</button><button data-addr="chi">Chị</button><button data-addr="ban">Bạn</button></div></div>
             <button class="btn" id="tkDone" disabled>Hoàn tất vé <svg class="ic"><use href="#i-check"/></svg></button>
           </div>
         </div>
@@ -462,13 +478,13 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
       <div class="pp">
         <div class="pp-book" id="ppBook">
           <div class="wm">VISA</div>
-          <div class="lbl">HỘ CHIẾU · PASSPORT · TXCC2026</div>
+          <div class="lbl">HỘ CHIẾU · PASSPORT · THANH XUÂN 2026</div>
           <div class="nm" id="ppName"></div>
           <div class="lbl" style="margin-top:6px" id="ppScore"></div>
           <div class="stamp" id="stamp">
             <svg viewBox="0 0 200 200" aria-hidden="true"><defs><path id="cp" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs>
               <circle cx="100" cy="100" r="96" fill="none" stroke="var(--stampc,#B45309)" stroke-width="4"/><circle cx="100" cy="100" r="62" fill="none" stroke="var(--stampc,#B45309)" stroke-width="2.5"/>
-              <text font-family="Be Vietnam Pro, sans-serif" font-weight="800" font-size="13" fill="var(--stampc,#B45309)" letter-spacing="2.5"><textPath href="#cp" id="stampText">★ APPROVED · TXCC2026 ★</textPath></text></svg>
+              <text font-family="Be Vietnam Pro, sans-serif" font-weight="800" font-size="13" fill="var(--stampc,#B45309)" letter-spacing="2.5"><textPath href="#cp" id="stampText">★ APPROVED · THANH XUÂN 2026 ★</textPath></text></svg>
             <div class="face"><img id="stampImg" alt=""></div>
           </div>
         </div>
@@ -479,7 +495,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   </section>
 
   <!-- CẤT CÁNH: nhìn qua cửa sổ -->
-  <section class="stage" id="s-takeoff"><div class="window"></div><div class="cabin-cap" id="cabinCap"><small>TXCC2026 · ĐANG CẤT CÁNH</small><h2>Thắt dây an toàn</h2></div></section>
+  <section class="stage" id="s-takeoff"><div class="bars"></div><div class="window"></div><div class="cabin-cap" id="cabinCap"><small>THANH XUÂN 2026 · ĐANG CẤT CÁNH</small><h2>Thắt dây an toàn</h2></div></section>
 
   <!-- VIDEO MỞ ĐẦU MỖI CHẶNG -->
   <section class="stage" id="s-video">
@@ -510,6 +526,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
       <div class="pbar"><i id="pBar"></i></div>
     </div><button class="pskip" id="pSkip">Bỏ qua khoảnh khắc <svg class="ic"><use href="#i-skip"/></svg></button></div>
     <div class="dusk" id="dusk"></div>
+    <div class="bars"></div>
   </section>
 
   <!-- CHẶNG 3: GIÔNG BÃO (chạm giữ) -->
@@ -520,12 +537,19 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
     <div class="st-rain" id="stRain"></div>
     <div class="st-light" id="stLight"></div>
     <div class="st-lead" id="stLead"></div>
-    <div class="st-frames" id="stFrames"></div>
-    <div class="st-hold" id="stHold">
-      <button class="hold-btn" id="holdBtn" aria-label="Chạm và giữ"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="54"/><circle class="fg" id="holdFg" cx="60" cy="60" r="54"/></svg><span class="core"></span></button>
-      <p>Chạm và giữ để bật đèn dẫn đường</p>
+    <div class="st-tap" id="stTap"><p>Phía xa có một điểm sáng…<br><b>Chạm vào điểm sáng</b> để bay tới đó</p></div>
+    <button class="st-beacon" id="stBeacon" aria-label="Chạm vào điểm sáng"><i></i></button>
+  </section>
+
+  <!-- TRONG ÁNH SÁNG: montage + poster Gia đình / Thầy cô / Bạn bè -->
+  <section class="stage" id="s-light">
+    <div class="montage"><video id="ltVid" muted playsinline loop preload="none"></video><div class="slides" id="ltSlides"></div></div>
+    <div class="lt-card" id="ltCard">
+      <div class="lt-poster"><div class="ph" id="ltImg"></div></div>
+      <div class="lt-side"><small id="ltKick"></small><h2 id="ltLabel"></h2><p id="ltText"></p><div class="pbar"><i id="ltBar"></i></div></div>
+      <button class="pskip" id="ltSkip">Tiếp <svg class="ic"><use href="#i-skip"/></svg></button>
     </div>
-    <div class="st-end" id="stEnd"><p id="stEndTx"></p><button class="btn" id="stNext">Tiếp tục hành trình <svg class="ic"><use href="#i-arrow"/></svg></button></div>
+    <div class="lt-end" id="ltEnd"><p id="ltEndTx"></p><button class="btn" id="ltNext">Tiếp tục hành trình <svg class="ic"><use href="#i-arrow"/></svg></button></div>
   </section>
 
   <!-- CHẶNG 4: ĐÁP CÁNH (phim 3D) -->
@@ -550,7 +574,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   <section class="stage paperpg" id="s-review"><div class="scroll">
     <div class="rate">
       <div class="cap-pf"></div>
-      <div class="kick" style="justify-content:center">TXCC2026 · Đã hạ cánh</div>
+      <div class="kick" style="justify-content:center">Thanh Xuân 2026 · Đã hạ cánh</div>
       <h2>Đánh giá chuyến bay cùng cơ trưởng Cường</h2>
       <p class="sub">Chuyến bay hôm nay thế nào?</p>
       <div class="stars" id="stars"></div>
@@ -564,10 +588,10 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   <!-- THIỆP MỜI CHÍNH THỨC -->
   <section class="stage paperpg" id="s-end"><div class="scroll">
     <div class="invite">
-      <div class="iv-hd"><div><b>TXCC2026</b><small>THIỆP MỜI CHÍNH THỨC</small></div><svg class="ic"><use href="#i-grad"/></svg></div>
+      <div class="iv-hd"><div><b>THANH XUÂN 2026</b><small>THIỆP MỜI CHÍNH THỨC</small></div><svg class="ic"><use href="#i-grad"/></svg></div>
       <div class="iv-bd">
         <p class="iv-msg" id="ivMsg"></p>
-        <div class="iv-row"><svg class="ic"><use href="#i-clock"/></svg><div><small>THỜI GIAN</small><b>15:00 · Thứ Ba, 08/12/2026</b></div></div>
+        <div class="iv-row"><svg class="ic"><use href="#i-clock"/></svg><div><small>THỜI GIAN</small><b>15:00 – 17:30 · Thứ Ba, 08/12/2026</b></div></div>
         <div class="iv-row"><svg class="ic"><use href="#i-pin"/></svg><div><small>ĐỊA ĐIỂM</small><b>Nhà hát Hòa Bình</b><span>240 Đường 3 Tháng 2, P. Hòa Hưng, TP.HCM</span></div></div>
         <div class="iv-row" id="ivPhoneRow"><svg class="ic"><use href="#i-phone"/></svg><div><small>LIÊN HỆ</small><b><a id="ivPhone"></a></b></div></div>
         <div class="iv-row"><svg class="ic"><use href="#i-grad"/></svg><div><small>LỄ TỐT NGHIỆP</small><b>Phan Ngọc Cao Cường</b><span>Tiếng Anh Thương Mại · CĐ Kinh tế Đối ngoại</span></div></div>
@@ -598,7 +622,7 @@ textarea:focus{outline:2px solid var(--gold);border-color:transparent}
   <div class="toast" id="toast"></div>
   <audio id="bgm" src="media/bgm.mp3" loop preload="auto"></audio>
   <audio id="gameMusic" src="media/game.mp3" loop preload="auto"></audio>
-  <div class="loading" id="loading"><div class="center"><span class="brand" style="justify-content:center"><span class="logo" style="width:58px;height:58px"><svg class="ic" style="width:28px;height:28px"><use href="#i-plane"/></svg></span></span><p>TXCC2026 · ĐANG CHUẨN BỊ</p></div></div>
+  <div class="loading" id="loading"><div class="center"><span class="brand" style="justify-content:center"><span class="logo" style="width:58px;height:58px"><svg class="ic" style="width:28px;height:28px"><use href="#i-plane"/></svg></span></span><p>THANH XUÂN 2026 · ĐANG CHUẨN BỊ</p></div></div>
 </div>
 <script>
   window.__errs = [];
