@@ -1,4 +1,4 @@
-import * as W from './world.js';
+import * as W from './world.js?v=20261128b'; // đổi số v mỗi lần cập nhật để điện thoại không dùng bản cũ
 
 /* ================= CẤU HÌNH (sửa nội dung ở đây) ================= */
 const CFG = {
